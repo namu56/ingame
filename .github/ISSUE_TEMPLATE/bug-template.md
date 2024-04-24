@@ -1,15 +1,15 @@
 ---
 name: Bug Template
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 ## 개요 및 증상
-- 버그 발생 일시: 
-- 버그 발생 위치: 
+
+- 버그 발생 일시:
+- 버그 발생 위치:
 - 기대한 동작
   - (어떻게 동작할 것이라고 기대했는지 작성합니다.)
 - 실제 동작
@@ -22,6 +22,7 @@ assignees: ''
 <br>
 
 ## 버그 재현 방법
+
 1. '...'에 간다.
 2. '....'를 클릭한다.
 3. '....'까지 스크롤을 내린다.
@@ -30,6 +31,7 @@ assignees: ''
 <br>
 
 ## 환경 정보
+
 - [ ] Desktop:
   - OS: [e.g. iOS]
   - Browser [e.g. chrome, safari]
