@@ -2,13 +2,71 @@ import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './styles/theme';
 import { GlobalStyle } from './styles/globalstyles';
-import Temp from './components/Temp';
+import Title from './components/Title';
+import Layout from './layout/Layout';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-      <Temp />
+      <Layout>
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+        <Title />
+      </Layout>
     </ThemeProvider>
   );
 }
