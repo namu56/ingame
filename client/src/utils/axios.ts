@@ -13,7 +13,6 @@ export const createClient = (config?: AxiosRequestConfig) => {
   axiosInstance.interceptors.request.use((request) => {
     // config.headers.Authorization = getToken() ? getToken() : '';
     // return config;
-
     return request;
   });
 
