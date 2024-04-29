@@ -1,7 +1,4 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 export const createClient = (config?: AxiosRequestConfig) => {
   const axiosInstance = axios.create({
@@ -16,6 +13,7 @@ export const createClient = (config?: AxiosRequestConfig) => {
   axiosInstance.interceptors.request.use((request) => {
     // config.headers.Authorization = getToken() ? getToken() : '';
     // return config;
+
     return request;
   });
 

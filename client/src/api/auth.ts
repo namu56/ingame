@@ -6,4 +6,7 @@ interface LoginInfo {
   password: string;
 }
 
-export const login = async (data: LoginInfo) => httpClient.post(API_END_POINT.LOGIN, { ...data });
+export const login = async (data: LoginInfo) => {
+  const resposne = await httpClient.post(API_END_POINT.LOGIN, { ...data });
+  return resposne.data;
+};
