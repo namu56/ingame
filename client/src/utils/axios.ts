@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+dotenv.config();
 
 export const createClient = (config?: AxiosRequestConfig) => {
   const axiosInstance = axios.create({
