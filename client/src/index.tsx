@@ -4,6 +4,8 @@ import App from './App';
 import './App.css';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import { store } from './store';
+import { Provider } from 'react-redux';
 
 async function mountApp() {
   if (process.env.NODE_ENV === 'development') {
@@ -13,9 +15,9 @@ async function mountApp() {
   }
   const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
   root.render(
-    <React.StrictMode>
+    <Provider store={store}>
       <App />
-    </React.StrictMode>
+    </Provider>
   );
 }
 serviceWorkerRegistration.register();
