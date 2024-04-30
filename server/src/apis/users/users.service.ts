@@ -5,12 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserInfo } from './entities/user-info.entity';
+import { ProfilePhoto } from './entities/profile-photo.entity';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(UserInfo) private userInfoRepository: Repository<UserInfo>
+    @InjectRepository(UserInfo) private userInfoRepository: Repository<UserInfo>,
+    @InjectRepository(ProfilePhoto) private profielPhotoRepository: Repository<ProfilePhoto>
   ) {}
   async createUser(createUserDto: CreateUserDto) {
     const { email, password, nickname } = createUserDto;
@@ -25,21 +28,31 @@ export class UsersService {
 
     const userInfo = this.userInfoRepository.create({ userId: savedUser.id, nickname });
     await this.userInfoRepository.save(userInfo);
+
+    const profilePhoto = this.profielPhotoRepository.create({ userId: savedUser.id });
+    await this.profielPhotoRepository.save(profilePhoto);
   }
 
   // findAll() {
   //   return `This action returns all users`;
   // }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
+  async findUserById(id: number): Promise<UserResponseDto> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['userInfo', 'profilePhoto'],
+    });
+    if (!user) {
+      throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+    }
+    return new UserResponseDto(user);
+  }
 
   // update(id: number, updateUserDto: UpdateUserDto) {
   //   return `This action updates a #${id} user`;
   // }
 
-  async deleteUser(id: number) {
+  async deleteUserById(id: number) {
     const findUserById = await this.userRepository.findOne({ where: { id } });
     if (!findUserById) {
       throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.CONFLICT);

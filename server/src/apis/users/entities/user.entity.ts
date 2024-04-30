@@ -2,7 +2,6 @@ import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -24,12 +23,16 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   password: string;
 
-  @OneToOne(() => UserInfo, (userInfo) => userInfo.user, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_info_id' })
+  @OneToOne(() => UserInfo, (userInfo) => userInfo.user, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   userInfo: UserInfo;
 
-  @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'profile_photo_id' })
+  @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   profilePhoto: ProfilePhoto;
 
   @OneToMany(() => Quest, (quest) => quest.user)

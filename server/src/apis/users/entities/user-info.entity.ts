@@ -11,15 +11,12 @@ export class UserInfo extends BaseEntity {
   nickname: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  profilePhoto: string;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
   intro: string;
 
   @Column({ type: 'int', nullable: true })
   point: number;
 
-  @OneToOne(() => User, (user) => user.userInfo, { onDelete: 'CASCADE' })
+  @OneToOne(() => User, (user) => user.userInfo)
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

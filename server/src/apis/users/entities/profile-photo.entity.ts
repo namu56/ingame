@@ -9,7 +9,7 @@ export class ProfilePhoto extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   profilePhoto: string;
 
-  @OneToOne(() => User, (user) => user.profilePhoto, { onDelete: 'CASCADE' })
+  @OneToOne(() => User, (user) => user.profilePhoto)
   @JoinColumn({ name: 'user_id' })
   user: User;
 }
