@@ -14,6 +14,8 @@ const color = {
   grayLightActive: '#F9F9F9',
   grayNormal: '#EBEBEB',
   grayNormalActive: '#BCBCBC',
+  grayDark: '#b0b0b0',
+  grayDarkActive: '#8d8d8d',
 };
 
 const font = {

@@ -16,6 +16,8 @@ declare module 'styled-components' {
       grayLightActive: string;
       grayNormal: string;
       grayNormalActive: string;
+      grayDark: string;
+      grayDarkActive: string;
     };
 
     font: {
