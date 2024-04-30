@@ -2,17 +2,14 @@ import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './styles/theme';
 import { GlobalStyle } from './styles/globalstyles';
-import Title from './components/Title';
-import Layout from './layout/Layout';
-import { Counter } from './pages/counter';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './routes/routing';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-      <Layout>
-        <Counter />
-      </Layout>
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 }
