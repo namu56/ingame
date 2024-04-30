@@ -6,7 +6,7 @@ export class ProfilePhoto extends BaseEntity {
   @PrimaryColumn()
   userId: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255, nullable: true })
   profilePhoto: string;
 
   @OneToOne(() => User, (user) => user.profilePhoto)

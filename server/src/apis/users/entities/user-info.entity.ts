@@ -1,21 +1,22 @@
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryColumn, Unique } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity('user_info')
+@Unique(['nickname'])
 export class UserInfo extends BaseEntity {
   @PrimaryColumn()
   userId: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   nickname: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255, nullable: true })
   profilePhoto: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255, nullable: true })
   intro: string;
 
-  @Column()
+  @Column({ type: 'int', nullable: true })
   point: number;
 
   @OneToOne(() => User, (user) => user.userInfo)
