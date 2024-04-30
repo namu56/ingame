@@ -1,6 +1,6 @@
 import { DefaultTheme } from 'styled-components';
 
-export const color = {
+const color = {
   black: '#000000',
   white: '#FFFFFF',
   coral: '#FF7262',
@@ -16,7 +16,7 @@ export const color = {
   grayNormalActive: '#BCBCBC',
 };
 
-export const font = {
+const font = {
   xsmall: '0.75rem',
   small: '1rem',
   medium: '1.25rem',
@@ -24,7 +24,7 @@ export const font = {
   xlarge: '2rem',
 };
 
-export const buttonSize = {
+const buttonSize = {
   large: {
     fontSize: '1.5rem',
     padding: '1rem 2rem',
@@ -39,6 +39,13 @@ export const buttonSize = {
   },
 };
 
+const borderRadius = {
+  small: '5px',
+  medium: '10px',
+  large: '20px',
+  xlarge: '999px',
+};
+
 const mediaQuery = (maxWidth: number): string => `@media (max-width: ${maxWidth}px)`;
 
 export const media = {
@@ -46,13 +53,6 @@ export const media = {
   mobile: mediaQuery(480),
   tablet: mediaQuery(1024),
   desktop: mediaQuery(1440),
-};
-
-const borderRadius = {
-  small: '5px',
-  medium: '10px',
-  large: '20px',
-  xlarge: '999px',
 };
 
 export const theme: DefaultTheme = {
