@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './user.entity';
-import { sideQuest } from './sidequest.entity';
+import { User } from '../../users/entities/user.entity';
+import { sideQuest } from './side-quest.entity';
 
 @Entity('quest')
 export class Quest extends BaseEntity {
