@@ -39,7 +39,12 @@ export class UsersService {
   //   return `This action updates a #${id} user`;
   // }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async deleteUser(id: number) {
+    const findUserById = await this.userRepository.findOne({ where: { id } });
+    if (!findUserById) {
+      throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.CONFLICT);
+    }
+
+    await this.userRepository.delete(id);
+  }
 }

@@ -24,11 +24,11 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   password: string;
 
-  @OneToOne(() => UserInfo, (userInfo) => userInfo.user)
+  @OneToOne(() => UserInfo, (userInfo) => userInfo.user, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_info_id' })
   userInfo: UserInfo;
 
-  @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user)
+  @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'profile_photo_id' })
   profilePhoto: ProfilePhoto;
 

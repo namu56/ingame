@@ -19,7 +19,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/signup')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async signup(@Body() createUserDto: CreateUserDto) {
     try {
       await this.usersService.createUser(createUserDto);
@@ -44,8 +44,14 @@ export class UsersController {
   //   return this.usersService.update(+id, updateUserDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.usersService.remove(+id);
-  // }
+  @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@Param('id') id: string) {
+    try {
+      await this.usersService.deleteUser(+id);
+      return;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

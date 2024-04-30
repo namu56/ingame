@@ -19,7 +19,7 @@ export class UserInfo extends BaseEntity {
   @Column({ type: 'int', nullable: true })
   point: number;
 
-  @OneToOne(() => User, (user) => user.userInfo)
+  @OneToOne(() => User, (user) => user.userInfo, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }
