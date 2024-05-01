@@ -1,8 +1,19 @@
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 
 @Entity('profile_photo')
 export class ProfilePhoto extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @PrimaryColumn()
   userId: number;
 
