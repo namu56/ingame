@@ -8,7 +8,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   color: keyof typeof theme.color;
 }
 
-function Button({ className, children, size, color, disabled, onClick, type }: Props) {
+const Button: React.FC<Props> = ({ className, children, size, color, disabled, onClick, type }) => {
   return (
     <ButtonStyle
       className={className}
@@ -21,7 +21,7 @@ function Button({ className, children, size, color, disabled, onClick, type }: P
       {children}
     </ButtonStyle>
   );
-}
+};
 
 const ButtonStyle = styled.button<Omit<Props, 'children'>>`
   color: ${({ theme }) => theme.color.white};
