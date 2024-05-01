@@ -6,7 +6,7 @@ export class UserResponseDto {
   nickname: string;
   intro: string | null;
   profilePhoto: string | null;
-  point: number | null;
+  point: number;
 
   constructor(user: User) {
     this.id = user.id;
@@ -14,6 +14,6 @@ export class UserResponseDto {
     this.nickname = user.userInfo.nickname;
     this.intro = user.userInfo.intro || null;
     this.profilePhoto = user.profilePhoto.profilePhoto || null;
-    this.point = user.userInfo.point || null;
+    this.point = user.userInfo.point;
   }
 }

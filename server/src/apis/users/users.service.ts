@@ -45,6 +45,14 @@ export class UsersService {
   }
 
   async updateUserInfoById(id: number, updateUserDto: UpdateUserDto): Promise<void> {
+    const existingNickname = await this.userInfoRepository.existsBy({
+      nickname: updateUserDto.nickname,
+    });
+
+    if (existingNickname) {
+      throw new HttpException('닉네임이 이미 사용 중입니다.', HttpStatus.CONFLICT);
+    }
+
     const userInfo = await this.userInfoRepository.findOne({ where: { userId: id } });
     if (!userInfo) {
       throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
@@ -56,7 +64,7 @@ export class UsersService {
   async deleteUserById(id: number) {
     const findUserById = await this.userRepository.findOne({ where: { id } });
     if (!findUserById) {
-      throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.CONFLICT);
+      throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
     }
 
     await this.userRepository.delete(id);
