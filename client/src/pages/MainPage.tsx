@@ -1,10 +1,16 @@
 import styled from 'styled-components';
 import React from 'react';
+// import SubBox from '@/components/SubBox';
+import MainBox from '@/components/MainBox';
+import RankingBox from '@/components/RankingBox';
+import SubBox from '@/components/SubBox';
 
 const MainPage = () => {
   return (
     <MainPageStyle>
-      <h1>MainPage</h1>
+      <MainBox /> 
+      {/* <RankingBox /> */}
+      {/* <SubBox /> */}
     </MainPageStyle>
   );
 };
