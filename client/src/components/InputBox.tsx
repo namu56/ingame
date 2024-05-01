@@ -5,10 +5,12 @@ import { BsKey } from 'react-icons/bs';
 import { FaRegSmile } from 'react-icons/fa';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 
+type endType = 'text' | 'icon';
+
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholer?: string;
   inputType?: 'text' | 'email' | 'password' | 'number';
-  $endType?: 'text' | 'icon';
+  $endType?: endType;
 }
 
 const InputBox = React.forwardRef(
