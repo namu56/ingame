@@ -7,10 +7,13 @@ import { Repository } from 'typeorm';
 import { UserInfo } from './entities/user-info.entity';
 import { ProfilePhoto } from './entities/profile-photo.entity';
 import { UserResponseDto } from './dto/user-response.dto';
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(UserInfo) private userInfoRepository: Repository<UserInfo>,
     @InjectRepository(ProfilePhoto) private profielPhotoRepository: Repository<ProfilePhoto>
@@ -22,8 +25,11 @@ export class UsersService {
     if (existingUser) {
       throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
     }
+    const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedPassword = bcrypt.hashSync(password, salt);
 
-    const user = this.userRepository.create({ email, password });
+    const user = this.userRepository.create({ email, password: hashedPassword });
     const savedUser = await this.userRepository.save(user);
 
     const userInfo = this.userInfoRepository.create({ userId: savedUser.id, nickname });
