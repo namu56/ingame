@@ -35,6 +35,6 @@ export class User extends BaseEntity {
   })
   profilePhoto: ProfilePhoto;
 
-  @OneToMany(() => Quest, (quest) => quest.user)
+  @OneToMany(() => Quest, (quest) => quest.user, { onDelete: 'CASCADE' })
   quests: Quest[];
 }
