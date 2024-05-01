@@ -6,6 +6,7 @@ import Error from '@/pages/Error';
 import { createBrowserRouter } from 'react-router-dom';
 import SignUp from '@/pages/SignUp';
 import Ranking from '@/pages/Ranking';
+import Test from '@/pages/Test';
 
 const routeList = [
   {
@@ -23,6 +24,10 @@ const routeList = [
   {
     path: ROUTERS.RANK,
     element: <Ranking />,
+  },
+  {
+    path: ROUTERS.TEST,
+    element: <Test />,
   },
 ];
 

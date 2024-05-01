@@ -5,4 +5,5 @@ export const ROUTERS = {
     SIGNUP: '/signup',
   },
   RANK: '/ranking',
+  TEST: '/test',
 } as const;

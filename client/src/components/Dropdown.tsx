@@ -1,0 +1,89 @@
+import { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+
+interface Props {
+  children: React.ReactNode;
+  toggleButton: React.ReactNode;
+  isOpen?: boolean;
+}
+
+const Dropdown = ({ children, toggleButton, isOpen = false }: Props) => {
+  const [open, setOpen] = useState(isOpen);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  console.log(children);
+
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [dropdownRef]);
+
+  return (
+    <DropdownStyle $open={open} ref={dropdownRef}>
+      <button className="toggle" onClick={() => setOpen(!open)}>
+        {toggleButton}
+      </button>
+      {open && <div className="panel">{children}</div>}
+    </DropdownStyle>
+  );
+};
+
+interface DropdownStyleProps {
+  $open: boolean;
+}
+
+const DropdownStyle = styled.div<DropdownStyleProps>`
+  position: relative;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .panel {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: white;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+    z-index: 100;
+    border: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: 12px;
+        border-bottom: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+        &:hover {
+          background-color: ${({ theme }) => theme.color.grayLightActive};
+          cursor: pointer;
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        div {
+          font-size: ${({ theme }) => theme.font.small};
+          color: ${({ theme }) => theme.color.black};
+        }
+      }
+    }
+  }
+`;
+
+export default Dropdown;
