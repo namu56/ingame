@@ -20,7 +20,7 @@ export class UsersService {
 
     const existingUser = await this.userRepository.findOne({ where: { email } });
     if (existingUser) {
-      throw new HttpException('Email already exists', HttpStatus.CONFLICT);
+      throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
     }
 
     const user = this.userRepository.create({ email, password });
@@ -39,7 +39,7 @@ export class UsersService {
       relations: ['userInfo', 'profilePhoto'],
     });
     if (!user) {
-      throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+      throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
     return new UserResponseDto(user);
   }
@@ -50,12 +50,12 @@ export class UsersService {
     });
 
     if (existingNickname) {
-      throw new HttpException('닉네임이 이미 사용 중입니다.', HttpStatus.CONFLICT);
+      throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
     }
 
     const userInfo = await this.userInfoRepository.findOne({ where: { userId: id } });
     if (!userInfo) {
-      throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+      throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
     const newUserInfo = this.userInfoRepository.merge(userInfo, updateUserDto);
     await this.userInfoRepository.save(newUserInfo);
@@ -64,7 +64,7 @@ export class UsersService {
   async deleteUserById(id: number) {
     const findUserById = await this.userRepository.findOne({ where: { id } });
     if (!findUserById) {
-      throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+      throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
 
     await this.userRepository.delete(id);

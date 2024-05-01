@@ -7,7 +7,7 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
-  Put,
+  Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,7 +30,7 @@ export class UsersController {
     return this.usersService.getUserById(+id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateUserInfo(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     await this.usersService.updateUserInfoById(+id, updateUserDto);
