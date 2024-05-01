@@ -31,7 +31,6 @@ const InnerStyle = styled.div`
   justify-content: flex-start;
   align-items: center;
   max-width: 480px;
-  min-height: 800px;
   border: 1px solid ${({ theme }) => theme.color.grayNormalActive};
   border-radius: ${({ theme }) => theme.borderRadius.large};
 
@@ -39,7 +38,6 @@ const InnerStyle = styled.div`
     min-height: 800px;
   }
 
-  height: 800px;
   overflow-y: scroll;
   background: ${({ theme }) => theme.color.white};
 `;
