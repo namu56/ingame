@@ -33,11 +33,7 @@ export class UsersService {
     await this.profielPhotoRepository.save(profilePhoto);
   }
 
-  // findAll() {
-  //   return `This action returns all users`;
-  // }
-
-  async findUserById(id: number): Promise<UserResponseDto> {
+  async getUserById(id: number): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['userInfo', 'profilePhoto'],
@@ -48,9 +44,14 @@ export class UsersService {
     return new UserResponseDto(user);
   }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
+  async updateUserInfoById(id: number, updateUserDto: UpdateUserDto): Promise<void> {
+    const userInfo = await this.userInfoRepository.findOne({ where: { userId: id } });
+    if (!userInfo) {
+      throw new HttpException('사용자가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+    }
+    const newUserInfo = this.userInfoRepository.merge(userInfo, updateUserDto);
+    await this.userInfoRepository.save(newUserInfo);
+  }
 
   async deleteUserById(id: number) {
     const findUserById = await this.userRepository.findOne({ where: { id } });
