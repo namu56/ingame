@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import { useForm } from 'react-hook-form';
 import { RxHamburgerMenu } from 'react-icons/rx';
+import Top from '@/components/Top';
 
 const Test = () => {
   const useform = useForm();
@@ -16,6 +17,14 @@ const Test = () => {
         <InputBox inputType="email" $endType="text" placeholder="이메일" {...register('email')} />
         <InputBox inputType="text" placeholder="닉네임" />
         <InputBox inputType="password" $endType="icon" placeholder="비밀번호" />
+        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
+        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
+        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
+        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
+        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
+        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
+        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
+        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
         <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
       </form>
       <Button size="medium" color="blue" children={'회원가입'} />
@@ -34,6 +43,7 @@ const Test = () => {
           </ul>
         }
       </Dropdown>
+      <Top />
     </TestStyle>
   );
 };
