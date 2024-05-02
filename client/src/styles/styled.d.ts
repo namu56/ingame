@@ -1,6 +1,8 @@
 import type { Theme } from './theme';
 
 declare module 'styled-components' {
+  export type Buttonsize = 'large' | 'medium' | 'small';
+
   export interface DefaultTheme extends Theme {
     color: {
       black: string;
@@ -16,6 +18,8 @@ declare module 'styled-components' {
       grayLightActive: string;
       grayNormal: string;
       grayNormalActive: string;
+      grayDark: string;
+      grayDarkActive: string;
     };
 
     font: {
@@ -27,15 +31,7 @@ declare module 'styled-components' {
     };
 
     buttonSize: {
-      large: {
-        fontSize: string;
-        padding: string;
-      };
-      medium: {
-        fontSize: string;
-        padding: string;
-      };
-      small: {
+      [key in Buttonsize]: {
         fontSize: string;
         padding: string;
       };
