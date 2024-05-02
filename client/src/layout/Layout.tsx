@@ -37,7 +37,7 @@ const InnerStyle = styled.div`
 
   ${media.mobile} {
     height: 100%;
-    min-height: 800px;
+    min-height: 100vh;
   }
   overflow-y: scroll;
   background: ${({ theme }) => theme.color.white};
