@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { IoIosArrowDropup } from 'react-icons/io';
+import { media } from '@/styles/theme';
 
 const Top = () => {
   // 버튼 클릭 시 맨 위로 이동
@@ -18,12 +19,19 @@ const Top = () => {
 };
 
 const TopStyle = styled.div`
-  display: flex;
   justify-content: flex-end;
   position: -webkit-sticky;
   position: sticky;
   bottom: 0;
   z-index: 999;
+
+  ${media.desktop} {
+    display: none;
+  }
+
+  ${media.mobile} {
+    display: flex;
+  }
 `;
 
 const TopButton = styled.button`
