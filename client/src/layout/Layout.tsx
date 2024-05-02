@@ -33,11 +33,12 @@ const InnerStyle = styled.div`
   max-width: 480px;
   border: 1px solid ${({ theme }) => theme.color.grayNormalActive};
   border-radius: ${({ theme }) => theme.borderRadius.large};
+  height: 800px;
 
   ${media.mobile} {
+    height: 100%;
     min-height: 800px;
   }
-
   overflow-y: scroll;
   background: ${({ theme }) => theme.color.white};
 `;
