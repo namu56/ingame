@@ -1,28 +1,5 @@
 import styled from 'styled-components';
-
-const rank = {
-  "status": 200,
-  "message": "success",
-  "updated": 20200520-240000, // 업데이트 시각 [format: YYYYMMDD-HHMMSS]
-  "count": 3,  // ranking 요소 개수
-  "ranking": [  //최대 100개 출력 
-    {
-      "userId": 1,
-      "nickname": "하늘 다람쥐",
-      "point": 220000
-    },
-    {
-      "userId": 2,
-      "nickname": "무당 벌레",
-      "point": 190000
-    },
-    {
-      "userId": 3,
-      "nickname": "물푸레나무",
-      "point": 180000
-    }
-  ]
-}
+import { rank } from '@/shared/dummy';
 
 const RankingBox = () => {
 

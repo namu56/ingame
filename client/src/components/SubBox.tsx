@@ -1,28 +1,9 @@
 import styled from 'styled-components';
 import { BsThreeDots } from "react-icons/bs";
+import { subQuest } from '@/shared/dummy';
 
-const questList = [
-  {
-    content: '서브 퀘스트 1',
-    status: 0
-  },
-  {
-    content: '서브 퀘스트 2',
-    status: 0
-  },
-  {
-    content: '서브 퀘스트 3',
-    status: 0
-  }
-];
 
 const SubBox = () => {
-  const subQuest = [
-    {
-      content: '서브 퀘스트 1',
-      status: 0
-    },
-  ];
   const handleModal = () => {
     
   }

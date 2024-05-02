@@ -3,22 +3,8 @@ import { BsThreeDots } from "react-icons/bs";
 import { MdArrowDropDown } from "react-icons/md";
 import { MdArrowDropUp } from "react-icons/md";
 import { useState } from 'react';
-import SubBox from './SubBox';
+import { sideQuestList } from '@/shared/dummy';
 
-const sideQuestList = [
-  {
-    content: '사이드 퀘스트 1',
-    status: 0
-  },
-  {
-    content: '사이드 퀘스트 2',
-    status: 0
-  },
-  {
-    content: '사이드 퀘스트 3',
-    status: 0
-  }
-];
 
 const MainBox = () => {
   const [isAccordion, setisAccordion] = useState(false);
