@@ -2,15 +2,14 @@ import styled from 'styled-components';
 import { BsThreeDots } from "react-icons/bs";
 import { subQuest } from '@/shared/dummy';
 
-
 const SubBox = () => {
   const handleModal = () => {
     
   }
   return (
     <SubBoxStyle>
-      <div className='title'>{subQuest[0].content}</div>
-      <div className='ellipsis' onClick={handleModal}><BsThreeDots /></div>
+      <h2 className='title'>{subQuest[0].content}</h2>
+      <button className='ellipsis' onClick={handleModal}><BsThreeDots /></button>
     </SubBoxStyle>
   );
 };
@@ -26,7 +25,8 @@ const SubBoxStyle = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 10px;
+  padding: 0px 10px 0px 20px;
+
   gap: 20px;
 
   margin-bottom: 5px;

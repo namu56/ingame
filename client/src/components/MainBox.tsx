@@ -33,19 +33,19 @@ const MainBox = () => {
   return (
     <>
       <MainBoxStyle onClick={handleToggleAccordion}>
-        <div className='aFContainer'>
-          <div className='aButton'>{isAccordion ? (<MdArrowDropUp size={30} />) : (<MdArrowDropDown size={30} />)}</div>
-          <div className='fDisplay'>{fraction}</div>
-        </div>
-        <div className='title'>{MainText}</div>
-        <div className='eButton' onClick={handleNavigate}><BsThreeDots /></div>
+      <header className='aFContainer'>
+        <button className='aButton'>{isAccordion ? (<MdArrowDropUp size={30} />) : (<MdArrowDropDown size={30} />)}</button>
+        <p className='fDisplay'>{fraction}</p>
+      </header>
+      <h1 className='title'>{MainText}</h1>
+      <button className='eButton' onClick={handleNavigate}><BsThreeDots /></button>
       </MainBoxStyle>
       {sideQuestList.map((quest, index) => (
         <SideBoxStyle key={index} className={`sideBox ${isAccordion ? 'show' : ''}`}>
-          <div className='cBox'>
+          <label className='cBox'>
             <input type='checkbox' checked={checked[index]} onChange={() => handleCheckboxClick(index)} />
-          </div>
-          <div className='sTitle'>{quest.content}</div>
+          </label>
+          <h2 className='sTitle'>{quest.content}</h2>
         </SideBoxStyle>
       ))}
   </>

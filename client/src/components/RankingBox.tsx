@@ -1,25 +1,23 @@
 import styled from 'styled-components';
 import { rank } from '@/shared/dummy';
+import { profileURL } from '@/shared/dummy';
 
 const RankingBox = () => {
-
-  const profileURL = "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg";
-
   return (
     <>
       {rank.ranking.map((rank, index) => (
         <RankingBoxStyle key={index}>
-        <div className='rpContainer'>
+        <section className='rpContainer'>
           <div className='rank'>{index + 1}</div>
           <div className='rProfile'><img src={profileURL} alt="" /></div>
-        </div>
-        <div className='nlContainer'>
-          <div className='nickname'>{rank.nickname}</div>
+        </section>
+        <section className='nlContainer'>
+          <h2 className='nickname'>{rank.nickname}</h2>
           <div className='lpContainer'>
-            <div className='level'>LV {Math.floor(rank.point / 1024)}</div>
-            <div className='point'>P {rank.point}</div>
+            <p className='level'>LV {Math.floor(rank.point / 1024)}</p>
+            <p className='point'>P {rank.point}</p>
           </div>
-        </div>
+        </section>
       </RankingBoxStyle>
       ))}
     </>
