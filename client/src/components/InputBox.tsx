@@ -7,7 +7,7 @@ import { IoEye, IoEyeOff } from 'react-icons/io5';
 
 type endType = 'text' | 'icon';
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholer?: string;
   inputType?: 'text' | 'email' | 'password' | 'number';
   $endType?: endType;
@@ -15,7 +15,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const InputBox = React.forwardRef(
   (
-    { placeholer, inputType, $endType, onChange, ...props }: Props,
+    { placeholer, inputType, $endType, onChange, ...props }: InputBoxProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const [isEyeIcon, setIsEyeIcon] = useState(true);
@@ -81,7 +81,7 @@ const InputIconSpan = styled.span`
   height: inherit;
 `;
 
-const InputEndIconSpan = styled.span<Pick<Props, '$endType'>>`
+const InputEndIconSpan = styled.span<Pick<InputBoxProps, '$endType'>>`
   width: ${({ $endType }) => ($endType === 'text' ? '4rem' : '2.25rem')};
   color: ${({ $endType, theme }) =>
     $endType === 'text' ? theme.color.purple : theme.color.grayDarkActive};

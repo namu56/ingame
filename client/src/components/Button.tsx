@@ -1,14 +1,22 @@
 import { theme } from '@/styles/theme';
 import { Buttonsize, styled } from 'styled-components';
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface BottonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   size: Buttonsize;
   disabled?: boolean;
   color: keyof typeof theme.color;
 }
 
-const Button: React.FC<Props> = ({ className, children, size, color, disabled, onClick, type }) => {
+const Button: React.FC<BottonProps> = ({
+  className,
+  children,
+  size,
+  color,
+  disabled,
+  onClick,
+  type,
+}) => {
   return (
     <ButtonStyle
       className={className}
@@ -23,7 +31,7 @@ const Button: React.FC<Props> = ({ className, children, size, color, disabled, o
   );
 };
 
-const ButtonStyle = styled.button<Omit<Props, 'children'>>`
+const ButtonStyle = styled.button<Omit<BottonProps, 'children'>>`
   color: ${({ theme }) => theme.color.white};
   padding: ${({ theme, size }) => theme.buttonSize[size].padding};
   font-size: ${({ theme, size }) => theme.buttonSize[size].fontSize};

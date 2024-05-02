@@ -2,13 +2,13 @@ import useOutsideClick from '@/hooks/useOutsideClick';
 import { useState } from 'react';
 import styled from 'styled-components';
 
-interface Props {
+interface DropdownProps {
   children: React.ReactNode;
   toggleButton: React.ReactNode;
   isOpen?: boolean;
 }
 
-const Dropdown = ({ children, toggleButton, isOpen = false }: Props) => {
+const Dropdown = ({ children, toggleButton, isOpen = false }: DropdownProps) => {
   const [open, setOpen] = useState(isOpen);
   const dropdownRef = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
 
