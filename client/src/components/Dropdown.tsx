@@ -45,6 +45,8 @@ const DropdownStyle = styled.div<DropdownStyleProps>`
     border-radius: ${({ theme }) => theme.borderRadius.small};
     z-index: 100;
     border: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+    font-size: ${({ theme }) => theme.font.small};
+    color: ${({ theme }) => theme.color.black};
 
     ul {
       list-style: none;
@@ -61,11 +63,6 @@ const DropdownStyle = styled.div<DropdownStyleProps>`
 
         &:last-child {
           border-bottom: none;
-        }
-
-        div {
-          font-size: ${({ theme }) => theme.font.small};
-          color: ${({ theme }) => theme.color.black};
         }
       }
     }
