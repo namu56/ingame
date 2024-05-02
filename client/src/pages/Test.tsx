@@ -13,20 +13,7 @@ const Test = () => {
   return (
     <TestStyle>
       <h1>Test</h1>
-      <form>
-        <InputBox inputType="email" $endType="text" placeholder="이메일" {...register('email')} />
-        <InputBox inputType="text" placeholder="닉네임" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-        <InputBox inputType="password" $endType="icon" placeholder="비밀번호 확인" />
-      </form>
+      <form></form>
       <Button size="medium" color="blue" children={'회원가입'} />
       <Dropdown toggleButton={<RxHamburgerMenu />}>
         {

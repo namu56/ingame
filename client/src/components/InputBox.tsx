@@ -5,17 +5,19 @@ import { BsKey } from 'react-icons/bs';
 import { FaRegSmile } from 'react-icons/fa';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 
-type endType = 'text' | 'icon';
+type endType = 'icon';
+type inputIconType = 'nickname' | 'email' | 'password' | 'code';
 
 interface InputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholer?: string;
   inputType?: 'text' | 'email' | 'password' | 'number';
+  inputIconType: inputIconType;
   $endType?: endType;
 }
 
 const InputBox = React.forwardRef(
   (
-    { placeholer, inputType, $endType, onChange, ...props }: InputBoxProps,
+    { placeholer, inputType, inputIconType, $endType, ...props }: InputBoxProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const [isEyeIcon, setIsEyeIcon] = useState(true);
@@ -29,22 +31,21 @@ const InputBox = React.forwardRef(
     return (
       <InputBoxLayoutStyle>
         <InputIconSpan>
-          {inputType === 'text' && <FaRegSmile />}
-          {inputType === 'email' && <MdOutlineEmail />}
-          {inputType === 'password' && <RotatedBsKey />}
-          {inputType === 'number' && <RotatedBsKey />}
+          {inputIconType === 'nickname' && <FaRegSmile />}
+          {(inputIconType === 'email' || inputIconType === 'code') && <MdOutlineEmail />}
+          {inputIconType === 'password' && <RotatedBsKey />}
         </InputIconSpan>
         <InputBoxStyle
           placeholder={placeholer}
           ref={ref}
           type={passwordType}
-          onChange={onChange}
           {...props}
         ></InputBoxStyle>
-        <InputEndIconSpan $endType={$endType} onClick={toggleIcon}>
-          {$endType === 'text' && '인증하기'}
-          {$endType === 'icon' && (isEyeIcon ? <IoEye /> : <IoEyeOff />)}
-        </InputEndIconSpan>
+        {$endType === 'icon' && (
+          <InputEndIconSpan $endType={$endType} onClick={toggleIcon}>
+            {$endType === 'icon' && (isEyeIcon ? <IoEye /> : <IoEyeOff />)}
+          </InputEndIconSpan>
+        )}
       </InputBoxLayoutStyle>
     );
   }
@@ -82,14 +83,12 @@ const InputIconSpan = styled.span`
 `;
 
 const InputEndIconSpan = styled.span<Pick<InputBoxProps, '$endType'>>`
-  width: ${({ $endType }) => ($endType === 'text' ? '4rem' : '2.25rem')};
-  color: ${({ $endType, theme }) =>
-    $endType === 'text' ? theme.color.purple : theme.color.grayDarkActive};
+  width: 2.25rem;
+  color: ${({ theme }) => theme.color.grayDarkActive};
   display: flex;
   align-items: center;
   justify-content: center;
   height: inherit;
-  font-size: ${({ $endType }) => $endType === 'text' && '13px'};
 
   &:hover {
     cursor: ${({ $endType }) => $endType && 'pointer'};

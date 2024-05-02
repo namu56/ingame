@@ -29,6 +29,7 @@ const Login = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset>
           <InputBox
+            inputIconType="email"
             inputType="email"
             placeholder="이메일"
             {...register('email', { required: true, maxLength: 50 })}
@@ -42,6 +43,7 @@ const Login = () => {
         </fieldset>
         <fieldset>
           <InputBox
+            inputIconType="password"
             inputType="password"
             placeholder="비밀번호"
             {...register('password', { required: true, maxLength: 100 })}
