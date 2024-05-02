@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import useOutsideClick from '@/hooks/useOutsideClick';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 interface Props {
@@ -9,22 +10,7 @@ interface Props {
 
 const Dropdown = ({ children, toggleButton, isOpen = false }: Props) => {
   const [open, setOpen] = useState(isOpen);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  console.log(children);
-
-  useEffect(() => {
-    function handleOutsideClick(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleOutsideClick);
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, [dropdownRef]);
+  const dropdownRef = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
 
   return (
     <DropdownStyle $open={open} ref={dropdownRef}>
