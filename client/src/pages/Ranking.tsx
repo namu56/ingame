@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { GiHamburgerMenu } from "react-icons/gi";
-import RankingBox from '@/components/RankingBox';
 import Top from '@/components/Top';
 import tropy from '@/assets/images/tropy.png';
-
+import { media } from '@/styles/theme';
+import RankingCardList from '@/components/RankingCardList';
 
 const Ranking = () => {
   return (
@@ -14,7 +14,7 @@ const Ranking = () => {
         <p>랭킹 순위</p>
       </div>
       <div>
-        <RankingBox />
+        <RankingCardList />
       </div>
       <div className='topBtn'><Top /></div>
     </RankingStyle>
@@ -44,7 +44,14 @@ const RankingStyle = styled.div`
 
 
   .topBtn {
-    
+    display: none;
+
+    ${media.mobile} {
+      display: flex;
+      position: fixed;
+      bottom: 10px;
+      right: 43%;
+    }
   }
 `;
 
