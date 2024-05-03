@@ -1,4 +1,4 @@
-export const rank = [
+export const mockRankingProfiles = [
     {
       "id": 1, 
       "nickname": "하늘 다람쥐",
@@ -27,7 +27,7 @@ export const rank = [
       "id": 5, 
       "nickname": "보라색 다람쥐",
       "point": 180000,
-      "rank": 1
+      "rank": 5
     },
     {
       "id": 6, 
