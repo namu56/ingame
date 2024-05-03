@@ -7,8 +7,8 @@ import { JwtPayloadDto } from './dto/jwt-payload.dto';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private configService: ConfigService,
-    private jwtService: JwtService
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();

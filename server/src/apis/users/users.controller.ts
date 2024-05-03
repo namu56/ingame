@@ -3,15 +3,19 @@ import {
   Get,
   Post,
   Body,
-  Param,
   Delete,
   HttpStatus,
   HttpCode,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { CurrentUser } from 'src/commons/decorators/auth.decorator';
+import { JwtPayloadDto } from '../auth/dto/jwt-payload.dto';
+import { ProfilePhotoDto } from './dto/profile-photo.dto';
 
 @Controller('users')
 export class UsersController {
@@ -24,21 +28,34 @@ export class UsersController {
     return { message: 'success' };
   }
 
-  @Get(':id')
+  @UseGuards(AuthGuard)
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@CurrentUser() user: JwtPayloadDto) {
+    await this.usersService.deleteCurrentUserById(user.id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('me')
   @HttpCode(HttpStatus.OK)
-  getUser(@Param('id') id: string) {
-    return this.usersService.getUserById(+id);
+  async getCurrentUser(@CurrentUser() user: JwtPayloadDto) {
+    return await this.usersService.getUserById(user.id);
   }
 
-  @Patch(':id')
+  @UseGuards(AuthGuard)
+  @Patch('me')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateUserInfo(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    await this.usersService.updateUserInfoById(+id, updateUserDto);
+  async updateUserInfo(@CurrentUser() user: JwtPayloadDto, @Body() updateUserDto: UpdateUserDto) {
+    await this.usersService.updateCurrenUserInfoById(user.id, updateUserDto);
   }
 
-  @Delete(':id')
+  @UseGuards(AuthGuard)
+  @Patch('me/profile-photo')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param('id') id: string) {
-    await this.usersService.deleteUserById(+id);
+  async updateProfilePhoto(
+    @CurrentUser() user: JwtPayloadDto,
+    @Body() profilePhotoDto: ProfilePhotoDto
+  ) {
+    await this.usersService.updateProfilePhotoById(user.id, profilePhotoDto);
   }
 }

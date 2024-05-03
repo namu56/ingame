@@ -9,7 +9,7 @@ import { JwtPayloadDto } from './dto/jwt-payload.dto';
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private usersService: UsersService
+    private readonly usersService: UsersService
   ) {}
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;

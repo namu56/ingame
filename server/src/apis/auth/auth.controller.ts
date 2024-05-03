@@ -17,6 +17,7 @@ export class AuthController {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
+
     res.json({ message: 'success' });
   }
 
