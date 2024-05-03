@@ -1,10 +1,11 @@
 import styled from 'styled-components';
-import { GiHamburgerMenu } from "react-icons/gi";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+
 
 const CloseButton = () => {
   return (
     <>
-      <CloseButtonStyle><GiHamburgerMenu /></CloseButtonStyle>  
+      <CloseButtonStyle><IoIosCloseCircleOutline /></CloseButtonStyle>  
     </>
   );
 };
