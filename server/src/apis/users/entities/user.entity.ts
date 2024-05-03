@@ -32,13 +32,11 @@ export class User extends BaseEntity {
   updatedAt: Date;
 
   @OneToOne(() => UserInfo, (userInfo) => userInfo.user, {
-    onDelete: 'CASCADE',
     eager: true,
   })
   userInfo: UserInfo;
 
   @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user, {
-    onDelete: 'CASCADE',
     eager: true,
   })
   profilePhoto: ProfilePhoto;

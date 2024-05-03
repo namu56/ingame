@@ -8,6 +8,7 @@ import { ProfilePhoto } from './entities/profile-photo.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserInfo, ProfilePhoto])],
+  exports: [UsersService],
   controllers: [UsersController],
   providers: [UsersService],
 })

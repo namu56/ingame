@@ -39,6 +39,14 @@ export class UsersService {
     await this.profielPhotoRepository.save(profilePhoto);
   }
 
+  async getUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    return user;
+  }
+
   async getUserById(id: number): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id },
