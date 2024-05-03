@@ -9,6 +9,7 @@ import { ProfilePhoto } from './entities/profile-photo.entity';
 import { UserResponseDto } from './dto/user-response.dto';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { ProfilePhotoDto } from './dto/profile-photo.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,13 +22,19 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto) {
     const { email, password, nickname } = createUserDto;
 
-    const existingUser = await this.userRepository.findOne({ where: { email } });
+    const existingUser = await this.userRepository.existsBy({ email });
     if (existingUser) {
       throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
     }
+    const existingNickname = await this.userInfoRepository.existsBy({ nickname });
+
+    if (existingNickname) {
+      throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
+    }
+
     const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
-    const salt = bcrypt.genSaltSync(saltRounds);
-    const hashedPassword = bcrypt.hashSync(password, salt);
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = this.userRepository.create({ email, password: hashedPassword });
     const savedUser = await this.userRepository.save(user);
@@ -39,6 +46,15 @@ export class UsersService {
     await this.profielPhotoRepository.save(profilePhoto);
   }
 
+  async deleteCurrentUserById(id: number) {
+    const findUserById = await this.userRepository.findOne({ where: { id } });
+    if (!findUserById) {
+      throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
+    }
+
+    await this.userRepository.delete(id);
+  }
+
   async getUserById(id: number): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id },
@@ -47,32 +63,51 @@ export class UsersService {
     if (!user) {
       throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
+
     return new UserResponseDto(user);
   }
 
-  async updateUserInfoById(id: number, updateUserDto: UpdateUserDto): Promise<void> {
-    const existingNickname = await this.userInfoRepository.existsBy({
-      nickname: updateUserDto.nickname,
-    });
-
-    if (existingNickname) {
-      throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
-    }
-
+  async updateCurrenUserInfoById(id: number, updateUserDto: UpdateUserDto): Promise<void> {
     const userInfo = await this.userInfoRepository.findOne({ where: { userId: id } });
     if (!userInfo) {
       throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
+
+    // 변경하려는 닉네임과 현재 사용자의 닉네임이 다른 경우에만 중복 확인
+    if (userInfo.nickname !== updateUserDto.nickname) {
+      const existingNickname = await this.userInfoRepository.existsBy({
+        nickname: updateUserDto.nickname,
+      });
+      if (existingNickname) {
+        throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
+      }
+    }
+
     const newUserInfo = this.userInfoRepository.merge(userInfo, updateUserDto);
     await this.userInfoRepository.save(newUserInfo);
   }
 
-  async deleteUserById(id: number) {
-    const findUserById = await this.userRepository.findOne({ where: { id } });
-    if (!findUserById) {
+  async updateProfilePhotoById(userId: number, profilePhotoDto: ProfilePhotoDto) {
+    const findProfilePhotoById = await this.profielPhotoRepository.findOne({
+      where: { userId: userId },
+    });
+
+    if (!findProfilePhotoById) {
       throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
 
-    await this.userRepository.delete(id);
+    const newProfilePhoto = this.profielPhotoRepository.merge(
+      findProfilePhotoById,
+      profilePhotoDto
+    );
+    await this.profielPhotoRepository.save(newProfilePhoto);
+  }
+
+  async getUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    return user;
   }
 }
