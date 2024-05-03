@@ -1,4 +1,4 @@
-import { login } from './auth';
+import { login } from './handlers/auth';
 import { setupWorker } from 'msw/browser';
 
 export const handlers = [login];
