@@ -4,13 +4,17 @@ import { theme } from './styles/theme';
 import { GlobalStyle } from './styles/globalstyles';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes/routing';
+import ReactQueryProvider from './provider/queryProvider';
 
 function App() {
+
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <ReactQueryProvider showDevTools>
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </ReactQueryProvider>
   );
 }
 
