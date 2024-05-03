@@ -1,14 +1,14 @@
 import styled from 'styled-components';
-import { GiHamburgerMenu } from "react-icons/gi";
 import Top from '@/components/Top';
 import tropy from '@/assets/images/tropy.png';
 import { media } from '@/styles/theme';
 import RankingCardList from '@/components/RankingCardList';
+import Hamberger from '@/components/Hamberger';
 
 const Ranking = () => {
   return (
     <RankingStyle>
-      <header className='hamberger'><GiHamburgerMenu /></header>
+      <Hamberger />
       <div className='rankTitleContainer'>
         <img src={tropy} alt="tropy" />
         <p>랭킹 순위</p>
@@ -26,12 +26,6 @@ const RankingStyle = styled.div`
   flex-direction: column;
   gap: 15px;
   background: ${({ theme }) => theme.color.white};
-
-  .hamberger {
-    display: flex;
-    justify-content: flex-end;
-    font-size: ${({ theme }) => theme.font.large};
-  }
 
   .rankTitleContainer {
     display: flex;

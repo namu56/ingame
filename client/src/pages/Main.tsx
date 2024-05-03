@@ -1,10 +1,9 @@
 import styled from 'styled-components';
-import Ranking from './Ranking';
 
 const Main = () => {
   return (
     <MainStyle>
-      <Ranking />
+      <div></div>
     </MainStyle>
   );
 };

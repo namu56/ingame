@@ -37,6 +37,7 @@ const RankingCardStyle = styled.div`
   padding: 10px;
   font-size: ${({ theme }) => theme.font.xsmall};
   margin-bottom: 5px;
+  cursor: pointer;
 
   .rpContainer {
     width: 80px;
@@ -63,6 +64,7 @@ const RankingCardStyle = styled.div`
   }
 
   .nlContainer {
+    margin-left: 10px;
     width: 233px;
     display: flex;
     flex-direction: column;
