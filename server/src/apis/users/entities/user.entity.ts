@@ -1,25 +1,48 @@
-import { BaseEntity, Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 import { UserInfo } from './user-info.entity';
 import { Quest } from '../../quests/entities/quest.entity';
 import { ProfilePhoto } from './profile-photo.entity';
 
 @Entity('user')
+@Unique(['email'])
 export class User extends BaseEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   password: string;
 
-  @OneToOne(() => UserInfo, (userInfo) => userInfo.user)
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+
+  @OneToOne(() => UserInfo, (userInfo) => userInfo.user, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   userInfo: UserInfo;
 
-  @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user)
+  @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   profilePhoto: ProfilePhoto;
 
-  @OneToMany(() => Quest, (quest) => quest.user)
+  @OneToMany(() => Quest, (quest) => quest.user, { onDelete: 'CASCADE' })
   quests: Quest[];
 }
