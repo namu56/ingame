@@ -5,6 +5,9 @@ import Title from '@/components/Title';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { ROUTERS } from '@/constant/route';
+import { useAuth } from '@/hooks/useAuth';
+import { useSelector } from 'react-redux';
+import { isLoggedIn, token } from '@/store/authSlice';
 
 export interface LoginProps {
   email: string;
@@ -12,6 +15,8 @@ export interface LoginProps {
 }
 
 const Login = () => {
+  const { userLogin } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -19,8 +24,7 @@ const Login = () => {
   } = useForm<LoginProps>();
 
   const onSubmit = (data: LoginProps) => {
-    // userLogin(data);
-    console.log(data);
+    userLogin(data);
   };
 
   return (

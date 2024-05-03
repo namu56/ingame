@@ -3,7 +3,7 @@ import styled from 'styled-components';
 const MainPage = () => {
   return (
     <MainPageStyle>
-      <div>MainPage</div>
+      <div>메인페이지</div>
     </MainPageStyle>
   );
 };

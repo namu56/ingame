@@ -6,6 +6,7 @@ import { ROUTERS } from '@/constant/route';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
+import { useUser } from '@/hooks/useUser';
 
 export interface SignupProps {
   email: string;
@@ -23,8 +24,11 @@ const SignUp = () => {
     watch,
   } = useForm<SignupProps>();
 
-  const onSubmit = (data: SignupProps) => {
-    console.log(data);
+  const { userSignup } = useUser();
+
+  const onSubmit = (formData: SignupProps) => {
+    const { confirmPassword, ...data } = formData;
+    userSignup(data);
   };
 
   return (
