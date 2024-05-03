@@ -3,4 +3,6 @@ export const API_END_POINT = {
   LOGIN: '/auth/login',
   // USERS
   SIGNUP: '/users/signup',
+  // RANKING
+  RANK: '/ranking',
 };

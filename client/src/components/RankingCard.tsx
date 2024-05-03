@@ -1,30 +1,30 @@
 import styled from 'styled-components';
-import { rank } from '@/shared/dummy';
 import { profileURL } from '@/shared/dummy';
+import { RankingItem } from '@/models/ranking.model';
 
-const RankingBox = () => {
+interface RankingCardProps extends RankingItem {};
+
+const RankingCard = ({id, nickname, point, rank}: RankingCardProps) => {
   return (
     <>
-      {rank.ranking.map((rank, index) => (
-        <RankingBoxStyle key={index}>
+      <RankingCardStyle>
         <section className='rpContainer'>
-          <div className='rank'>{index + 1}</div>
+          <div className='rank'>{rank}</div>
           <div className='rProfile'><img src={profileURL} alt="" /></div>
         </section>
         <section className='nlContainer'>
-          <h2 className='nickname'>{rank.nickname}</h2>
+          <h2 className='nickname'>{nickname}</h2>
           <div className='lpContainer'>
-            <p className='level'>LV {Math.floor(rank.point / 1024)}</p>
-            <p className='point'>P {rank.point}</p>
+            <p className='level'>LV {Math.floor(point / 1024)}</p>
+            <p className='point'>P {point}</p>
           </div>
         </section>
-      </RankingBoxStyle>
-      ))}
+      </RankingCardStyle>
     </>
   );
 };
 
-const RankingBoxStyle = styled.div`
+const RankingCardStyle = styled.div`
   width: 22rem;
   height: 61px;
 
@@ -37,6 +37,7 @@ const RankingBoxStyle = styled.div`
   padding: 10px;
   font-size: ${({ theme }) => theme.font.xsmall};
   margin-bottom: 5px;
+  cursor: pointer;
 
   .rpContainer {
     width: 80px;
@@ -63,6 +64,7 @@ const RankingBoxStyle = styled.div`
   }
 
   .nlContainer {
+    margin-left: 10px;
     width: 233px;
     display: flex;
     flex-direction: column;
@@ -79,4 +81,4 @@ const RankingBoxStyle = styled.div`
 
 `;
 
-export default RankingBox;
+export default RankingCard;

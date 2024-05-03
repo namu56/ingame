@@ -1,7 +1,7 @@
 import { ROUTERS } from '@/constant/route';
 import Layout from '@/layout/Layout';
 import Login from '@/pages/Login';
-import MainPage from '@/pages/MainPage';
+import Main from '@/pages/Main';
 import Error from '@/pages/Error';
 import { createBrowserRouter } from 'react-router-dom';
 import SignUp from '@/pages/SignUp';
@@ -11,7 +11,7 @@ import Test from '@/pages/Test';
 const routeList = [
   {
     path: ROUTERS.MAIN,
-    element: <MainPage />,
+    element: <Main />,
   },
   {
     path: ROUTERS.AUTH.LOGIN,

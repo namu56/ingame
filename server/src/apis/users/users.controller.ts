@@ -1,34 +1,61 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  HttpStatus,
+  HttpCode,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { CurrentUser } from 'src/commons/decorators/auth.decorator';
+import { JwtPayloadDto } from '../auth/dto/jwt-payload.dto';
+import { ProfilePhotoDto } from './dto/profile-photo.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @Post('signup')
+  @HttpCode(HttpStatus.CREATED)
+  async signup(@Body() createUserDto: CreateUserDto) {
+    await this.usersService.createUser(createUserDto);
+    return { message: 'success' };
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @UseGuards(AuthGuard)
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@CurrentUser() user: JwtPayloadDto) {
+    await this.usersService.deleteCurrentUserById(user.id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @UseGuards(AuthGuard)
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  async getCurrentUser(@CurrentUser() user: JwtPayloadDto) {
+    return await this.usersService.getUserById(user.id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @UseGuards(AuthGuard)
+  @Patch('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateUserInfo(@CurrentUser() user: JwtPayloadDto, @Body() updateUserDto: UpdateUserDto) {
+    await this.usersService.updateCurrenUserInfoById(user.id, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @UseGuards(AuthGuard)
+  @Patch('me/profile-photo')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateProfilePhoto(
+    @CurrentUser() user: JwtPayloadDto,
+    @Body() profilePhotoDto: ProfilePhotoDto
+  ) {
+    await this.usersService.updateProfilePhotoById(user.id, profilePhotoDto);
   }
 }
