@@ -3,7 +3,7 @@ import { LoginProps } from '@/pages/Login';
 import { httpClient } from '@/utils/axios';
 
 interface LoginResponse {
-  token: string;
+  accessToken: string;
 }
 export const login = async (data: LoginProps) => {
   const resposne = await httpClient.post<LoginResponse>(API_END_POINT.LOGIN, { ...data });

@@ -13,7 +13,7 @@ export const useAuth = () => {
     login(data).then(
       (res) => {
         //상태 변화
-        dispatch(storeLogin({ token: res.token }));
+        dispatch(storeLogin({ token: res.accessToken }));
         alert('로그인 성공');
         navigate(ROUTERS.MAIN);
       },
