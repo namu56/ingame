@@ -29,12 +29,13 @@ const ProfileIntroInputBoxLayoutStyle = styled.div`
   display: flex;
   align-items: flex-start;
 
-  width: 17.6rem;
+  width: 245px;
   height: 216px;
   background: ${({ theme }) => theme.color.white};
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.small};
+  margin-bottom: 10px;
 `;
 
 const ProfileIntroInputBoxStyle = styled.textarea`

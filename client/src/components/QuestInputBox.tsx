@@ -1,5 +1,5 @@
 import React, { useState, ForwardedRef } from 'react';
-import styled from 'styled-components';
+import {styled} from 'styled-components';
 
 interface QuestInputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
@@ -8,7 +8,7 @@ interface QuestInputBoxProps extends React.InputHTMLAttributes<HTMLInputElement>
 
 const QuestInputBox = React.forwardRef(
   (
-    { placeholder, inputType, ...props }: QuestInputBoxProps,
+    { placeholder }: QuestInputBoxProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const [questTitle, setQuestTitle] = useState(placeholder);
@@ -20,7 +20,11 @@ const QuestInputBox = React.forwardRef(
 
     return (
       <QuestInputBoxLayoutStyle>
-        <QuestInputBoxStyle placeholder={placeholder} ref={ref} {...props} value={questTitle} onChange={onChangeHandler} />
+        <QuestInputBoxStyle 
+          placeholder={placeholder} 
+          ref={ref} 
+          value={questTitle}
+          onChange={onChangeHandler} />
       </QuestInputBoxLayoutStyle>
     );
   }
@@ -30,12 +34,14 @@ const QuestInputBoxLayoutStyle = styled.div`
   display: flex;
   align-items: center;
 
-  width: 17.6rem;
+  width: 245px;
   height: 36px;
+
   background: ${({ theme }) => theme.color.white};
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.small};
+  margin-bottom: 10px;
 `;
 
 const QuestInputBoxStyle = styled.input`
