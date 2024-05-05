@@ -1,23 +1,33 @@
 import useOutsideClick from '@/hooks/useOutsideClick';
 import { useState } from 'react';
 import styled from 'styled-components';
+import { GiHamburgerMenu } from 'react-icons/gi';
+import { useDispatch } from 'react-redux';
+import { storeLogout } from '@/store/authSlice';
 
 interface DropdownProps {
-  children: React.ReactNode;
-  toggleButton: React.ReactNode;
   isOpen?: boolean;
 }
 
-const Dropdown = ({ children, toggleButton, isOpen = false }: DropdownProps) => {
+const Dropdown = ({ isOpen = false }: DropdownProps) => {
   const [open, setOpen] = useState(isOpen);
   const dropdownRef = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
 
+  const dispatch = useDispatch();
   return (
     <DropdownStyle $open={open} ref={dropdownRef}>
       <button className="toggle" onClick={() => setOpen(!open)}>
-        {toggleButton}
+        <GiHamburgerMenu />
       </button>
-      {open && <div className="panel">{children}</div>}
+      {open && (
+        <div className="panel">
+          <ul>
+            <li>
+              <button onClick={() => dispatch(storeLogout())}>로그아웃</button>
+            </li>
+          </ul>
+        </div>
+      )}
     </DropdownStyle>
   );
 };
@@ -27,6 +37,8 @@ interface DropdownStyleProps {
 }
 
 const DropdownStyle = styled.div<DropdownStyleProps>`
+  display: flex;
+  justify-content: flex-end;
   position: relative;
 
   button {

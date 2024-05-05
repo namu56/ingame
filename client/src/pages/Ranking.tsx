@@ -3,20 +3,22 @@ import Top from '@/components/Top';
 import tropy from '@/assets/images/tropy.png';
 import { media } from '@/styles/theme';
 import RankingCardList from '@/components/RankingCardList';
-import Hamberger from '@/components/Hamberger';
+import Dropdown from '@/components/Dropdown';
 
 const Ranking = () => {
   return (
     <RankingStyle>
-      <Hamberger />
-      <div className='rankTitleContainer'>
+      <Dropdown />
+      <div className="rankTitleContainer">
         <img src={tropy} alt="tropy" />
         <p>랭킹 순위</p>
       </div>
       <div>
         <RankingCardList />
       </div>
-      <div className='topBtn'><Top /></div>
+      <div className="topBtn">
+        <Top />
+      </div>
     </RankingStyle>
   );
 };
@@ -35,7 +37,6 @@ const RankingStyle = styled.div`
     padding-bottom: 10px;
     font-size: ${({ theme }) => theme.font.medium};
   }
-
 
   .topBtn {
     display: none;

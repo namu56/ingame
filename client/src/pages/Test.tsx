@@ -15,21 +15,7 @@ const Test = () => {
       <h1>Test</h1>
       <form></form>
       <Button size="medium" color="blue" children={'회원가입'} />
-      <Dropdown toggleButton={<RxHamburgerMenu />}>
-        {
-          <ul>
-            <li>
-              <div>드롭박스 내용</div>
-            </li>
-            <li>
-              <div>드롭박스 내용</div>
-            </li>
-            <li>
-              <div>드롭박스 내용</div>
-            </li>
-          </ul>
-        }
-      </Dropdown>
+
       <Top />
     </TestStyle>
   );

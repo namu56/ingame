@@ -1,13 +1,11 @@
 import styled from 'styled-components';
-import { GiHamburgerMenu } from "react-icons/gi";
-
-
+import { GiHamburgerMenu } from 'react-icons/gi';
 
 const Hamberger = () => {
   return (
-    <>
-      <HambergerStyle><GiHamburgerMenu /></HambergerStyle>  
-    </>
+    <HambergerStyle>
+      <GiHamburgerMenu />
+    </HambergerStyle>
   );
 };
 
