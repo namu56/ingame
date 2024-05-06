@@ -17,7 +17,7 @@ export class UsersService {
     private readonly configService: ConfigService,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(UserInfo) private userInfoRepository: Repository<UserInfo>,
-    @InjectRepository(ProfilePhoto) private profielPhotoRepository: Repository<ProfilePhoto>,
+    @InjectRepository(ProfilePhoto) private profilePhotoRepository: Repository<ProfilePhoto>,
     private readonly dataSource: DataSource
   ) {}
   async createUser(createUserDto: CreateUserDto) {
@@ -48,7 +48,7 @@ export class UsersService {
       const userInfo = this.userInfoRepository.create({ userId: savedUser.id, nickname });
       await queryRunner.manager.save(userInfo);
 
-      const profilePhoto = this.profielPhotoRepository.create({ userId: savedUser.id });
+      const profilePhoto = this.profilePhotoRepository.create({ userId: savedUser.id });
       await queryRunner.manager.save(profilePhoto);
 
       await queryRunner.commitTransaction();
@@ -102,7 +102,7 @@ export class UsersService {
   }
 
   async updateProfilePhotoById(userId: number, profilePhotoDto: ProfilePhotoDto) {
-    const findProfilePhotoById = await this.profielPhotoRepository.findOne({
+    const findProfilePhotoById = await this.profilePhotoRepository.findOne({
       where: { userId: userId },
     });
 
@@ -110,11 +110,11 @@ export class UsersService {
       throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
 
-    const newProfilePhoto = this.profielPhotoRepository.merge(
+    const newProfilePhoto = this.profilePhotoRepository.merge(
       findProfilePhotoById,
       profilePhotoDto
     );
-    await this.profielPhotoRepository.save(newProfilePhoto);
+    await this.profilePhotoRepository.save(newProfilePhoto);
   }
 
   async getUserByEmail(email: string) {
