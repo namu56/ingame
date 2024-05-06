@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { getToken } from './tokenUtils';
 
 export const createClient = (config?: AxiosRequestConfig) => {
   const axiosInstance = axios.create({
@@ -11,8 +12,7 @@ export const createClient = (config?: AxiosRequestConfig) => {
     ...config,
   });
   axiosInstance.interceptors.request.use((request) => {
-    // config.headers.Authorization = getToken() ? getToken() : '';
-    // return config;
+    request.headers.Authorization = `Bearer ${getToken() ? getToken() : ''}`;
     return request;
   });
 
@@ -21,12 +21,10 @@ export const createClient = (config?: AxiosRequestConfig) => {
       return response;
     },
     (error) => {
-      //   if (error.response.status == 401) {
-      //     removeToken();
-      //     window.location.href = "/login";
-      //     return;
+      // if (error.response.status == 401) {
+      //   window.location.href = '/login';
+      //   return;
       // }
-      // return Promise.reject(error);
       return Promise.reject(error);
     }
   );
