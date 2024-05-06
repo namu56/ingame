@@ -8,7 +8,12 @@ import SignUp from '@/pages/SignUp';
 import Ranking from '@/pages/Ranking';
 import Test from '@/pages/Test';
 
-const routeList = [
+type Route = {
+  path: '/' | '/login' | '/signup' | '/ranking' | '/test';
+  element: React.ReactNode;
+};
+
+const routeList: Route[] = [
   {
     path: ROUTERS.MAIN,
     element: <Main />,
@@ -25,11 +30,14 @@ const routeList = [
     path: ROUTERS.RANK,
     element: <Ranking />,
   },
-  {
+];
+
+if (process.env.NODE_ENV === 'development') {
+  routeList.push({
     path: ROUTERS.TEST,
     element: <Test />,
-  },
-];
+  });
+}
 
 export const router = createBrowserRouter(
   routeList.map((item) => {
