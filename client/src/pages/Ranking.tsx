@@ -28,6 +28,7 @@ const RankingStyle = styled.div`
   flex-direction: column;
   gap: 15px;
   background: ${({ theme }) => theme.color.white};
+  width: 100%;
 
   .rankTitleContainer {
     display: flex;

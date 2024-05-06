@@ -6,8 +6,6 @@ import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { ROUTERS } from '@/constant/route';
 import { useAuth } from '@/hooks/useAuth';
-import { useSelector } from 'react-redux';
-import { isLoggedIn, token } from '@/store/authSlice';
 
 export interface LoginProps {
   email: string;

@@ -6,16 +6,16 @@ import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import Top from '@/components/Top';
+import { getToken } from '@/utils/tokenUtils';
 
 const Test = () => {
   const useform = useForm();
   const { register, handleSubmit, watch } = useform;
   return (
     <TestStyle>
-      <h1>Test</h1>
+      <h1></h1>
       <form></form>
       <Button size="medium" color="blue" children={'회원가입'} />
-
       <Top />
     </TestStyle>
   );

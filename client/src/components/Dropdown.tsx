@@ -4,6 +4,9 @@ import styled from 'styled-components';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { useDispatch } from 'react-redux';
 import { storeLogout } from '@/store/authSlice';
+import { useAuth } from '@/hooks/useAuth';
+import { Link } from 'react-router-dom';
+import { ROUTERS } from '@/constant/route';
 
 interface DropdownProps {
   isOpen?: boolean;
@@ -13,7 +16,7 @@ const Dropdown = ({ isOpen = false }: DropdownProps) => {
   const [open, setOpen] = useState(isOpen);
   const dropdownRef = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
 
-  const dispatch = useDispatch();
+  const { userLogout } = useAuth();
   return (
     <DropdownStyle $open={open} ref={dropdownRef}>
       <button className="toggle" onClick={() => setOpen(!open)}>
@@ -23,7 +26,20 @@ const Dropdown = ({ isOpen = false }: DropdownProps) => {
         <div className="panel">
           <ul>
             <li>
-              <button onClick={() => dispatch(storeLogout())}>로그아웃</button>
+              <Link className="link-styles" to={ROUTERS.MAIN}>
+                메인 화면
+              </Link>
+            </li>
+            <li>
+              <Link className="link-styles" to={ROUTERS.RANK}>
+                랭킹
+              </Link>
+            </li>
+            <li>
+              <button onClick={userLogout}>로그아웃</button>
+            </li>
+            <li>
+              <button>회원 탈퇴</button>
             </li>
           </ul>
         </div>
@@ -48,9 +64,13 @@ const DropdownStyle = styled.div<DropdownStyleProps>`
     outline: none;
   }
 
+  .toggle {
+    padding: 0;
+  }
+
   .panel {
     position: absolute;
-    top: 40px;
+    top: 20px;
     right: 0;
     background: white;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
@@ -66,8 +86,9 @@ const DropdownStyle = styled.div<DropdownStyleProps>`
       margin: 0;
 
       li {
-        padding: 12px;
+        padding: 10px;
         border-bottom: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+        text-align: center;
         &:hover {
           background-color: ${({ theme }) => theme.color.grayLightActive};
           cursor: pointer;
@@ -75,6 +96,12 @@ const DropdownStyle = styled.div<DropdownStyleProps>`
 
         &:last-child {
           border-bottom: none;
+        }
+
+        .link-styles {
+          display: block;
+          text-decoration: none;
+          color: ${({ theme }) => theme.color.black};
         }
       }
     }
