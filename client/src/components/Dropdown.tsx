@@ -2,8 +2,6 @@ import useOutsideClick from '@/hooks/useOutsideClick';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { useDispatch } from 'react-redux';
-import { storeLogout } from '@/store/authSlice';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { ROUTERS } from '@/constant/route';
