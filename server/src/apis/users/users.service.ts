@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserInfo } from './entities/user-info.entity';
 import { ProfilePhoto } from './entities/profile-photo.entity';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -17,33 +17,47 @@ export class UsersService {
     private readonly configService: ConfigService,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(UserInfo) private userInfoRepository: Repository<UserInfo>,
-    @InjectRepository(ProfilePhoto) private profielPhotoRepository: Repository<ProfilePhoto>
+    @InjectRepository(ProfilePhoto) private profielPhotoRepository: Repository<ProfilePhoto>,
+    private readonly dataSource: DataSource
   ) {}
   async createUser(createUserDto: CreateUserDto) {
     const { email, password, nickname } = createUserDto;
 
-    const existingUser = await this.userRepository.existsBy({ email });
-    if (existingUser) {
-      throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const existingUser = await this.userRepository.existsBy({ email });
+      if (existingUser) {
+        throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
+      }
+      const existingNickname = await this.userInfoRepository.existsBy({ nickname });
+
+      if (existingNickname) {
+        throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
+      }
+
+      const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const user = this.userRepository.create({ email, password: hashedPassword });
+      const savedUser = await queryRunner.manager.save(user);
+
+      const userInfo = this.userInfoRepository.create({ userId: savedUser.id, nickname });
+      await queryRunner.manager.save(userInfo);
+
+      const profilePhoto = this.profielPhotoRepository.create({ userId: savedUser.id });
+      await queryRunner.manager.save(profilePhoto);
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
-    const existingNickname = await this.userInfoRepository.existsBy({ nickname });
-
-    if (existingNickname) {
-      throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
-    }
-
-    const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const user = this.userRepository.create({ email, password: hashedPassword });
-    const savedUser = await this.userRepository.save(user);
-
-    const userInfo = this.userInfoRepository.create({ userId: savedUser.id, nickname });
-    await this.userInfoRepository.save(userInfo);
-
-    const profilePhoto = this.profielPhotoRepository.create({ userId: savedUser.id });
-    await this.profielPhotoRepository.save(profilePhoto);
   }
 
   async deleteCurrentUserById(id: number) {
@@ -109,5 +123,14 @@ export class UsersService {
     });
 
     return user;
+  }
+
+  async getAllUser(): Promise<UserInfo[]> {
+    const users = await this.userInfoRepository.find({
+      order: {
+        point: 'DESC',
+      },
+    });
+    return users;
   }
 }
