@@ -23,7 +23,8 @@ const LayoutStyle = styled.div`
   }
 `;
 
-const InnerStyle = styled.div`
+export const InnerStyle = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   margin: 0 auto;

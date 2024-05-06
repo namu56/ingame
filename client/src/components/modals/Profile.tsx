@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import CloseButton from '../CloseButton';
 import QuestInputBox from '../QuestInputBox';
 import ProfileIntroInputBox from '../ProfileIntroInputBox';
 import { FaUser } from "react-icons/fa";
@@ -18,36 +17,24 @@ const Profile = () => {
 
   return (
     <ProfileStyle>
-      <div className='container'>
-        <CloseButton />
-        <div className='userNameContainer'>
-          <div><FaUser /></div>
-          <h1>닉네임 변경</h1>
-        </div>
-        <QuestInputBox placeholder={nickname} />
-        <div className='userIntroContainer'>
-          <div><FaUserPen /></div>
-          <h1>자기소개 변경</h1>
-        </div>
-        <ProfileIntroInputBox placeholder={introduce} />
-        <div className='editButtonContainer'>
-          <Button size="medium" color="green" onClick={onClickHandler}>수정하기</Button>
-        </div>
-      </div>          
+      <div className='userNameContainer'>
+        <div><FaUser /></div>
+        <h1>닉네임 변경</h1>
+      </div>
+      <QuestInputBox placeholder={nickname} />
+      <div className='userIntroContainer'>
+        <div><FaUserPen /></div>
+        <h1>자기소개 변경</h1>
+      </div>
+      <ProfileIntroInputBox placeholder={introduce} />
+      <div className='editButtonContainer'>
+        <Button size="medium" color="green" onClick={onClickHandler}>수정하기</Button>
+      </div>
     </ProfileStyle>
   );
 };
 
 const ProfileStyle = styled.div`
-
-  .container { 
-    width: 18.75rem;
-    height: 28rem;
-    border: 1px solid ${({ theme }) => theme.color.black};
-    border-radius: ${({ theme }) => theme.borderRadius.medium};
-    padding: 1.25rem ;
-  }
-  
   .userNameContainer,
   .userIntroContainer {
     display: flex;
