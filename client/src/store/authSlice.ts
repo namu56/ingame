@@ -32,4 +32,4 @@ export const { storeLogin, storeLogout } = authSlice.actions;
 export default authSlice.reducer;
 
 export const isLoggedIn = (state: RootState) => state.auth.isLoggedIn;
-export const token = (state: RootState) => state.auth.token;
+export const acceccToken = (state: RootState) => state.auth.token;

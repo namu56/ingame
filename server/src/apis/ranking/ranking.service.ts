@@ -1,26 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRankingDto } from './dto/create-ranking.dto';
-import { UpdateRankingDto } from './dto/update-ranking.dto';
+import { UsersService } from '../users/users.service';
+import { RankingResponseDto } from './dto/ranking-response.dto';
 
 @Injectable()
 export class RankingService {
-  create(createRankingDto: CreateRankingDto) {
-    return 'This action adds a new ranking';
-  }
+  constructor(private readonly usersService: UsersService) {}
+  async getRanking(): Promise<RankingResponseDto[]> {
+    const users = await this.usersService.getAllUser();
+    let currentRank = 1;
+    let lastUserPoint = 0;
+    let countCurrentRank = 0;
 
-  findAll() {
-    return `This action returns all ranking`;
-  }
+    const ranking = users.map((user) => {
+      if (user.point !== lastUserPoint) {
+        currentRank += countCurrentRank;
+        countCurrentRank = 1;
+      } else {
+        countCurrentRank++;
+      }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ranking`;
-  }
+      const rankedUser = new RankingResponseDto(user, currentRank);
 
-  update(id: number, updateRankingDto: UpdateRankingDto) {
-    return `This action updates a #${id} ranking`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} ranking`;
+      lastUserPoint = user.point;
+      return rankedUser;
+    });
+    return ranking;
   }
 }
