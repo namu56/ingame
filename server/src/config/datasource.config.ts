@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 dotenv.config({
-  path: '.development.env',
+  path: process.env.NODE_ENV === 'production' ? '.production.env' : '.development.env',
 });
 
 export const dataSource = new DataSource({
