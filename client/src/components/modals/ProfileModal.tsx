@@ -8,6 +8,7 @@ import Button from '../Button';
 import CloseButton from '../CloseButton';
 import { useMutation } from '@tanstack/react-query';
 import { patchUserProfile } from '@/api/users.api';
+import { useState } from 'react';
 
 interface ProfileModifyProps {
   nickname: string,
@@ -16,11 +17,13 @@ interface ProfileModifyProps {
 
 interface ProfileProps {
   onClose: () => void;
+  OriginNickname: string;
+  OriginIntro: string;
 }
 
-const ProfileModal = ({ onClose }: ProfileProps) => {
-  const nickname = '닉네임';
-  const introduce = '자기 소개';
+const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) => {
+  const [nickname, setNickname] = useState(OriginNickname);
+  const [intro, setIntro] = useState(OriginIntro);
 
   const { register, handleSubmit } = useForm<ProfileModifyProps>();
 
@@ -34,7 +37,7 @@ const ProfileModal = ({ onClose }: ProfileProps) => {
       onClose();
     },
     onError(err) {
-      alert('프로필 수정에 실패했습니다.');
+      onClose();
     },
   });
 
@@ -47,14 +50,14 @@ const ProfileModal = ({ onClose }: ProfileProps) => {
             <FaUser size={24} />
             <p className="title">닉네임변경</p>
           </div>
-          <QuestInputBox placeholder={nickname} {...register('nickname', {required: true})} />
+          <QuestInputBox placeholder={nickname} value={nickname} {...register('nickname', {required: true})} onChange={(e) => setNickname(e.target.value)} />
         </BoxStyle>
         <BoxStyle>
           <div className="box__title">
             <FaUserPen size={24} />
             <p className="title">자기소개 변경</p>
           </div>
-          <ProfileIntroInputBox placeholder={introduce} {...register('intro')} />
+          <ProfileIntroInputBox placeholder={intro} value={intro} {...register('intro')} onChange={(e) => setIntro(e.target.value)} />
         </BoxStyle>
         <ButtonContainerStyle>
           <Button size="medium" color="green" children={'수정하기'} />

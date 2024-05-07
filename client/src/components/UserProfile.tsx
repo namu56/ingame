@@ -24,7 +24,7 @@ const UserProfile = () => {
               <p className="nickname">
                 Lv {Math.floor(userInfo.point / 1024)}. {userInfo.nickname}
               </p>
-              <EditProfileButton />
+              <EditProfileButton nickname={userInfo.nickname} intro={userInfo.intro} />
             </div>
             <div className="progress__bar">
               <ProgressBar point={userInfo.point} />
