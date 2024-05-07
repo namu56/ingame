@@ -7,7 +7,6 @@ export interface User {
 }
 
 export interface UserProfile {
-  id: number;
   nickname: string;
   intro: string;
 }
