@@ -13,32 +13,36 @@ export const useAuth = () => {
   const dispatch = useDispatch();
 
   const userLogin = (data: LoginProps) => {
-    login(data).then(
-      (res) => {
-        //상태 변화
-        setToken(res.accessToken);
-        alert('로그인 성공');
-        navigate(ROUTERS.MAIN);
-      },
-      (error) => {
-        console.log(error);
-        alert('로그인 실패');
-      }
-    );
+    loginMutation.mutate(data);
   };
 
+  const loginMutation = useMutation({
+    mutationFn: login,
+    onSuccess(res) {
+      setToken(res.accessToken);
+      alert('로그인 성공');
+      navigate(ROUTERS.MAIN);
+    },
+    onError(err) {
+      alert('로그인 실패');
+    },
+  });
+
   const userLogout = () => {
-    logout().then(
-      (res) => {
-        alert('로그아웃 성공');
-        removeToken();
-        navigate(ROUTERS.AUTH.LOGIN);
-      },
-      (error) => {
-        alert('로그아웃 실패');
-      }
-    );
+    logoutMutation.mutate();
   };
+
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSuccess(res) {
+      alert('로그아웃 성공');
+      removeToken();
+      navigate(ROUTERS.AUTH.LOGIN);
+    },
+    onError(err) {
+      alert('로그아웃 실패');
+    },
+  });
 
   return { userLogin, userLogout };
 };
