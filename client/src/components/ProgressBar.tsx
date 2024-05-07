@@ -12,7 +12,7 @@ const ProgressBar = ({ point }: ProgressBarProps) => {
     <ProgressBarStyle>
       <Progress
         percent={calcProgressPercent(point)}
-        size={['100%', 28]}
+        size={['100%', 25]}
         strokeColor="#0ACF83"
         trailColor="#E2F8F1"
       />
