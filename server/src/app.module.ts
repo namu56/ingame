@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeORMConfig } from './config/typeorm.config';
+import { typeORMConfig } from './common/config/typeorm.config';
 import { UsersModule } from './apis/users/users.module';
 import { RankingModule } from './apis/ranking/ranking.module';
 import { QuestsModule } from './apis/quests/quests.module';
@@ -16,7 +16,7 @@ import { AuthModule } from './apis/auth/auth.module';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => await typeORMConfig(configService),
+      useFactory: (configService: ConfigService) => typeORMConfig(configService),
     }),
     UsersModule,
     AuthModule,
