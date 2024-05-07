@@ -1,10 +1,12 @@
 import Dropdown from '@/components/Dropdown';
+import WeekCalander from '@/components/WeekCalander';
 import styled from 'styled-components';
 
 const Main = () => {
   return (
     <MainStyle>
       <Dropdown />
+      <WeekCalander />
     </MainStyle>
   );
 };
