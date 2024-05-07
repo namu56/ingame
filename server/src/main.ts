@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { HttpExceptionFilter } from './common/exception/http-exception.filter';
 import * as cookieParser from 'cookie-parser';
+import { setupSwagger } from './common/config/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +11,8 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get<string>('PORT'));
   const origin = configService.get<string>('CORS_ORIGIN');
+
+  setupSwagger(app);
 
   app.use(cookieParser());
   app.useGlobalFilters(new HttpExceptionFilter());
