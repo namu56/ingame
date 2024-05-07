@@ -1,17 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { QuestsService } from './quests.service';
 import { CreateQuestDto } from './dto/create-quest.dto';
 import { UpdateQuestDto } from './dto/update-quest.dto';
 import { CreateSideQuestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { CurrentUser } from '../../commons/decorators/auth.decorator';
+import { JwtPayloadDto } from '../auth/dto/jwt-payload.dto';
 
 @Controller('quests')
 export class QuestsController {
   constructor(private readonly questsService: QuestsService) {}
 
+  @UseGuards(AuthGuard)
   @Post('')
-  create(@Body() createQuestDto: CreateQuestDto) {
-    return this.questsService.create(createQuestDto);
+  @HttpCode(HttpStatus.CREATED)
+  async create(@CurrentUser() user: JwtPayloadDto, @Body() createQuestDto: CreateQuestDto) {
+    return await this.questsService.create(user.id, createQuestDto);
   }
 
   @Patch(':id')
