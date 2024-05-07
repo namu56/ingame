@@ -17,7 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm:dev": "cross-env NODE_ENV=development node -r ts-node/register ./node_modules/typeorm/cli.js",
+    "typeorm:dev:d": "cross-env NODE_ENV=development node -r ts-node/register ./node_modules/typeorm/cli.js -d src/config/datasource.config.ts",
+    "typeorm": "cross-env NODE_ENV=production node -r ts-node/register ./node_modules/typeorm/cli.js",
+    "typeorm:d": "cross-env NODE_ENV=production node -r ts-node/register ./node_modules/typeorm/cli.js -d src/config/datasource.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.2",
@@ -36,6 +40,7 @@
     "mysql2": "^3.9.7",
     "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.1",
+    "ts-node": "^10.9.2",
     "typeorm": "^0.3.20",
     "typeorm-naming-strategies": "^4.1.0"
   },

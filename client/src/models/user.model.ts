@@ -5,3 +5,8 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface UserProfile {
+  nickname: string;
+  intro: string;
+}

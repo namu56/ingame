@@ -41,6 +41,21 @@ const buttonSize = {
   },
 };
 
+const inputSize = {
+  small: {
+    width: '14rem',
+    height: '36px',
+  },
+  medium: {
+    width: '17.6rem',
+    height: '36px',
+  },
+  lagre: {
+    width: '20rem',
+    height: '36px',
+  }
+}
+
 const borderRadius = {
   small: '5px',
   medium: '10px',
@@ -63,6 +78,7 @@ export const theme: DefaultTheme = {
   media,
   borderRadius,
   buttonSize,
+  inputSize,
 };
 
 export type Theme = typeof theme;
