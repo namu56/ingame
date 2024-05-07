@@ -13,7 +13,13 @@ export class sideQuest extends BaseEntity {
   content: string;
 
   @Column()
-  status: number;
+  status: string;
+
+  @Column('timestamp')
+  createdAt: Date;
+
+  @Column('timestamp')
+  updatedAt: Date;
 
   @ManyToOne(() => Quest, (quest) => quest.sideQuests)
   quest: Quest;

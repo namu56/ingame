@@ -14,10 +14,10 @@ export class Quest extends BaseEntity {
   title: string;
 
   @Column()
-  difficulty: number;
+  difficulty: string;
 
   @Column()
-  mode: number;
+  mode: string;
 
   @Column('timestamp')
   startDate: Date;
@@ -26,7 +26,16 @@ export class Quest extends BaseEntity {
   endDate: Date;
 
   @Column()
-  hidden: number;
+  hidden: string;
+
+  @Column()
+  status: string;
+
+  @Column('timestamp')
+  createdAt: Date;
+
+  @Column('timestamp')
+  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.quests)
   user: User;
