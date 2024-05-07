@@ -16,7 +16,7 @@ const EditProfileButton = ({ isOpen = false }: EditProfileButtonProps) => {
       <button onClick={() => setOpen(!open)}>
         <img src={edit} alt="edit" />
       </button>
-      {open && <ProfileModal />}
+      {open && <ProfileModal onClose={() => setOpen(false)} />}
     </EditProfileButtonStyle>
   );
 };
