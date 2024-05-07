@@ -5,6 +5,7 @@ import { USER } from '@/constant/queryKey';
 import { getUserInfo } from '@/api/users.api';
 import EditProfileButton from './EditProfileButton';
 import ProgressBar from './ProgressBar';
+import { media } from '@/styles/theme';
 
 const UserProfile = () => {
   const { data: userInfo } = useQuery({
@@ -62,8 +63,12 @@ const UserDetailInfoStyle = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  max-width: 328px;
   width: 100%;
+  max-width: 328px;
+
+  ${media.mobile} {
+    width: calc(100vw - 140px);
+  }
 
   .basic__info {
     display: flex;
