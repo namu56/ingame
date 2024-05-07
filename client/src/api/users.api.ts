@@ -12,6 +12,7 @@ export const signup = async (data: Omit<SignupProps, 'confirmPassword'>) => {
 export const patchUserProfile = async (data: UserProfile) => {
   const response = await httpClient.patch(API_END_POINT.PROFILE, { ...data });
   return response.data;
+};
 
 export const getUserInfo = async (): Promise<UserInfo> => {
   const resposne = await httpClient.get(API_END_POINT.GET_USERINFO);
