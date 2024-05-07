@@ -6,4 +6,5 @@ export const API_END_POINT = {
   SIGNUP: '/users/signup',
   // RANKING
   RANK: '/ranking',
+  GET_USERINFO: '/users/me',
 };
