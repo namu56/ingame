@@ -2,33 +2,75 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { QuestsService } from './quests.service';
 import { CreateQuestDto } from './dto/create-quest.dto';
 import { UpdateQuestDto } from './dto/update-quest.dto';
+import { CreateSideQuestDto } from './dto/create-side-quest.dto';
+import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 
 @Controller('quests')
 export class QuestsController {
   constructor(private readonly questsService: QuestsService) {}
 
-  @Post()
+  @Post('')
   create(@Body() createQuestDto: CreateQuestDto) {
     return this.questsService.create(createQuestDto);
   }
 
-  @Get()
+  @Patch(':id')
+  patchComplete(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
+    return this.questsService.update(+id, updateQuestDto);
+  }
+
+  @Get('main')
   findAll() {
     return this.questsService.findAll();
   }
 
-  @Get(':id')
+  @Get('main/:id')
   findOne(@Param('id') id: string) {
     return this.questsService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('main/:id')
   update(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
     return this.questsService.update(+id, updateQuestDto);
   }
 
-  @Delete(':id')
+  @Delete('main/:id')
   remove(@Param('id') id: string) {
+    return this.questsService.remove(+id);
+  }
+
+  @Post('side')
+  createSide(@Body() createQuestDto: CreateSideQuestDto) {
+    return this.questsService.createSide(createQuestDto);
+  }
+
+  @Patch('side/:id')
+  updateSide(@Param('id') id: string, @Body() updateQuestDto: UpdateSideQuestDto) {
+    return this.questsService.updateSide(+id, updateQuestDto);
+  }
+
+  @Delete('side/:id')
+  removeSide(@Param('id') id: string) {
+    return this.questsService.removeSide(+id);
+  }
+
+  @Get('sub')
+  findAllSub() {
+    return this.questsService.findAll();
+  }
+
+  @Get('sub/:id')
+  findOneSub(@Param('id') id: string) {
+    return this.questsService.findOne(+id);
+  }
+
+  @Patch('sub/:id')
+  updateSub(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
+    return this.questsService.update(+id, updateQuestDto);
+  }
+
+  @Delete('sub/:id')
+  removeSub(@Param('id') id: string) {
     return this.questsService.remove(+id);
   }
 }
