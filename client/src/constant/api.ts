@@ -10,4 +10,6 @@ export const API_END_POINT = {
   PROFILE: '/profile',
   // GET_USERINFO
   GET_USERINFO: '/users/me',
+  // PATCH_USERINFO
+  PATCH_USERINFO: '/users/me',
 };
