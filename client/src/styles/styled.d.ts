@@ -2,6 +2,7 @@ import type { Theme } from './theme';
 
 declare module 'styled-components' {
   export type Buttonsize = 'large' | 'medium' | 'small';
+  export type Inputsize = 'small' | 'medium' | 'large';
 
   export interface DefaultTheme extends Theme {
     color: {
@@ -37,6 +38,21 @@ declare module 'styled-components' {
       };
     };
 
+    inputSize: {
+      small: {
+        width: string;
+        height: string;
+      };
+      medium: {
+        width: string;
+        height: string;
+      };
+      lagre: {
+        width: string;
+        height: string;
+      };
+    };
+
     borderRadius: {
       small: string;
       medium: string;
@@ -51,5 +67,6 @@ declare module 'styled-components' {
     media,
     borderRadius,
     buttonSize,
+    inputSize,
   };
 }
