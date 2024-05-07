@@ -12,14 +12,20 @@ const ProfileIntroInputBox = React.forwardRef(
   ) => {
     const [profileIntro, setprofileIntro] = useState(placeholder);
 
-  const onChangeHandler = (event: any) => {
-    event.preventDefault();
-    setprofileIntro(event.target.value);
-  }
+    const onChangeHandler = (event: any) => {
+      event.preventDefault();
+      setprofileIntro(event.target.value);
+    };
 
     return (
       <ProfileIntroInputBoxLayoutStyle>
-        <ProfileIntroInputBoxStyle placeholder={placeholder} ref={ref} {...props} value={profileIntro} onChange={onChangeHandler} />
+        <ProfileIntroInputBoxStyle
+          placeholder={placeholder}
+          ref={ref}
+          {...props}
+          value={profileIntro}
+          onChange={onChangeHandler}
+        />
       </ProfileIntroInputBoxLayoutStyle>
     );
   }
@@ -29,7 +35,7 @@ const ProfileIntroInputBoxLayoutStyle = styled.div`
   display: flex;
   align-items: flex-start;
 
-  width: 245px;
+  width: 100%;
   height: 216px;
   background: ${({ theme }) => theme.color.white};
   border: 1px solid rgba(0, 0, 0, 0.1);
