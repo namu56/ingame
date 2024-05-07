@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import CloseButton from './CloseButton';
-import { useRef } from 'react';
+// import { useRef } from 'react';
 
 export interface ModalProps {
   children: React.ReactNode;

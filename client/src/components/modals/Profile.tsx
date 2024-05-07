@@ -6,14 +6,12 @@ import { FaUserPen } from "react-icons/fa6";
 import Button from '../Button';
 
 const Profile = () => {
-  // 받아온 닉네임
-  // 이렇게 되면 profile모달을 열 때 main에서 닉네임을 받아와야 한다.
   const nickname = '닉네임';
   const introduce = '자기 소개';
 
   const onClickHandler = () => {
 
-  }
+  };
 
   return (
     <ProfileStyle>
