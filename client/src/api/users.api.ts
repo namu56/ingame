@@ -10,7 +10,7 @@ export const signup = async (data: Omit<SignupProps, 'confirmPassword'>) => {
 };
 
 export const patchUserProfile = async (data: UserProfile) => {
-  const response = await httpClient.patch(API_END_POINT.PROFILE, { ...data });
+  const response = await httpClient.patch(API_END_POINT.PATCH_USERINFO, { ...data });
   return response.data;
 };
 
