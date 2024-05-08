@@ -80,12 +80,28 @@ export class QuestsService {
     return quests;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} quest`;
-  }
+  /*async findOne(userId: number, id: number) {
+    const quests = await this.questRepository.find({
+      where: { userId: userId, id: id },
+      relations: ['side_quest'],
+    });
 
-  update(id: number, updateQuestDto: UpdateQuestDto) {
-    return `This action updates a #${id} quest`;
+    if (!quests) {
+      throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
+    }
+
+    return quests;
+  }*/
+
+  async update(userId: number, id: number, updateQuestDto: UpdateQuestDto) {
+    const targetQuest = await this.questRepository.findOne({ where: { userId: userId, id: id } });
+
+    if (!targetQuest) {
+      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+    }
+
+    const updatedQuest = this.questRepository.merge(targetQuest, updateQuestDto);
+    await this.questRepository.save(updatedQuest);
   }
 
   remove(id: number) {

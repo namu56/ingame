@@ -30,26 +30,29 @@ export class QuestsController {
     return await this.questsService.create(user.id, createQuestDto);
   }
 
-  @Patch(':id')
-  patchComplete(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
-    return this.questsService.update(+id, updateQuestDto);
-  }
-
   @UseGuards(AuthGuard)
   @Get('main')
   @HttpCode(HttpStatus.OK)
-  findAll(@CurrentUser() user: JwtPayloadDto) {
-    return this.questsService.findAll(user.id);
+  async findAll(@CurrentUser() user: JwtPayloadDto) {
+    return await this.questsService.findAll(user.id);
   }
 
+  /*@UseGuards(AuthGuard)
   @Get('main/:id')
-  findOne(@Param('id') id: string) {
-    return this.questsService.findOne(+id);
-  }
+  @HttpCode(HttpStatus.OK)
+  findOne(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+    return this.questsService.findOne(user.id, +id);
+  }*/
 
+  @UseGuards(AuthGuard)
   @Patch('main/:id')
-  update(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
-    return this.questsService.update(+id, updateQuestDto);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async update(
+    @CurrentUser() user: JwtPayloadDto,
+    @Param('id') id: string,
+    @Body() updateQuestDto: UpdateQuestDto
+  ) {
+    await this.questsService.update(user.id, +id, updateQuestDto);
   }
 
   @Delete('main/:id')
@@ -77,10 +80,12 @@ export class QuestsController {
     return this.questsService.findAll();
   }
 
+  /*@UseGuards(AuthGuard)
   @Get('sub/:id')
-  findOneSub(@Param('id') id: string) {
-    return this.questsService.findOne(+id);
-  }
+  @HttpCode(HttpStatus.OK)
+  findOneSub(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+    return this.questsService.findOne(user.id, +id);
+  }*/
 
   @Patch('sub/:id')
   updateSub(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
