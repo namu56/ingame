@@ -6,9 +6,11 @@ import ProfileModal from './modals/ProfileModal';
 
 interface EditProfileButtonProps {
   isOpen?: boolean;
+  nickname: string;
+  intro: string;
 }
 
-const EditProfileButton = ({ isOpen = false }: EditProfileButtonProps) => {
+const EditProfileButton = ({ isOpen = false, nickname, intro }: EditProfileButtonProps) => {
   const [open, setOpen] = useState(isOpen);
   const editProfileModalRef = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
   return (
@@ -16,7 +18,7 @@ const EditProfileButton = ({ isOpen = false }: EditProfileButtonProps) => {
       <button onClick={() => setOpen(!open)}>
         <img src={edit} alt="edit" />
       </button>
-      {open && <ProfileModal />}
+      {open && <ProfileModal OriginNickname={nickname} OriginIntro={intro} onClose={() => setOpen(false)} />}
     </EditProfileButtonStyle>
   );
 };

@@ -16,6 +16,7 @@ const CloseButton = ({onClick}: CloseButtonProps) => {
 const CloseButtonStyle = styled.div`
   display: flex;
   justify-content: flex-end;
+  width: 100%;
   font-size: ${({ theme }) => theme.font.large};
 
   border: none;
