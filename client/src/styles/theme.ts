@@ -9,6 +9,7 @@ const color = {
   purple: '#A259FF',
   blue: '#1ABCFE',
   green: '#0ACF83',
+  lightGreen: '#D1eae7',
   greenOpactiy30: 'rgba(10, 207, 131, 0.3)',
   grayLight: '#FDFDFD',
   grayLightActive: '#F9F9F9',
@@ -53,8 +54,8 @@ const inputSize = {
   lagre: {
     width: '20rem',
     height: '36px',
-  }
-}
+  },
+};
 
 const borderRadius = {
   small: '5px',

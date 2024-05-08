@@ -1,11 +1,12 @@
 import styled from 'styled-components';
-import defaultProfile from '../assets/images/Profile-PNG-File.png';
+import defaultProfile from '@/assets/images/avatar.png';
 import { useQuery } from '@tanstack/react-query';
 import { USER } from '@/constant/queryKey';
 import { getUserInfo } from '@/api/users.api';
 import EditProfileButton from './EditProfileButton';
 import ProgressBar from './ProgressBar';
 import { media } from '@/styles/theme';
+import Camera from '@/assets/images/camera.svg';
 
 const UserProfile = () => {
   const { data: userInfo } = useQuery({
@@ -17,7 +18,10 @@ const UserProfile = () => {
       {userInfo && (
         <UserInfoStyle>
           <UserImageStyle>
-            <img src={defaultProfile} alt="profileImage" />
+            <div className="profileImage">
+              <img src={defaultProfile} alt="default" />
+              <img className="camera" src={Camera} alt="camera" />
+            </div>
           </UserImageStyle>
           <UserDetailInfoStyle>
             <div className="basic__info">
@@ -52,10 +56,28 @@ const UserInfoStyle = styled.div`
 `;
 
 const UserImageStyle = styled.div`
+  display: flex;
+  align-items: center;
   width: 100%;
-  img {
+  height: 90px;
+  padding: 10px;
+  border-radius: ${({ theme }) => theme.borderRadius.xlarge};
+  background-color: ${({ theme }) => theme.color.lightGreen};
+  .profileImage {
+    display: flex;
+    align-items: center;
+    position: relative;
     width: 70px;
     height: 70px;
+
+    .camera {
+      position: absolute;
+      padding: 5px;
+      background-color: ${({ theme }) => theme.color.grayDark};
+      border-radius: ${({ theme }) => theme.borderRadius.xlarge};
+      bottom: 0;
+      right: 0;
+    }
   }
 `;
 
@@ -64,10 +86,10 @@ const UserDetailInfoStyle = styled.div`
   flex-direction: column;
   gap: 0.75rem;
   width: 100%;
-  max-width: 328px;
+  max-width: 308px;
 
   ${media.mobile} {
-    width: calc(100vw - 140px);
+    width: calc(100vw - 170px);
   }
 
   .basic__info {
