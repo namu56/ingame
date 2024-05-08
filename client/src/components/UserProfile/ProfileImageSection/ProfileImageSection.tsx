@@ -1,14 +1,27 @@
 import styled from 'styled-components';
 import defaultProfile from '@/assets/images/avatar.png';
 import Camera from '@/assets/images/camera.svg';
+import { useState } from 'react';
+import useOutsideClick from '@/hooks/useOutsideClick';
+import ChangeProfileImageModal from '@/components/modals/ChangeProfileImageModal';
 
-const ProfileImageSection = () => {
+interface ProfileImageSecitonProps {
+  profilePhoto?: string;
+}
+
+const ProfileImageSection = ({ profilePhoto = 'default' }: ProfileImageSecitonProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const ChangeProfileImageModalRef = useOutsideClick<HTMLDivElement>(isOpen, () =>
+    setIsOpen(false)
+  );
+
   return (
-    <ProfileImageSectionStyle>
+    <ProfileImageSectionStyle onClick={() => setIsOpen(!isOpen)} ref={ChangeProfileImageModalRef}>
       <div className="profileImage">
         <img src={defaultProfile} alt="default" />
         <img className="camera" src={Camera} alt="camera" />
       </div>
+      {isOpen && <ChangeProfileImageModal />}
     </ProfileImageSectionStyle>
   );
 };

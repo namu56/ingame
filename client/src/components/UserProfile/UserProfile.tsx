@@ -5,7 +5,7 @@ import { getUserInfo } from '@/api/users.api';
 import EditProfileButton from '../EditProfileButton';
 import ProgressBar from '../ProgressBar';
 import { media } from '@/styles/theme';
-import ProfileImageSection from './ProfileImageSection/ProfileImage';
+import ProfileImageSection from './ProfileImageSection/ProfileImageSection';
 
 const UserProfile = () => {
   const { data: userInfo } = useQuery({
