@@ -55,9 +55,11 @@ export class QuestsController {
     await this.questsService.update(user.id, +id, updateQuestDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('main/:id')
-  remove(@Param('id') id: string) {
-    return this.questsService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+    await this.questsService.remove(user.id, +id);
   }
 
   @Post('side')

@@ -104,8 +104,13 @@ export class QuestsService {
     await this.questRepository.save(updatedQuest);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} quest`;
+  async remove(userId: number, id: number) {
+    const targetQuest = await this.questRepository.findOne({ where: { userId: userId, id: id } });
+    if (!targetQuest) {
+      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+    }
+
+    await this.questRepository.delete({ id: id });
   }
 
   createSide(createQuestDto: CreateSideQuestDto) {
