@@ -7,3 +7,8 @@ export const ROUTERS = {
   RANK: '/ranking',
   TEST: '/test',
 } as const;
+
+type ValueOf<T> = T[keyof T];
+type RecursiveValueOf<T> = T extends object ? RecursiveValueOf<ValueOf<T>> : T;
+
+export type Routers = RecursiveValueOf<typeof ROUTERS>;

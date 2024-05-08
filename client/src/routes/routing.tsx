@@ -1,4 +1,4 @@
-import { ROUTERS } from '@/constant/route';
+import { ROUTERS, Routers } from '@/constant/route';
 import Layout from '@/layout/Layout';
 import Login from '@/pages/Login';
 import Main from '@/pages/Main';
@@ -9,7 +9,7 @@ import Ranking from '@/pages/Ranking';
 import Test from '@/pages/Test';
 
 type Route = {
-  path: '/' | '/login' | '/signup' | '/ranking' | '/test';
+  path: Routers;
   element: React.ReactNode;
 };
 
