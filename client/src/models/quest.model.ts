@@ -11,3 +11,9 @@ export interface Quest {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface SubQuest {
+  id: number;
+  title: string;
+  hidden: number;
+}

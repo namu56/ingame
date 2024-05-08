@@ -12,4 +12,6 @@ export const API_END_POINT = {
   GET_USERINFO: '/users/me',
   // PATCH_USERINFO
   PATCH_USERINFO: '/users/me',
+  // QUESTS
+  GET_SUB_QUEST: '/quests/sub',
 };

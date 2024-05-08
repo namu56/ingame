@@ -3,8 +3,13 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { GrFormPrevious, GrFormNext } from 'react-icons/gr';
 import { media } from '@/styles/theme';
+import { QUERYSTRING } from '@/constant/queryString';
+import { useSearchParams } from 'react-router-dom';
+import { formattedCalendar } from '@/utils/formatter';
 
 const Week = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const { today, getWeekDates } = useWeek();
 
   const [calendarDay, setCalendarDay] = useState<Date[]>(getWeekDates(today));
@@ -38,14 +43,23 @@ const Week = () => {
     setCalendarDay(getWeekDates(nextDay));
   };
 
-  const onClickDate = (calendar: Date) => {
+  const handleGetSubquest = (calendar: Date) => {
     setSelectedDay(new Date(calendar.getFullYear(), calendar.getMonth(), calendar.getDate()));
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    if (formattedCalendar(calendar) === formattedCalendar(today)) {
+      newSearchParams.delete(QUERYSTRING.DATE);
+    } else {
+      newSearchParams.set(QUERYSTRING.DATE, formattedCalendar(calendar));
+    }
+
+    setSearchParams(newSearchParams);
   };
 
   return (
     <WeekStyle>
-      <div className="">
-        <button onClick={onPrev}>
+      <div>
+        <button onClick={onPrev} className="navigationButton">
           <GrFormPrevious />
         </button>
       </div>
@@ -54,15 +68,15 @@ const Week = () => {
           <div
             key={index}
             className={`daylistSector ${calendar.day.getDate() === selectedDay.getDate() ? 'selected' : ''} ${calendar.day.getDate() === today.getDate() ? 'today' : ''}`}
-            onClick={() => onClickDate(calendar.day)}
+            onClick={() => handleGetSubquest(calendar.day)}
           >
             <div className="week">{calendar.week}</div>
             <div className="day">{calendar.day.getDate()}</div>
           </div>
         ))}
       </div>
-      <div className="">
-        <button onClick={onNext}>
+      <div>
+        <button onClick={onNext} className="navigationButton">
           <GrFormNext />
         </button>
       </div>
@@ -72,15 +86,22 @@ const Week = () => {
 
 const WeekStyle = styled.div`
   display: flex;
-  align-items: center;
   justify-content: center;
   gap: 20px;
   font-family: 'Pretendard400';
   font-size: ${({ theme }) => theme.font.small};
+  align-items: center;
+  height: 53px;
+
+  .navigationButton {
+    display: flex;
+    align-items: center;
+  }
 
   .daylistContainer {
     display: flex;
     gap: 10px;
+    align-items: center;
 
     .daylistSector {
       width: 40px;
@@ -112,6 +133,7 @@ const WeekStyle = styled.div`
     .daylistSector.selected {
       background-color: ${({ theme }) => theme.color.blue};
       color: ${({ theme }) => theme.color.white};
+      border: 2px solid ${({ theme }) => theme.color.blue};
 
       .week {
         color: ${({ theme }) => theme.color.white};

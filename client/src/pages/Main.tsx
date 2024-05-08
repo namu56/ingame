@@ -1,15 +1,18 @@
-import Button from '@/components/Button';
 import Dropdown from '@/components/Dropdown';
-import WeekCalander from '@/components/WeekCalander';
 import styled from 'styled-components';
 import UserProfile from '@/components/UserProfile';
+import SubBox from '@/components/SubBox';
+import WeekCalendar from '@/components/WeekCalendar';
+import { useQuest } from '@/hooks/useQuest';
 
 const Main = () => {
+  const { quest } = useQuest();
   return (
     <MainStyle>
       <Dropdown />
-      <WeekCalander />
+      <WeekCalendar />
       <UserProfile />
+      <SubBox />
     </MainStyle>
   );
 };
@@ -17,7 +20,7 @@ const Main = () => {
 const MainStyle = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   width: 100%;
 `;
 
