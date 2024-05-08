@@ -7,6 +7,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import SignUp from '@/pages/SignUp';
 import Ranking from '@/pages/Ranking';
 import Test from '@/pages/Test';
+import CreateMainQuest from '@/pages/CreateMainQuest';
 
 type Route = {
   path: Routers;
@@ -30,6 +31,10 @@ const routeList: Route[] = [
     path: ROUTERS.RANK,
     element: <Ranking />,
   },
+  {
+    path: ROUTERS.CREATEQUEST,
+    element: <CreateMainQuest />,
+  }
 ];
 
 if (process.env.NODE_ENV === 'development') {
