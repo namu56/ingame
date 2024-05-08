@@ -35,9 +35,11 @@ export class QuestsController {
     return this.questsService.update(+id, updateQuestDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get('main')
-  findAll() {
-    return this.questsService.findAll();
+  @HttpCode(HttpStatus.OK)
+  findAll(@CurrentUser() user: JwtPayloadDto) {
+    return this.questsService.findAll(user.id);
   }
 
   @Get('main/:id')

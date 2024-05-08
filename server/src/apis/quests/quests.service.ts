@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateQuestDto } from './dto/create-quest.dto';
 import { UpdateQuestDto } from './dto/update-quest.dto';
 import { CreateSideQuestDto } from './dto/create-side-quest.dto';
@@ -64,8 +64,20 @@ export class QuestsService {
     return { message: 'success' };
   }
 
-  findAll() {
-    return `This action returns all quests`;
+  async findAll(id: number) {
+    const quests = await this.questRepository.find({
+      where: { userId: id },
+      order: {
+        id: 'DESC',
+      },
+      relations: ['side_quest'],
+    });
+
+    if (!quests) {
+      throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
+    }
+
+    return quests;
   }
 
   findOne(id: number) {
