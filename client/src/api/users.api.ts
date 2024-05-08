@@ -5,8 +5,8 @@ import { httpClient } from '@/utils/axios';
 import { UserInfo } from '@/models/userInfo.model';
 
 export const signup = async (data: Omit<SignupProps, 'confirmPassword'>) => {
-  const resposne = await httpClient.post(API_END_POINT.SIGNUP, { ...data });
-  return resposne.data;
+  const response = await httpClient.post(API_END_POINT.SIGNUP, { ...data });
+  return response.data;
 };
 
 export const patchUserProfile = async (data: UserProfile) => {
@@ -15,6 +15,6 @@ export const patchUserProfile = async (data: UserProfile) => {
 };
 
 export const getUserInfo = async (): Promise<UserInfo> => {
-  const resposne = await httpClient.get(API_END_POINT.GET_USERINFO);
-  return resposne.data;
+  const response = await httpClient.get(API_END_POINT.GET_USERINFO);
+  return response.data;
 };
