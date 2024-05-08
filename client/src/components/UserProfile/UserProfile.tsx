@@ -16,7 +16,7 @@ const UserProfile = () => {
     <UserProfileStyle>
       {userInfo && (
         <UserInfoStyle>
-          <ProfileImageSection />
+          <ProfileImageSection profilePhoto={userInfo.profilePhoto} />
           <UserDetailInfoStyle>
             <div className="basic__info">
               <p className="nickname">

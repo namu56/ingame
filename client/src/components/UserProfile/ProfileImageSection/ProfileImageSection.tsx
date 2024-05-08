@@ -1,28 +1,47 @@
 import styled from 'styled-components';
-import defaultProfile from '@/assets/images/avatar.png';
 import Camera from '@/assets/images/camera.svg';
 import { useState } from 'react';
 import useOutsideClick from '@/hooks/useOutsideClick';
 import ChangeProfileImageModal from '@/components/modals/ChangeProfileImageModal';
+import { rabbit, defaultImage as defaultProfile, tiger, lion, cat } from '@/assets';
 
 interface ProfileImageSecitonProps {
   profilePhoto?: string;
 }
 
-const ProfileImageSection = ({ profilePhoto = 'default' }: ProfileImageSecitonProps) => {
+const ProfileImageSection = ({ profilePhoto = 'defaultImage' }: ProfileImageSecitonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const ChangeProfileImageModalRef = useOutsideClick<HTMLDivElement>(isOpen, () =>
     setIsOpen(false)
   );
 
+  const [profileImage, setProfileImage] = useState(profilePhoto);
+
+  console.log(profileImage);
+
   return (
-    <ProfileImageSectionStyle onClick={() => setIsOpen(!isOpen)} ref={ChangeProfileImageModalRef}>
-      <div className="profileImage">
-        <img src={defaultProfile} alt="default" />
-        <img className="camera" src={Camera} alt="camera" />
-      </div>
+    <>
+      <ProfileImageSectionStyle ref={ChangeProfileImageModalRef}>
+        <div className="profileImage" onClick={() => setIsOpen(!isOpen)}>
+          <img
+            src={
+              profileImage === 'cat'
+                ? cat
+                : profileImage === 'lion'
+                  ? lion
+                  : profileImage === 'rabbit'
+                    ? rabbit
+                    : profileImage === 'tiger'
+                      ? tiger
+                      : defaultProfile
+            }
+            alt="default"
+          />
+          <img className="camera" src={Camera} alt="camera" />
+        </div>
+      </ProfileImageSectionStyle>
       {isOpen && <ChangeProfileImageModal />}
-    </ProfileImageSectionStyle>
+    </>
   );
 };
 
@@ -36,7 +55,6 @@ const ProfileImageSectionStyle = styled.div`
   background-color: ${({ theme }) => theme.color.greenLight};
 
   &:hover {
-    cursor: pointer;
     background-color: ${({ theme }) => theme.color.greenLightActive};
   }
 
@@ -46,6 +64,10 @@ const ProfileImageSectionStyle = styled.div`
     position: relative;
     width: 70px;
     height: 70px;
+
+    &:hover {
+      cursor: pointer;
+    }
 
     .camera {
       position: absolute;

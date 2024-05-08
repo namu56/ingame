@@ -5,6 +5,6 @@ export const mockUserInfo: UserInfo = {
   email: 'test@test.com',
   nickname: '닉네임',
   intro: '안녕하세요, test입니다.안녕하세요, test입니다.안녕하세요, test입니다.',
-  profilePhoto: 'default',
+  profilePhoto: 'cat',
   point: 3000,
 };
