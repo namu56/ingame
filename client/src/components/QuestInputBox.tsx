@@ -1,27 +1,19 @@
-import React, { useState, ForwardedRef } from 'react';
+import React, { ForwardedRef } from 'react';
 import { styled } from 'styled-components';
 
 interface QuestInputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
-  inputType?: 'text' | 'number';
 }
 
 const QuestInputBox = React.forwardRef(
-  ({ placeholder }: QuestInputBoxProps, ref: ForwardedRef<HTMLInputElement>) => {
-    const [questTitle, setQuestTitle] = useState(placeholder);
-
-    const onChangeHandler = (event: any) => {
-      event.preventDefault();
-      setQuestTitle(event.target.value);
-    };
+  ({ placeholder, ...props }: QuestInputBoxProps, ref: ForwardedRef<HTMLInputElement>) => {
 
     return (
       <QuestInputBoxLayoutStyle>
         <QuestInputBoxStyle
           placeholder={placeholder}
           ref={ref}
-          value={questTitle}
-          onChange={onChangeHandler}
+          {...props}
         />
       </QuestInputBoxLayoutStyle>
     );
