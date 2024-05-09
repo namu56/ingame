@@ -1,34 +1,101 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { QuestsService } from './quests.service';
 import { CreateQuestDto } from './dto/create-quest.dto';
 import { UpdateQuestDto } from './dto/update-quest.dto';
+import { CreateSideQuestDto } from './dto/create-side-quest.dto';
+import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { CurrentUser } from '../../commons/decorators/auth.decorator';
+import { JwtPayloadDto } from '../auth/dto/jwt-payload.dto';
 
 @Controller('quests')
 export class QuestsController {
   constructor(private readonly questsService: QuestsService) {}
 
-  @Post()
-  create(@Body() createQuestDto: CreateQuestDto) {
-    return this.questsService.create(createQuestDto);
+  @UseGuards(AuthGuard)
+  @Post('')
+  @HttpCode(HttpStatus.CREATED)
+  async create(@CurrentUser() user: JwtPayloadDto, @Body() createQuestDto: CreateQuestDto) {
+    return await this.questsService.create(user.id, createQuestDto);
   }
 
-  @Get()
-  findAll() {
+  @UseGuards(AuthGuard)
+  @Get('main')
+  @HttpCode(HttpStatus.OK)
+  async findAll(@CurrentUser() user: JwtPayloadDto) {
+    return await this.questsService.findAll(user.id);
+  }
+
+  /*@UseGuards(AuthGuard)
+  @Get('main/:id')
+  @HttpCode(HttpStatus.OK)
+  findOne(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+    return this.questsService.findOne(user.id, +id);
+  }*/
+
+  @UseGuards(AuthGuard)
+  @Patch('main/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async update(
+    @CurrentUser() user: JwtPayloadDto,
+    @Param('id') id: string,
+    @Body() updateQuestDto: UpdateQuestDto
+  ) {
+    await this.questsService.update(user.id, +id, updateQuestDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('main/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+    await this.questsService.remove(user.id, +id);
+  }
+
+  @Post('side')
+  createSide(@Body() createQuestDto: CreateSideQuestDto) {
+    return this.questsService.createSide(createQuestDto);
+  }
+
+  @Patch('side/:id')
+  updateSide(@Param('id') id: string, @Body() updateQuestDto: UpdateSideQuestDto) {
+    return this.questsService.updateSide(+id, updateQuestDto);
+  }
+
+  @Delete('side/:id')
+  removeSide(@Param('id') id: string) {
+    return this.questsService.removeSide(+id);
+  }
+
+  @Get('sub')
+  findAllSub() {
     return this.questsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.questsService.findOne(+id);
-  }
+  /*@UseGuards(AuthGuard)
+  @Get('sub/:id')
+  @HttpCode(HttpStatus.OK)
+  findOneSub(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+    return this.questsService.findOne(user.id, +id);
+  }*/
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
+  @Patch('sub/:id')
+  updateSub(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
     return this.questsService.update(+id, updateQuestDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete('sub/:id')
+  removeSub(@Param('id') id: string) {
     return this.questsService.remove(+id);
   }
 }
