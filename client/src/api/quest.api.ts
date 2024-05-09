@@ -8,6 +8,6 @@ export const CreateQuest = async (data: Quest) => {
 };
 
 export const PatchQuest = async (data: Quest) => {
-  const response = await httpClient.patch(`${API_END_POINT.PATCH_QUEST}/${data.id}`, { ...data });
+  const response = await httpClient.patch(API_END_POINT.PATCH_QUEST, { ...data });
   return response.data;
 }

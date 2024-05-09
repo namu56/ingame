@@ -1,4 +1,3 @@
-import Button from '@/components/Button';
 import Dropdown from '@/components/Dropdown';
 import WeekCalander from '@/components/WeekCalander';
 import styled from 'styled-components';
