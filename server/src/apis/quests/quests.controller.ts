@@ -16,7 +16,7 @@ import { UpdateQuestDto } from './dto/update-quest.dto';
 import { CreateSideQuestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { AuthGuard } from '../auth/auth.guard';
-import { CurrentUser } from '../../commons/decorators/auth.decorator';
+import { CurrentUser } from '../../common/decorators/auth.decorator';
 import { JwtPayloadDto } from '../auth/dto/jwt-payload.dto';
 
 @Controller('quests')
@@ -77,9 +77,11 @@ export class QuestsController {
     return this.questsService.removeSide(+id);
   }
 
+  @UseGuards(AuthGuard)
   @Get('sub')
-  findAllSub() {
-    return this.questsService.findAll();
+  @HttpCode(HttpStatus.OK)
+  findAllSub(@CurrentUser() user: JwtPayloadDto) {
+    return this.questsService.findAll(user.id);
   }
 
   /*@UseGuards(AuthGuard)
@@ -89,13 +91,21 @@ export class QuestsController {
     return this.questsService.findOne(user.id, +id);
   }*/
 
+  @UseGuards(AuthGuard)
   @Patch('sub/:id')
-  updateSub(@Param('id') id: string, @Body() updateQuestDto: UpdateQuestDto) {
-    return this.questsService.update(+id, updateQuestDto);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateSub(
+    @CurrentUser() user: JwtPayloadDto,
+    @Param('id') id: string,
+    @Body() updateQuestDto: UpdateQuestDto
+  ) {
+    await this.questsService.update(user.id, +id, updateQuestDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('sub/:id')
-  removeSub(@Param('id') id: string) {
-    return this.questsService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeSub(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+    await this.questsService.remove(user.id, +id);
   }
 }
