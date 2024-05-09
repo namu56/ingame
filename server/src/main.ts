@@ -15,9 +15,7 @@ async function bootstrap() {
   const origin = configService.get<string>('CORS_ORIGIN');
 
   setupSwagger(app);
-
   app.use(cookieParser());
-
   app.enableCors({
     origin: origin,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',

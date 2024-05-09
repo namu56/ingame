@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { RankingResponseDto } from './dto/ranking-response.dto';
+import { UserInfo } from '../users/entities/user-info.entity';
 
 @Injectable()
 export class RankingService {
@@ -19,11 +20,20 @@ export class RankingService {
         countCurrentRank++;
       }
 
-      const rankedUser = new RankingResponseDto(user, currentRank);
+      const rankedUser = this.toRankingResponse(user, currentRank);
 
       lastUserPoint = user.point;
       return rankedUser;
     });
     return ranking;
+  }
+
+  private toRankingResponse(userInfo: UserInfo, rank: number): RankingResponseDto {
+    return {
+      id: userInfo.userId,
+      nickname: userInfo.nickname,
+      point: userInfo.point,
+      rank: rank,
+    };
   }
 }

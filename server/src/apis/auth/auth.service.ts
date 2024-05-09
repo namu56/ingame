@@ -3,7 +3,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayloadDto } from './dto/jwt-payload.dto';
+import { JwtPayload } from './auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +20,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload: JwtPayloadDto = {
+    const payload: JwtPayload = {
       id: user.id,
       email: user.email,
     };

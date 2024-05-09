@@ -78,11 +78,12 @@ export class UsersService {
       throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
 
-    return new UserResponseDto(user);
+    return this.toUserResponse(user);
   }
 
   async updateCurrenUserInfoById(id: number, updateUserDto: UpdateUserDto): Promise<void> {
     const userInfo = await this.userInfoRepository.findOne({ where: { userId: id } });
+    console.log(userInfo);
     if (!userInfo) {
       throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
@@ -132,5 +133,16 @@ export class UsersService {
       },
     });
     return users;
+  }
+
+  private toUserResponse(user: User): UserResponseDto {
+    return {
+      id: user.id,
+      email: user.email,
+      nickname: user.userInfo.nickname,
+      intro: user.userInfo.intro ?? null,
+      profilePhoto: user.profilePhoto.profilePhoto ?? null,
+      point: user.userInfo.point,
+    };
   }
 }

@@ -24,6 +24,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       timestamp: datetime,
       path: req.url,
       method: req.method,
+      message: message,
     };
     const args = req.body;
 
