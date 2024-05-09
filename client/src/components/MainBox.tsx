@@ -4,6 +4,7 @@ import { MdArrowDropDown } from "react-icons/md";
 import { MdArrowDropUp } from "react-icons/md";
 import { useState } from 'react';
 import { sideQuestList } from '@/shared/dummy';
+import SideBox from './SideBox';
 
 
 const MainBox = () => {
@@ -32,28 +33,43 @@ const MainBox = () => {
 
   return (
     <>
+    <MainBoxContainer>
       <MainBoxStyle onClick={handleToggleAccordion}>
-      <header className='aFContainer'>
-        <button className='aButton'>{isAccordion ? (<MdArrowDropUp size={30} />) : (<MdArrowDropDown size={30} />)}</button>
-        <p className='fDisplay'>{fraction}</p>
-      </header>
-      <h1 className='title'>{MainText}</h1>
-      <button className='eButton' onClick={handleNavigate}><BsThreeDots /></button>
+        <header className='aFContainer'>
+          <button className='aButton'>{isAccordion ? (<MdArrowDropUp size={30} />) : (<MdArrowDropDown size={30} />)}</button>
+          <p className='fDisplay'>{fraction}</p>
+        </header>
+        <h1 className='title'>{MainText}</h1>
+        <button className='eButton' onClick={handleNavigate}><BsThreeDots /></button>
       </MainBoxStyle>
-      {sideQuestList.map((quest, index) => (
-        <SideBoxStyle key={index} className={`sideBox ${isAccordion ? 'show' : ''}`}>
-          <label className='cBox'>
-            <input type='checkbox' checked={checked[index]} onChange={() => handleCheckboxClick(index)} />
-          </label>
-          <h2 className='sTitle'>{quest.content}</h2>
-        </SideBoxStyle>
-      ))}
+      <SideBoxContainer>
+        {sideQuestList.map((quest, index) => (
+          <SideBox
+            key={index}
+            isAccordion={isAccordion}
+            checked={checked[index]}
+            handleCheckboxClick={() => handleCheckboxClick(index)}
+            content={quest.content}
+          />
+        ))}
+      </SideBoxContainer>
+    </MainBoxContainer>
   </>
   );
 };
 
+const MainBoxContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  padding: 0px 10px;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+`;
+
 const MainBoxStyle = styled.div`
-  width: 22rem;
+  width: 90%;
   height: 55px;
   background: ${({ theme }) => theme.color.white};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
@@ -77,36 +93,13 @@ const MainBoxStyle = styled.div`
 
 `;
 
-const SideBoxStyle = styled.div`
-  position: relative;
-  left: 23px;
-  margin-top: 5px;
-
+const SideBoxContainer = styled.div`
   display: flex;
-  align-items: center;
-  padding: 0px 10px;
-  width: 20.5rem;
-  height: 55px;
-  background: ${({ theme }) => theme.color.white};
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  gap: 20px;
-
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-  transform: translateY(-100%);
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-
-  &.show {
-    transform: translateY(0%);
-    max-height: 100%;
-    opacity: 1;
-  }
-
-  .cBox {
-    cursor: pointer;
-  }
+  flex-direction: column;
+  align-items: flex-end;
+  width: 90%;
+  gap: 10px;
+  margin-right: 11.7%;
 `;
 
 export default MainBox;
