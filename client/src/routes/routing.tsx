@@ -8,6 +8,7 @@ import SignUp from '@/pages/SignUp';
 import Ranking from '@/pages/Ranking';
 import Test from '@/pages/Test';
 import CreateMainQuest from '@/pages/CreateMainQuest';
+import EditMainQuest from '@/pages/EditMainQuest';
 
 type Route = {
   path: Routers;
@@ -34,6 +35,10 @@ const routeList: Route[] = [
   {
     path: ROUTERS.CREATEQUEST,
     element: <CreateMainQuest />,
+  },
+  {
+    path: ROUTERS.EDITQUEST,
+    element: <EditMainQuest />,
   }
 ];
 
