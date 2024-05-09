@@ -40,7 +40,7 @@ const QuestInputBoxStyle = styled.input`
   border: none;
   background: none;
   font-size: ${({ theme }) => theme.font.xsmall};
-  color: ${({ theme }) => theme.color.grayDark};
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export default QuestInputBox;

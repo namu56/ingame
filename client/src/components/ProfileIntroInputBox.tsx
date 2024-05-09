@@ -51,7 +51,7 @@ const ProfileIntroInputBoxStyle = styled.textarea`
   border: none;
   background: none;
   font-size: ${({ theme }) => theme.font.xsmall};
-  color: ${({ theme }) => theme.color.grayDark};
+  color: ${({ theme }) => theme.color.black};
   resize: none;
 `;
 
