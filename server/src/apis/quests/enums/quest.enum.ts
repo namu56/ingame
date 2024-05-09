@@ -1,21 +1,21 @@
 export enum Difficulty {
-  'easy' = 'easy',
-  'normal' = 'normal',
-  'hard' = 'hard',
+  Easy = 'EASY',
+  Normal = 'NORMAL',
+  Hard = 'HARD',
 }
 
 export enum Mode {
-  'main' = 'main',
-  'sub' = 'sub',
+  Main = 'MAIN',
+  Sub = 'SUB',
 }
 
 export enum isHidden {
-  'true' = 'true',
-  'false' = 'false',
+  True = 'TRUE',
+  False = 'FALSE',
 }
 
 export enum Status {
-  'completed' = 'completed',
-  'fail' = 'fail',
-  'on_progress' = 'on_progress',
+  Completed = 'COMPLETED',
+  Fail = 'FAIL',
+  onProgress = 'ON_PROGRESS',
 }

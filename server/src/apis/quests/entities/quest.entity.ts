@@ -29,7 +29,7 @@ export class Quest extends BaseEntity {
   @Column({ type: 'enum', name: 'hidden', enum: isHidden })
   hidden!: isHidden;
 
-  @Column({ type: 'enum', name: 'status', enum: Status, default: Status.on_progress })
+  @Column({ type: 'enum', name: 'status', enum: Status, default: Status.onProgress })
   status!: Status;
 
   @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })

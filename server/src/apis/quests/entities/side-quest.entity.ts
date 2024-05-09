@@ -13,7 +13,7 @@ export class sideQuest extends BaseEntity {
   @Column({ type: 'varchar', length: 50, nullable: false })
   content: string;
 
-  @Column({ type: 'enum', name: 'status', enum: Status, default: Status.on_progress })
+  @Column({ type: 'enum', name: 'status', enum: Status, default: Status.onProgress })
   status: Status;
 
   @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
