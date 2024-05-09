@@ -1,4 +1,5 @@
-import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Status } from '../enums/quest.enum';
 
 export class SideQuestItem {
   @IsNumber()
@@ -9,9 +10,9 @@ export class SideQuestItem {
   @IsNotEmpty()
   public content: string;
 
-  @IsString({ groups: ['completed', 'fail', 'on_progress'] })
+  @IsEnum(Status)
   @IsNotEmpty()
-  public status: string;
+  public status: Status;
 
   @IsDateString()
   @IsNotEmpty()

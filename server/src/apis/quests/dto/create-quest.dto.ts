@@ -1,18 +1,19 @@
-import { IsArray, IsBoolean, IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { SideQuestItem } from './create-side-quest.dto';
+import { Difficulty, isHidden, Mode, Status } from '../enums/quest.enum';
 
 export class CreateQuestDto {
   @IsString()
   @IsNotEmpty()
   public title: string;
 
-  @IsString({ groups: ['easy', 'normal', 'hard'] })
+  @IsEnum(Difficulty)
   @IsNotEmpty()
-  public difficulty: string;
+  public difficulty: Difficulty;
 
-  @IsString({ groups: ['main', 'sub'] })
+  @IsEnum(Mode)
   @IsNotEmpty()
-  public mode: string;
+  public mode: Mode;
 
   @IsArray()
   @IsNotEmpty()
@@ -26,13 +27,13 @@ export class CreateQuestDto {
   @IsNotEmpty()
   public endDate: string; // YYYY-MM-DD 형식
 
-  @IsString({ groups: ['true', 'false'] })
+  @IsEnum(isHidden)
   @IsNotEmpty()
-  public hidden: string;
+  public hidden: isHidden;
 
-  @IsString({ groups: ['completed', 'fail', 'on_progress'] })
+  @IsEnum(Status)
   @IsNotEmpty()
-  public status: string;
+  public status: Status;
 
   @IsDateString()
   @IsNotEmpty()
