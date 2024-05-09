@@ -24,6 +24,8 @@ interface ProfileProps {
 const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) => {
   const [nickname, setNickname] = useState(OriginNickname);
   const [intro, setIntro] = useState(OriginIntro);
+  const [inputCount, setInputCount] = useState(OriginIntro.length);
+  const [profileIntro, setprofileIntro] = useState(intro);
 
   const { register, handleSubmit } = useForm<ProfileModifyProps>();
 
@@ -57,7 +59,11 @@ const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) =>
             <FaUserPen size={24} />
             <p className="title">자기소개 변경</p>
           </div>
-          <ProfileIntroInputBox placeholder={intro} value={intro} {...register('intro')} onChange={(e) => setIntro(e.target.value)} />
+          <ProfileIntroInputBox placeholder={intro} value={intro} inputCount={inputCount} {...register('intro')} onChange={(e) => {
+            setIntro(e.target.value);
+            setInputCount(e.target.value.length);
+            setprofileIntro(e.target.value);
+          }} />
         </BoxStyle>
         <ButtonContainerStyle>
           <Button size="medium" color="green" children={'수정하기'} />
