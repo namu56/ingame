@@ -1,15 +1,20 @@
 import styled from 'styled-components';
-import { BsThreeDots } from "react-icons/bs";
+import { BsThreeDots } from 'react-icons/bs';
 import { subQuest } from '@/shared/dummy';
+import { SubQuest } from '@/models/quest.model';
 
-const SubBox = () => {
-  const handleModal = () => {
-    
-  }
+interface SubBoxProps {
+  content: SubQuest;
+}
+
+const SubBox = ({ content }: SubBoxProps) => {
+  const handleModal = () => {};
   return (
     <SubBoxStyle>
-      <h2 className='title'>{subQuest[0].content}</h2>
-      <button className='ellipsis' onClick={handleModal}><BsThreeDots /></button>
+      <h2 className="title">{content.title}</h2>
+      <button className="ellipsis" onClick={handleModal}>
+        <BsThreeDots />
+      </button>
     </SubBoxStyle>
   );
 };

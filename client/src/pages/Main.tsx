@@ -4,15 +4,17 @@ import UserProfile from '@/components/UserProfile';
 import SubBox from '@/components/SubBox';
 import WeekCalendar from '@/components/WeekCalendar';
 import { useQuest } from '@/hooks/useQuest';
+import Loading from '@/components/Loading';
 
 const Main = () => {
   const { quest } = useQuest();
+
   return (
     <MainStyle>
       <Dropdown />
       <WeekCalendar />
       <UserProfile />
-      <SubBox />
+      {quest ? quest.map((content) => <SubBox key={content.id} content={content} />) : <Loading />}
     </MainStyle>
   );
 };

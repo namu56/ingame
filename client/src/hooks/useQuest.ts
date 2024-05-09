@@ -22,5 +22,6 @@ export const useQuest = () => {
 
   return {
     quest: subQuestList,
+    isLoading,
   };
 };
