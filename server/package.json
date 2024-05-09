@@ -19,9 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm:dev": "cross-env NODE_ENV=development node -r ts-node/register ./node_modules/typeorm/cli.js",
-    "typeorm:dev:d": "cross-env NODE_ENV=development node -r ts-node/register ./node_modules/typeorm/cli.js -d src/config/datasource.config.ts",
+    "typeorm:dev:d": "cross-env NODE_ENV=development node -r ts-node/register ./node_modules/typeorm/cli.js -d src/common/config/datasource.config.ts",
     "typeorm": "cross-env NODE_ENV=production node -r ts-node/register ./node_modules/typeorm/cli.js",
-    "typeorm:d": "cross-env NODE_ENV=production node -r ts-node/register ./node_modules/typeorm/cli.js -d src/config/datasource.config.ts"
+    "typeorm:d": "cross-env NODE_ENV=production node -r ts-node/register ./node_modules/typeorm/cli.js -d src/common/config/datasource.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.2",
@@ -30,19 +30,24 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.3.2",
+    "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.2",
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "cookie-parser": "^1.4.6",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "mysql2": "^3.9.7",
+    "nest-winston": "^1.9.4",
     "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.1",
     "ts-node": "^10.9.2",
     "typeorm": "^0.3.20",
-    "typeorm-naming-strategies": "^4.1.0"
+    "typeorm-naming-strategies": "^4.1.0",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.1",
