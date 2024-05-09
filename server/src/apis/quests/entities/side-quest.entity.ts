@@ -1,26 +1,31 @@
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Quest } from './quest.entity';
+import { Status } from '../enums/quest.enum';
 
 @Entity('side_quest')
 export class sideQuest extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('int', { nullable: false })
   questId: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   content: string;
 
-  @Column()
-  status: string;
+  @Column({ type: 'enum', name: 'status', enum: Status })
+  status: Status;
 
-  @Column('timestamp')
+  @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column('timestamp')
+  @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @ManyToOne(() => Quest, (quest) => quest.sideQuests)
+  @ManyToOne(() => Quest, (quest) => quest.sideQuests, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   quest: Quest;
 }
