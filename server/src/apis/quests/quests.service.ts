@@ -7,12 +7,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from './entities/quest.entity';
 import { DataSource, Repository } from 'typeorm';
 import { sideQuest } from './entities/side-quest.entity';
-import { Status } from './enums/quest.enum';
 
 @Injectable()
 export class QuestsService {
   constructor(
-    private readonly questsService: QuestsService,
     @InjectRepository(Quest) private readonly questRepository: Repository<Quest>,
     @InjectRepository(sideQuest) private readonly sideQuestRepository: Repository<sideQuest>,
     private readonly dataSource: DataSource
