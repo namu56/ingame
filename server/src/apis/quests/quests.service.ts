@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from './entities/quest.entity';
 import { DataSource, Repository } from 'typeorm';
 import { sideQuest } from './entities/side-quest.entity';
+import { Status } from './enums/quest.enum';
 
 @Injectable()
 export class QuestsService {
@@ -34,7 +35,6 @@ export class QuestsService {
         startDate: startDate,
         endDate: endDate,
         hidden: hidden,
-        status: status,
         createdAt: currentDate,
         updatedAt: currentDate,
       });
@@ -46,7 +46,6 @@ export class QuestsService {
           id: idx,
           questId: savedQuest.id,
           content: content,
-          status: 'on_progress',
           createdAt: currentDate,
           updatedAt: currentDate,
         });
