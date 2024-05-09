@@ -14,7 +14,13 @@ const Main = () => {
       <Dropdown />
       <WeekCalendar />
       <UserProfile />
-      {quest ? quest.map((content) => <SubBox key={content.id} content={content} />) : <Loading />}
+      <div className="subquestList">
+        {quest ? (
+          quest.map((content) => <SubBox key={content.id} content={content} />)
+        ) : (
+          <Loading />
+        )}
+      </div>
     </MainStyle>
   );
 };

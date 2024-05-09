@@ -18,6 +18,12 @@ const color = {
   grayDarkActive: '#8d8d8d',
 };
 
+const statusColor = {
+  completed: color.green,
+  fail: color.coral,
+  on_progress: color.white,
+};
+
 const font = {
   xsmall: '0.75rem',
   small: '1rem',
@@ -53,8 +59,8 @@ const inputSize = {
   lagre: {
     width: '20rem',
     height: '36px',
-  }
-}
+  },
+};
 
 const borderRadius = {
   small: '5px',
@@ -74,6 +80,7 @@ export const media = {
 
 export const theme: DefaultTheme = {
   color,
+  statusColor,
   font,
   media,
   borderRadius,

@@ -16,4 +16,7 @@ export interface SubQuest {
   id: number;
   title: string;
   hidden: number;
+  status: QuestStatus;
 }
+
+export type QuestStatus = 'completed' | 'fail' | 'on_progress';

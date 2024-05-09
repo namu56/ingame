@@ -1,6 +1,5 @@
-import styled from 'styled-components';
+import styled, { theme } from 'styled-components';
 import { BsThreeDots } from 'react-icons/bs';
-import { subQuest } from '@/shared/dummy';
 import { SubQuest } from '@/models/quest.model';
 
 interface SubBoxProps {
@@ -10,7 +9,7 @@ interface SubBoxProps {
 const SubBox = ({ content }: SubBoxProps) => {
   const handleModal = () => {};
   return (
-    <SubBoxStyle>
+    <SubBoxStyle status={content.status}>
       <h2 className="title">{content.title}</h2>
       <button className="ellipsis" onClick={handleModal}>
         <BsThreeDots />
@@ -19,11 +18,11 @@ const SubBox = ({ content }: SubBoxProps) => {
   );
 };
 
-const SubBoxStyle = styled.div`
-  width: 22rem;
-  height: 55px;
+const SubBoxStyle = styled.div<{ status: keyof typeof theme.statusColor }>`
+  width: 100%;
+  height: 50px;
 
-  background: ${({ theme }) => theme.color.white};
+  background: ${({ theme, status }) => theme.statusColor[status]};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 
@@ -38,6 +37,7 @@ const SubBoxStyle = styled.div`
 
   .ellipsis {
     cursor: pointer;
+    background: none;
   }
 `;
 
