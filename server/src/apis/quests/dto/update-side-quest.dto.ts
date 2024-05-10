@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateSideQuestDto } from './create-side-quest.dto';
+import { SideQuestItem } from './create-side-quest.dto';
 
-export class UpdateSideQuestDto extends PartialType(CreateSideQuestDto) {}
+export class UpdateSideQuestDto extends PartialType(SideQuestItem) {}

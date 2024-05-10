@@ -125,8 +125,21 @@ export class QuestsService {
     return { message: 'success' };
   }
 
-  updateSide(id: number, updateQuestDto: UpdateSideQuestDto) {
-    return `This action updates a #${id} quest`;
+  async updateSide(userId: number, id: number, updateQuestDto: UpdateSideQuestDto) {
+    const quest = await this.questRepository.findOne({ where: { userId: userId, id: id } });
+
+    if (!quest) {
+      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+    }
+
+    const targetQuest = await this.sideQuestRepository.findOne({ where: { id: id } });
+
+    if (!targetQuest) {
+      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+    }
+
+    const updatedQuest = this.sideQuestRepository.merge(targetQuest, updateQuestDto);
+    await this.questRepository.save(updatedQuest);
   }
 
   removeSide(id: number) {
