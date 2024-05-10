@@ -69,9 +69,9 @@ const EditMainQuestQuest = () => {
       <form onSubmit={onSubmit}>
         <QuestInputBox placeholder='퀘스트 제목' {...register('title')} />
         <QuestButtonContainer>
-          <Button onClick={() => setIsDifficulty(0)}>EASY</Button>
-          <Button onClick={() => setIsDifficulty(1)}>NORMAL</Button>
-          <Button onClick={() => setIsDifficulty(2)}>HARD</Button>
+          <Button className='easyButton' onClick={() => setIsDifficulty(0)}>EASY</Button>
+          <Button className='normalButton' onClick={() => setIsDifficulty(1)}>NORMAL</Button>
+          <Button className='hardButton' onClick={() => setIsDifficulty(2)}>HARD</Button>
         </QuestButtonContainer>
         <div className='plusContainer'>
           <h1>단계</h1>
@@ -115,8 +115,8 @@ const EditMainQuestQuest = () => {
           />
         </div>
         <div className='modifiyAndClose'>
-          <Button htmlType='submit'>수정</Button>
-          <Button>닫기</Button>          
+          <Button className='modifiyButton' htmlType='submit'>수정</Button>
+          <Button className='closeButton'>닫기</Button>          
         </div>
       </form>
     </EditMainQuestQuestStyle>
@@ -191,10 +191,10 @@ const EditMainQuestQuestStyle = styled.div`
       width: 40%;
       color: ${({ theme }) => theme.color.white};
     }
-    button:first-child {
+    .modifiyButton {
       background-color: ${({ theme }) => theme.color.green};
     }
-    button:last-child {
+    .closeButton {
       background-color: ${({ theme }) => theme.color.grayNormalActive};
     }
   }
@@ -207,15 +207,15 @@ const QuestButtonContainer = styled.div`
   button {
     width: 31%;
   }
-  button:first-child {
+  .easyButton {
     color: ${({ theme }) => theme.color.purple};
     border: 1px solid ${({ theme }) => theme.color.purple};
   }
-  button:nth-child(2) {
+  .normalButton {
     color: ${({ theme }) => theme.color.blue};
     border: 1px solid ${({ theme }) => theme.color.blue};
   }
-  button:last-child {
+  .hardButton {
     color: ${({ theme }) => theme.color.coral};
     border: 1px solid ${({ theme }) => theme.color.coral};
   }
