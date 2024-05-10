@@ -1,5 +1,5 @@
 import { useWeek } from '@/hooks/useWeek';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { GrFormPrevious, GrFormNext } from 'react-icons/gr';
 import { media } from '@/styles/theme';
@@ -9,6 +9,7 @@ import { formattedCalendar } from '@/utils/formatter';
 
 const Week = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const newSearchParams = new URLSearchParams(searchParams);
 
   const { today, getWeekDates } = useWeek();
 
@@ -45,7 +46,6 @@ const Week = () => {
 
   const handleGetSubquest = (calendar: Date) => {
     setSelectedDay(new Date(calendar.getFullYear(), calendar.getMonth(), calendar.getDate()));
-    const newSearchParams = new URLSearchParams(searchParams);
 
     if (formattedCalendar(calendar) === formattedCalendar(today)) {
       newSearchParams.delete(QUERYSTRING.DATE);
@@ -55,6 +55,13 @@ const Week = () => {
 
     setSearchParams(newSearchParams);
   };
+
+  useEffect(() => {
+    if (formattedCalendar(selectedDay) !== newSearchParams.get(QUERYSTRING.DATE)) {
+      newSearchParams.delete(QUERYSTRING.DATE);
+    }
+    setSearchParams(newSearchParams);
+  }, []);
 
   return (
     <WeekStyle>

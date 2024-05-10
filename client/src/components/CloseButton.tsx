@@ -1,15 +1,15 @@
 import styled from 'styled-components';
-import { IoIosCloseCircleOutline } from "react-icons/io";
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 
 interface CloseButtonProps {
   onClick: () => void;
 }
 
-const CloseButton = ({onClick}: CloseButtonProps) => {
+const CloseButton = ({ onClick }: CloseButtonProps) => {
   return (
-    <>
-      <CloseButtonStyle><IoIosCloseCircleOutline className='closeIcon' onClick={onClick} /></CloseButtonStyle>  
-    </>
+    <CloseButtonStyle>
+      <IoIosCloseCircleOutline className="closeIcon" onClick={onClick} />
+    </CloseButtonStyle>
   );
 };
 

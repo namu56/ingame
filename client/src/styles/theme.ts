@@ -19,8 +19,8 @@ const color = {
 };
 
 const statusColor = {
-  completed: color.green,
-  fail: color.coral,
+  completed: color.greenOpactiy30,
+  fail: color.coralOpacity70,
   on_progress: color.white,
 };
 

@@ -6,7 +6,7 @@ export interface Quest {
   mode: number;
   startDate: string;
   endDate: string;
-  hidden: number;
+  hidden: QuestHiddenType;
   status: number;
   createdAt: string;
   updatedAt: string;
@@ -15,8 +15,9 @@ export interface Quest {
 export interface SubQuest {
   id: number;
   title: string;
-  hidden: number;
+  hidden: QuestHiddenType;
   status: QuestStatus;
 }
 
 export type QuestStatus = 'completed' | 'fail' | 'on_progress';
+export type QuestHiddenType = 'TRUE' | 'FALSE';
