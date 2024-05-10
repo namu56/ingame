@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { RankingResponseDto } from './dto/ranking-response.dto';
+import { UserRankingDto } from './dto/ranking-response.dto';
 import { UserInfo } from '../users/entities/user-info.entity';
 
 @Injectable()
 export class RankingService {
   constructor(private readonly usersService: UsersService) {}
-  async getRanking(): Promise<RankingResponseDto[]> {
+  async getRanking(): Promise<UserRankingDto[]> {
     const users = await this.usersService.getAllUser();
     let currentRank = 1;
     let lastUserPoint = 0;
@@ -28,7 +28,7 @@ export class RankingService {
     return ranking;
   }
 
-  private toRankingResponse(userInfo: UserInfo, rank: number): RankingResponseDto {
+  private toRankingResponse(userInfo: UserInfo, rank: number): UserRankingDto {
     return {
       id: userInfo.userId,
       nickname: userInfo.nickname,

@@ -1,11 +1,7 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { UserResponseDto } from 'src/apis/users/dto/user-response.dto';
+import { UserProfileDto } from 'src/apis/users/dto/user-profile.dto';
 
-export class RankingResponseDto extends PickType(UserResponseDto, [
-  'id',
-  'nickname',
-  'point',
-] as const) {
+export class UserRankingDto extends PickType(UserProfileDto, ['id', 'nickname', 'point'] as const) {
   @ApiProperty({
     example: 1,
     description: '순위',
