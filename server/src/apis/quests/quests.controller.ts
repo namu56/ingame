@@ -17,7 +17,7 @@ import { CreateSideQuestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from '../../common/decorators/auth.decorator';
-import { JwtPayloadDto } from '../auth/dto/jwt-payload.dto';
+import { JwtPayload } from '../auth/auth.interface';
 
 @Controller('quests')
 export class QuestsController {
@@ -26,14 +26,14 @@ export class QuestsController {
   @UseGuards(AuthGuard)
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  async create(@CurrentUser() user: JwtPayloadDto, @Body() createQuestDto: CreateQuestDto) {
+  async create(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateQuestDto) {
     return await this.questsService.create(user.id, createQuestDto);
   }
 
   @UseGuards(AuthGuard)
   @Get('main')
   @HttpCode(HttpStatus.OK)
-  async findAll(@CurrentUser() user: JwtPayloadDto) {
+  async findAll(@CurrentUser() user: JwtPayload) {
     return await this.questsService.findAll(user.id);
   }
 
@@ -48,7 +48,7 @@ export class QuestsController {
   @Patch('main/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async update(
-    @CurrentUser() user: JwtPayloadDto,
+    @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateQuestDto
   ) {
@@ -58,7 +58,7 @@ export class QuestsController {
   @UseGuards(AuthGuard)
   @Delete('main/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+  async remove(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
     await this.questsService.remove(user.id, +id);
   }
 
@@ -80,7 +80,7 @@ export class QuestsController {
   @UseGuards(AuthGuard)
   @Get('sub')
   @HttpCode(HttpStatus.OK)
-  findAllSub(@CurrentUser() user: JwtPayloadDto) {
+  findAllSub(@CurrentUser() user: JwtPayload) {
     return this.questsService.findAll(user.id);
   }
 
@@ -95,7 +95,7 @@ export class QuestsController {
   @Patch('sub/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateSub(
-    @CurrentUser() user: JwtPayloadDto,
+    @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateQuestDto
   ) {
@@ -105,7 +105,7 @@ export class QuestsController {
   @UseGuards(AuthGuard)
   @Delete('sub/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeSub(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+  async removeSub(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
     await this.questsService.remove(user.id, +id);
   }
 }

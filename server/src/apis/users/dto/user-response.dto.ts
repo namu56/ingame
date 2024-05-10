@@ -1,19 +1,45 @@
-import { User } from '../entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UserResponseDto {
+  @ApiProperty({
+    example: 1,
+    description: 'id',
+    required: true,
+  })
   id: number;
-  email: string;
-  nickname: string;
-  intro: string | null;
-  profilePhoto: string | null;
-  point: number;
 
-  constructor(user: User) {
-    this.id = user.id;
-    this.email = user.email;
-    this.nickname = user.userInfo.nickname;
-    this.intro = user.userInfo.intro || null;
-    this.profilePhoto = user.profilePhoto.profilePhoto || null;
-    this.point = user.userInfo.point;
-  }
+  @ApiProperty({
+    example: 'test@gmail.com',
+    description: '이메일',
+    required: true,
+  })
+  email: string;
+
+  @ApiProperty({
+    example: 'test',
+    description: '닉네임',
+    required: true,
+  })
+  nickname: string;
+
+  @ApiProperty({
+    example: null,
+    description: '자기소개',
+    required: false,
+  })
+  intro: string | null;
+
+  @ApiProperty({
+    example: null,
+    description: '프로필 사진',
+    required: false,
+  })
+  profilePhoto: string | null;
+
+  @ApiProperty({
+    example: 0,
+    description: '포인트 점수',
+    required: true,
+  })
+  point: number;
 }
