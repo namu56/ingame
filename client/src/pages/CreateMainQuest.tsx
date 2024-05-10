@@ -59,14 +59,16 @@ const CreateMainQuest = () => {
     <CreateMainQuestStyle>
       <header>
         <p>Main Quest</p>
-        {isPrivate ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
+        <div className='lockIcons'>
+          {isPrivate ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
+        </div>
       </header>
       <form onSubmit={onSubmit}>
         <QuestInputBox placeholder='퀘스트 제목' {...register('title')} />
         <QuestButtonContainer>
-          <Button onClick={() => setIsDifficulty(0)}>EASY</Button>
-          <Button onClick={() => setIsDifficulty(1)}>NORMAL</Button>
-          <Button onClick={() => setIsDifficulty(2)}>HARD</Button>
+          <Button onClick={() => setIsDifficulty(0)} children={'EASY'} />
+          <Button onClick={() => setIsDifficulty(1)} children={'NORMAL'} />
+          <Button onClick={() => setIsDifficulty(2)} children={'HARD'} />
         </QuestButtonContainer>
         <div className='plusContainer'>
           <h1>단계</h1>
@@ -99,7 +101,7 @@ const CreateMainQuest = () => {
             })} />
         </div>
         <div className='modifiyAndClose'>
-          <Button htmlType='submit'>추가하기</Button>
+          <Button htmlType='submit' children={'추가하기'} />
         </div>
       </form>
     </CreateMainQuestStyle>
@@ -123,6 +125,10 @@ const CreateMainQuestStyle = styled.div`
     p {
       font-size: 1.5rem;
       font-family: 'Pretendard600';
+    }
+
+    .lockIcons {
+      cursor: pointer;
     }
   }
 
@@ -155,7 +161,7 @@ const CreateMainQuestStyle = styled.div`
       padding: 0.2rem;
       border: 1px solid rgba(0, 0, 0, 0.2);
       border-radius: 5px;
-      background-color: ${({ theme }) => theme.color.grayNormal};
+      background-color: ${({ theme }) => theme.color.grayLightActive};
     }
   }
 
@@ -166,20 +172,10 @@ const CreateMainQuestStyle = styled.div`
     margin-top: 1rem;
 
     button {
-      width: 40%;
-    }
-    button:first-child {
+      width: 60%;
       background-color: ${({ theme }) => theme.color.green};
+      color: ${({ theme }) => theme.color.white};
     }
-    button:first-child:hover {
-      background-color: ${({ theme }) => theme.color.greenOpactiy30};
-    }
-    button:last-child {
-      background-color: ${({ theme }) => theme.color.grayNormal};
-    }
-    button:last-child:hover {
-      background-color: ${({ theme }) => theme.color.grayNormalActive};
-    } 
   }
 `;
 
@@ -190,10 +186,25 @@ const QuestButtonContainer = styled.div`
   button {
     width: 31%;
   }
+  button:first-child {
+    color: ${({ theme }) => theme.color.purple};
+    border: 1px solid ${({ theme }) => theme.color.purple};
+  }
+  button: nth-child(2) {
+    color: ${({ theme }) => theme.color.blue};
+    border: 1px solid ${({ theme }) => theme.color.blue};
+  }
+  button: last-child {
+    color: ${({ theme }) => theme.color.coral};
+    border: 1px solid ${({ theme }) => theme.color.coral};
+  }
 `;
 
 const InnerQuests = styled.div` 
   min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `
 
 export default CreateMainQuest;

@@ -14,6 +14,8 @@ import { PatchQuest } from '@/api/quest.api';
 
 interface SideContent {
   content: string;
+  status: number;
+  action: string;
 }
 
 interface EditMainQuestQuestProps extends Quest {
@@ -26,10 +28,10 @@ interface EditMainQuestQuestProps extends Quest {
 }
 
 const EditMainQuestQuest = () => {
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [isDifficulty, setIsDifficulty] = useState(0);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [isPrivate, setIsPrivate] = useState(false); // 이것도
+  const [isDifficulty, setIsDifficulty] = useState(0); // 나중에 Main에서 기존 difficulty 받아오기
+  const [startDate, setStartDate] = useState(''); // 전부
+  const [endDate, setEndDate] = useState(''); // 다
   const today = new Date().toISOString().substring(0, 10);
   const navigate = useNavigate();
 
@@ -41,7 +43,8 @@ const EditMainQuestQuest = () => {
 
   const onSubmit = handleSubmit((data) => {
     const hidden = isPrivate ? 1 : 0;
-    const newData = {...data, hidden, difficulty: isDifficulty};
+    const status = data.side.map(side => side.status ? 'complete' : 'on progress');
+    const newData = {...data, hidden, difficulty: isDifficulty, side: data.side.map((side, index) => ({...side, status: status[index]}))};
     EditQuestMutation.mutate(newData);
   });
 
@@ -59,7 +62,9 @@ const EditMainQuestQuest = () => {
     <EditMainQuestQuestStyle>
       <header>
         <p>Main Quest</p>
+        <div className='lockIcons'>
         {isPrivate ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
+        </div>
       </header>
       <form onSubmit={onSubmit}>
         <QuestInputBox placeholder='퀘스트 제목' {...register('title')} />
@@ -73,11 +78,21 @@ const EditMainQuestQuest = () => {
           <GoPlusCircle onClick={() => isDifficulty === 2 ? '' : setIsDifficulty(isDifficulty + 1)} />
         </div>
         <InnerQuests>
-          {Array(isDifficulty + 3).fill(0).map((_, index) => 
+        {Array(isDifficulty + 3).fill(0).map((quest, index) => 
           (
-            <QuestInputBox key={index} placeholder='퀘스트 제목' {...register(`side.${index}.content` as const)} />
+            <SideBoxContainer key={index}>
+              <input 
+                className='checkBoxInput'
+                type='checkbox' 
+                {...register(`side.${index}.status` as const)}
+              />
+              <QuestInputBox  
+                placeholder='퀘스트 제목' 
+                {...register(`side.${index}.content` as const)} 
+              />
+            </SideBoxContainer>
           )
-          )}
+        )}
         </InnerQuests>
         <h3 className='period'>기간</h3>
         <div className='dateContainer'>
@@ -92,11 +107,12 @@ const EditMainQuestQuest = () => {
           />
           <input 
             className='endDate'
-            type='date' 
+            type='date'
             {...register('endDate', {
-              required: true, 
-              onChange: e => setEndDate(e.target.value)
-            })} />
+              required: true,            
+              onChange: e => setEndDate(e.target.value)          
+            })}
+          />
         </div>
         <div className='modifiyAndClose'>
           <Button htmlType='submit'>수정</Button>
@@ -124,6 +140,10 @@ const EditMainQuestQuestStyle = styled.div`
     p {
       font-size: 1.5rem;
       font-family: 'Pretendard600';
+    }
+
+    .lockIcons {
+      cursor: pointer;
     }
   }
 
@@ -156,7 +176,8 @@ const EditMainQuestQuestStyle = styled.div`
       padding: 0.2rem;
       border: 1px solid rgba(0, 0, 0, 0.2);
       border-radius: 5px;
-      background-color: ${({ theme }) => theme.color.grayNormal};
+      font-size: 0.8rem;
+      background-color: ${({ theme }) => theme.color.grayLightActive};
     }
   }
 
@@ -168,19 +189,14 @@ const EditMainQuestQuestStyle = styled.div`
 
     button {
       width: 40%;
+      color: ${({ theme }) => theme.color.white};
     }
     button:first-child {
       background-color: ${({ theme }) => theme.color.green};
     }
-    button:first-child:hover {
-      background-color: ${({ theme }) => theme.color.greenOpactiy30};
-    }
     button:last-child {
-      background-color: ${({ theme }) => theme.color.grayNormal};
-    }
-    button:last-child:hover {
       background-color: ${({ theme }) => theme.color.grayNormalActive};
-    } 
+    }
   }
 `;
 
@@ -191,10 +207,38 @@ const QuestButtonContainer = styled.div`
   button {
     width: 31%;
   }
+  button:first-child {
+    color: ${({ theme }) => theme.color.purple};
+    border: 1px solid ${({ theme }) => theme.color.purple};
+  }
+  button:nth-child(2) {
+    color: ${({ theme }) => theme.color.blue};
+    border: 1px solid ${({ theme }) => theme.color.blue};
+  }
+  button:last-child {
+    color: ${({ theme }) => theme.color.coral};
+    border: 1px solid ${({ theme }) => theme.color.coral};
+  }
 `;
 
 const InnerQuests = styled.div` 
   min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `
+
+const SideBoxContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .checkBoxInput {
+    display: flex;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+  }
+`;
 
 export default EditMainQuestQuest;
