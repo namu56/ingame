@@ -37,13 +37,6 @@ export class QuestsController {
     return await this.questsService.findAll(user.id);
   }
 
-  /*@UseGuards(AuthGuard)
-  @Get('main/:id')
-  @HttpCode(HttpStatus.OK)
-  findOne(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
-    return this.questsService.findOne(user.id, +id);
-  }*/
-
   @UseGuards(AuthGuard)
   @Patch('main/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -62,9 +55,11 @@ export class QuestsController {
     await this.questsService.remove(user.id, +id);
   }
 
+  @UseGuards(AuthGuard)
   @Post('side')
-  createSide(@Body() createQuestDto: CreateSideQuestDto) {
-    return this.questsService.createSide(createQuestDto);
+  @HttpCode(HttpStatus.OK)
+  createSide(@CurrentUser() user: JwtPayloadDto, @Body() createQuestDto: CreateSideQuestDto) {
+    return this.questsService.createSide(user.id, createQuestDto);
   }
 
   @Patch('side/:id')
@@ -83,13 +78,6 @@ export class QuestsController {
   findAllSub(@CurrentUser() user: JwtPayloadDto) {
     return this.questsService.findAll(user.id);
   }
-
-  /*@UseGuards(AuthGuard)
-  @Get('sub/:id')
-  @HttpCode(HttpStatus.OK)
-  findOneSub(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
-    return this.questsService.findOne(user.id, +id);
-  }*/
 
   @UseGuards(AuthGuard)
   @Patch('sub/:id')
