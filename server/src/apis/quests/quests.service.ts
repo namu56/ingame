@@ -107,8 +107,8 @@ export class QuestsService {
           questId: questId,
           content: content,
           status: status,
-          createdAt: currentDate,
-          updatedAt: currentDate,
+          createdAt: createdAt ? new Date(createdAt) : currentDate,
+          updatedAt: updatedAt ? new Date(updatedAt) : currentDate,
         });
 
         await queryRunner.manager.save(side);
