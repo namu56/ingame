@@ -1,6 +1,6 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { RankingService } from './ranking.service';
-import { RankingResponseDto } from './dto/ranking-response.dto';
+import { UserRankingDto } from './dto/ranking-response.dto';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -15,10 +15,10 @@ export class RankingController {
 
   @Get()
   @ApiOperation({ summary: '랭킹 조회' })
-  @ApiOkResponse({ type: RankingResponseDto, isArray: true })
+  @ApiOkResponse({ type: UserRankingDto, isArray: true })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  findAllRanking(): Promise<RankingResponseDto[]> {
+  findAllRanking(): Promise<UserRankingDto[]> {
     return this.rankingService.getRanking();
   }
 }

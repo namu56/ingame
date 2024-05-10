@@ -6,7 +6,7 @@ import { User } from './entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { UserInfo } from './entities/user-info.entity';
 import { ProfilePhoto } from './entities/profile-photo.entity';
-import { UserResponseDto } from './dto/user-response.dto';
+import { UserProfileDto } from './dto/user-profile.dto';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
@@ -28,12 +28,12 @@ export class UsersService {
     await queryRunner.startTransaction();
 
     try {
-      const existingUser = await this.userRepository.existsBy({ email });
-      if (existingUser) {
+      const existingEmail = await this.userRepository.existsBy({ email });
+      if (existingEmail) {
         throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
       }
-      const existingNickname = await this.userInfoRepository.existsBy({ nickname });
 
+      const existingNickname = await this.userInfoRepository.existsBy({ nickname });
       if (existingNickname) {
         throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
       }
@@ -69,7 +69,7 @@ export class UsersService {
     await this.userRepository.delete(id);
   }
 
-  async getUserById(id: number): Promise<UserResponseDto> {
+  async getUserById(id: number): Promise<UserProfileDto> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['userInfo', 'profilePhoto'],
@@ -81,13 +81,11 @@ export class UsersService {
     return this.toUserResponse(user);
   }
 
-  async updateCurrenUserInfoById(id: number, updateUserDto: UpdateUserDto): Promise<void> {
-    const userInfo = await this.userInfoRepository.findOne({ where: { userId: id } });
-    console.log(userInfo);
+  async updateCurrenUserInfoById(userId: number, updateUserDto: UpdateUserDto): Promise<void> {
+    const userInfo = await this.userInfoRepository.findOne({ where: { userId } });
     if (!userInfo) {
       throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
     }
-
     // 변경하려는 닉네임과 현재 사용자의 닉네임이 다른 경우에만 중복 확인
     if (userInfo.nickname !== updateUserDto.nickname) {
       const existingNickname = await this.userInfoRepository.existsBy({
@@ -97,18 +95,16 @@ export class UsersService {
         throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
       }
     }
-
     const newUserInfo = this.userInfoRepository.merge(userInfo, updateUserDto);
     await this.userInfoRepository.save(newUserInfo);
   }
 
   async updateProfilePhotoById(userId: number, profilePhotoDto: ProfilePhotoDto) {
     const findProfilePhotoById = await this.profilePhotoRepository.findOne({
-      where: { userId: userId },
+      where: { userId },
     });
-
     if (!findProfilePhotoById) {
-      throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Fail - User not found', HttpStatus.NOT_FOUND);
     }
 
     const newProfilePhoto = this.profilePhotoRepository.merge(
@@ -118,11 +114,13 @@ export class UsersService {
     await this.profilePhotoRepository.save(newProfilePhoto);
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email },
     });
-
+    if (!user) {
+      throw new HttpException('Fail - User not found', HttpStatus.NOT_FOUND);
+    }
     return user;
   }
 
@@ -135,7 +133,7 @@ export class UsersService {
     return users;
   }
 
-  private toUserResponse(user: User): UserResponseDto {
+  private toUserResponse(user: User): UserProfileDto {
     return {
       id: user.id,
       email: user.email,

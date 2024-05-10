@@ -10,6 +10,8 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -25,12 +27,13 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { UserResponseDto } from './dto/user-response.dto';
+import { UserProfileDto } from './dto/user-profile.dto';
 
 @Controller('users')
 @ApiTags('Users API')
@@ -65,11 +68,11 @@ export class UsersController {
   @Get('me')
   @ApiOperation({ summary: '나의 정보 조회' })
   @ApiBearerAuth('accessToken')
-  @ApiOkResponse({ type: UserResponseDto })
+  @ApiOkResponse({ type: UserProfileDto })
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
   @HttpCode(HttpStatus.OK)
-  async getCurrentUser(@CurrentUser() user: JwtPayload): Promise<UserResponseDto> {
+  async getCurrentUser(@CurrentUser() user: JwtPayload): Promise<UserProfileDto> {
     return await this.usersService.getUserById(user.id);
   }
 
@@ -84,7 +87,6 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateUserInfo(@CurrentUser() user: JwtPayload, @Body() updateUserDto: UpdateUserDto) {
-    console.log(user);
     await this.usersService.updateCurrenUserInfoById(user.id, updateUserDto);
   }
 
@@ -102,5 +104,14 @@ export class UsersController {
     @Body() profilePhotoDto: ProfilePhotoDto
   ) {
     await this.usersService.updateProfilePhotoById(user.id, profilePhotoDto);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: '특정 유저의 정보 조회' })
+  @ApiOkResponse({ type: UserProfileDto })
+  @ApiNotFoundResponse({ description: 'Fail - User not found' })
+  @HttpCode(HttpStatus.OK)
+  async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserProfileDto> {
+    return await this.usersService.getUserById(id);
   }
 }
