@@ -1,17 +1,17 @@
 import styled from 'styled-components';
 
 interface SideBoxProps {
-  isAccordion: boolean;
+  isAccordion?: boolean;
   checked: boolean;
-  handleCheckboxClick: () => void;
+  onClick: () => void;
   content: string;
 }
 
-const SideBox: React.FC<SideBoxProps> = ({ isAccordion, checked, handleCheckboxClick, content }) => {
+const SideBox: React.FC<SideBoxProps> = ({ isAccordion, checked, onClick, content }) => {
   return (
     <SideBoxStyle className={`sideBox ${isAccordion ? 'show' : ''}`}>
       <label className='cBox'>
-        <input type='checkbox' checked={checked} onChange={handleCheckboxClick} />
+        <input type='checkbox' checked={checked} onChange={onClick} />
       </label>
       <h2 className='sTitle'>{content}</h2>
     </SideBoxStyle>

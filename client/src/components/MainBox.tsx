@@ -48,7 +48,7 @@ const MainBox = () => {
             key={index}
             isAccordion={isAccordion}
             checked={checked[index]}
-            handleCheckboxClick={() => handleCheckboxClick(index)}
+            onClick={() => handleCheckboxClick(index)}
             content={quest.content}
           />
         ))}
