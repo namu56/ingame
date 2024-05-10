@@ -15,11 +15,9 @@ export class SideQuestItem {
   public status: Status;
 
   @IsDateString()
-  @IsNotEmpty()
   public createdAt: string;
 
   @IsDateString()
-  @IsNotEmpty()
   public updatedAt: string;
 }
 
