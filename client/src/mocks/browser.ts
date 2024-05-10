@@ -3,8 +3,8 @@ import { setupWorker } from 'msw/browser';
 import { patchUserProfile, signup } from './handlers/users';
 import { getRanking } from './handlers/ranking';
 import { getUserInfo } from './handlers/users';
-import { CreateQuest, PatchQuest } from './handlers/quest';
+import { createQuest, patchQuest } from './handlers/quest';
 
-export const handlers = [login, logout, signup, getRanking, getUserInfo, patchUserProfile, CreateQuest, PatchQuest];
+export const handlers = [login, logout, signup, getRanking, getUserInfo, patchUserProfile, createQuest, patchQuest];
 
 export const worker = setupWorker(...handlers);
