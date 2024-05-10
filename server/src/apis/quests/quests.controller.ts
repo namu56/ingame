@@ -73,9 +73,11 @@ export class QuestsController {
     return this.questsService.updateSide(user.id, +id, updateQuestDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('side/:id')
-  removeSide(@Param('id') id: string) {
-    return this.questsService.removeSide(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeSide(@CurrentUser() user: JwtPayloadDto, @Param('id') id: string) {
+    return this.questsService.removeSide(user.id, +id);
   }
 
   @UseGuards(AuthGuard)
