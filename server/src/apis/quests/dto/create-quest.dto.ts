@@ -16,7 +16,6 @@ export class CreateQuestDto {
   public mode: Mode;
 
   @IsArray()
-  @IsNotEmpty()
   public side: SideQuestItem[];
 
   @IsDateString()
@@ -36,10 +35,8 @@ export class CreateQuestDto {
   public status: Status;
 
   @IsDateString()
-  @IsNotEmpty()
   public createdAt: string;
 
   @IsDateString()
-  @IsNotEmpty()
   public updatedAt: string;
 }
