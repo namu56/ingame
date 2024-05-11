@@ -8,7 +8,7 @@ import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { Quest } from '@/models/quest.model';
+import { Quest, QuestHiddenType } from '@/models/quest.model';
 import { useNavigate } from 'react-router-dom';
 import { PatchQuest } from '@/api/quest.api';
 
@@ -24,7 +24,7 @@ interface EditMainQuestQuestProps extends Quest {
   side: SideContent[];
   startDate: string;
   endDate: string;
-  hidden: number;
+  hidden: QuestHiddenType;
 }
 
 const EditMainQuestQuest = () => {
@@ -42,7 +42,7 @@ const EditMainQuestQuest = () => {
   });
 
   const onSubmit = handleSubmit((data) => {
-    const hidden = isPrivate ? 1 : 0;
+    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
     const status = data.side.map(side => side.status ? 'complete' : 'on progress');
     const newData = {...data, hidden, difficulty: isDifficulty, side: data.side.map((side, index) => ({...side, status: status[index]}))};
     EditQuestMutation.mutate(newData);
