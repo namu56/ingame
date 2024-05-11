@@ -14,7 +14,7 @@ const Test = () => {
   const { register, handleSubmit, watch } = useform;
   return (
     <TestStyle>
-      <WeekCalander />
+      {/* <WeekCalander /> */}
     </TestStyle>
   );
 };

@@ -30,7 +30,6 @@ const QuestInputBoxLayoutStyle = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.small};
-  margin-bottom: 10px;
 `;
 
 const QuestInputBoxStyle = styled.input`
@@ -40,7 +39,7 @@ const QuestInputBoxStyle = styled.input`
   border: none;
   background: none;
   font-size: ${({ theme }) => theme.font.xsmall};
-  color: ${({ theme }) => theme.color.grayDark};
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export default QuestInputBox;
