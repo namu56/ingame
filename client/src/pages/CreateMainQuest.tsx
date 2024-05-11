@@ -9,7 +9,7 @@ import { media } from '@/styles/theme';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { CreateQuest } from '@/api/quest.api';
-import { Quest } from '@/models/quest.model';
+import { Quest, QuestHiddenType } from '@/models/quest.model';
 import { useNavigate } from 'react-router-dom';
 
 interface SideContent {
@@ -22,7 +22,7 @@ interface CreateMainQuestProps extends Quest {
   side: SideContent[];
   startDate: string;
   endDate: string;
-  hidden: number;
+  hidden: QuestHiddenType;
 }
 
 const CreateMainQuest = () => {
@@ -40,7 +40,7 @@ const CreateMainQuest = () => {
   });
 
   const onSubmit = handleSubmit((data) => {
-    const hidden = isPrivate ? 1 : 0;
+    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
     const newData = {...data, hidden, difficulty: isDifficulty};
     CreateQuestMutation.mutate(newData);
   });
