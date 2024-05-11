@@ -3,19 +3,15 @@ import styled from 'styled-components';
 
 interface ProfileIntroInputBoxProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   placeholder?: string;
+  inputCount?: number;
+  onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
 const ProfileIntroInputBox = React.forwardRef(
   (
-    { placeholder, ...props }: ProfileIntroInputBoxProps,
+    { placeholder, inputCount, onChange, ...props }: ProfileIntroInputBoxProps,
     ref: ForwardedRef<HTMLTextAreaElement>
   ) => {
-    const [profileIntro, setprofileIntro] = useState(placeholder);
-
-    const onChangeHandler = (event: any) => {
-      event.preventDefault();
-      setprofileIntro(event.target.value);
-    };
 
     return (
       <ProfileIntroInputBoxLayoutStyle>
@@ -23,9 +19,13 @@ const ProfileIntroInputBox = React.forwardRef(
           placeholder={placeholder}
           ref={ref}
           {...props}
-          value={profileIntro}
-          onChange={onChangeHandler}
+          maxLength={50}
+          onChange={onChange}
         />
+        <p className='textLength'>
+          <span>{inputCount}</span>
+          <span> / 50 자</span>
+        </p>
       </ProfileIntroInputBoxLayoutStyle>
     );
   }
@@ -42,16 +42,26 @@ const ProfileIntroInputBoxLayoutStyle = styled.div`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.small};
   margin-bottom: 10px;
+
+  .textLength {
+    position: absolute;
+    bottom: 5.5rem;
+    right: 2.2rem;
+    margin: 0.5rem 0.5rem;
+    font-size: ${({ theme }) => theme.font.xsmall};
+    color: ${({ theme }) => theme.color.grayDark};
+  }
 `;
 
 const ProfileIntroInputBoxStyle = styled.textarea`
+  position: relative;
   width: 100%;
   height: 100%;
   padding: 0.5rem 0.5rem;
   border: none;
   background: none;
   font-size: ${({ theme }) => theme.font.xsmall};
-  color: ${({ theme }) => theme.color.grayDark};
+  color: ${({ theme }) => theme.color.black};
   resize: none;
 `;
 

@@ -11,7 +11,11 @@ import { getToken } from '@/utils/tokenUtils';
 const Test = () => {
   const useform = useForm();
   const { register, handleSubmit, watch } = useform;
-  return <TestStyle></TestStyle>;
+  return (
+    <TestStyle>
+      {/* <WeekCalander /> */}
+    </TestStyle>
+  );
 };
 
 const TestStyle = styled.div`
