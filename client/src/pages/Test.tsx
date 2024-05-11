@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import Top from '@/components/Top';
 import { getToken } from '@/utils/tokenUtils';
-import WeekCalander from '@/components/WeekCalander';
 
 const Test = () => {
   const useform = useForm();
