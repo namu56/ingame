@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 export const useUser = () => {
   const navigate = useNavigate();
 
-  const userSignup = (data: Omit<SignupProps, 'confirmPassword'>) => {
+  const userSignup = (data: Omit<SignupProps, 'confirmPassword' | 'code'>) => {
     signup(data).then(
       (res) => {
         alert('회원가입 성공');

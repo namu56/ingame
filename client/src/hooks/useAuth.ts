@@ -15,7 +15,7 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess(res) {
-      setToken(res.accessToken);
+      setToken(res);
       alert('로그인 성공');
       navigate(ROUTERS.MAIN);
     },
