@@ -66,7 +66,7 @@ const CreateMainQuest = () => {
       <form onSubmit={onSubmit}>
         <QuestInputBox placeholder='퀘스트 제목' {...register('title')} />
         <QuestButtonContainer>
-        <Button className='easyButton' onClick={() => setIsDifficulty(0)}>EASY</Button>
+          <Button className='easyButton' onClick={() => setIsDifficulty(0)}>EASY</Button>
           <Button className='normalButton' onClick={() => setIsDifficulty(1)}>NORMAL</Button>
           <Button className='hardButton' onClick={() => setIsDifficulty(2)}>HARD</Button>
         </QuestButtonContainer>
