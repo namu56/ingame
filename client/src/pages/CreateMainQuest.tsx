@@ -8,9 +8,10 @@ import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { CreateQuest } from '@/api/quest.api';
+
 import { Quest, QuestHiddenType } from '@/models/quest.model';
 import { useNavigate } from 'react-router-dom';
+import { createMainQuest } from '@/api/quests.api';
 
 interface SideContent {
   content: string;
@@ -46,7 +47,7 @@ const CreateMainQuest = () => {
   });
 
   const CreateQuestMutation = useMutation({
-    mutationFn: CreateQuest,
+    mutationFn: createMainQuest,
     onSuccess(res) {
       // navigate('/');
     },

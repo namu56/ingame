@@ -8,15 +8,9 @@ import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { Quest, QuestHiddenType } from '@/models/quest.model';
+import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
 import { useNavigate } from 'react-router-dom';
-import { PatchQuest } from '@/api/quest.api';
-
-interface SideContent {
-  content: string;
-  status: number;
-  action: string;
-}
+import { modiMainQuest } from '@/api/quests.api';
 
 interface EditMainQuestQuestProps extends Quest {
   title: string;
@@ -49,7 +43,7 @@ const EditMainQuestQuest = () => {
   });
 
   const EditQuestMutation = useMutation({
-    mutationFn: PatchQuest,
+    mutationFn: modiMainQuest,
     onSuccess(res) {
       // navigate('/');
     },
