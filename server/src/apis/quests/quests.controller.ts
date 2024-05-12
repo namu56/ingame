@@ -59,33 +59,33 @@ export class QuestsController {
   @UseGuards(AuthGuard)
   @Post('side')
   @HttpCode(HttpStatus.OK)
-  createSide(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateSideQuestDto[]) {
-    return this.questsService.createSide(user.id, createQuestDto);
+  async createSide(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateSideQuestDto[]) {
+    return await this.questsService.createSide(user.id, createQuestDto);
   }
 
   @UseGuards(AuthGuard)
   @Patch('side/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  updateSide(
+  async updateSide(
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateSideQuestDto
   ) {
-    this.questsService.updateSide(user.id, +id, updateQuestDto);
+    await this.questsService.updateSide(user.id, +id, updateQuestDto);
   }
 
   @UseGuards(AuthGuard)
   @Delete('side/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeSide(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
-    this.questsService.removeSide(user.id, +id);
+  async removeSide(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    await this.questsService.removeSide(user.id, +id);
   }
 
   @UseGuards(AuthGuard)
   @Get('sub')
   @HttpCode(HttpStatus.OK)
-  findAllSub(@CurrentUser() user: JwtPayload) {
-    return this.questsService.findAll(user.id, Mode.Sub);
+  async findAllSub(@CurrentUser() user: JwtPayload) {
+    return await this.questsService.findAll(user.id, Mode.Sub);
   }
 
   @UseGuards(AuthGuard)
