@@ -18,12 +18,12 @@ export const modiMainQuest = http.patch(`${API_END_POINT.PATCH_QUEST}/:id`, asyn
   return new HttpResponse(JSON.stringify(mockMainQuests), { status: 200, statusText: `success` });
 });
 
-export const getSubQuest = http.get(`${API_END_POINT['SUB_QUEST']}`, async (date) => {
+export const getSubQuest = http.get(`${API_END_POINT.SUB_QUEST}`, async (date) => {
   return new HttpResponse(JSON.stringify(mockSubQuest), { status: 200, statusText: `success` });
 });
 
 export const modiSubQuest = http.patch(
-  `${API_END_POINT['SUB_QUEST']}/:id`,
+  `${API_END_POINT.SUB_QUEST}/:id`,
   async ({ request, params }) => {
     const data = (await request.json()) as Omit<SubQuest, 'status'>;
     mockSubQuest.map((quest) => {
