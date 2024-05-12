@@ -120,8 +120,8 @@ export class QuestsService {
       for (const it of createQuestDto) {
         const { questId, content, status, createdAt, updatedAt } = it;
 
-        const quest = this.questRepository.find({ where: { id: questId, userId: id } });
-        if (!quest) {
+        const quest = await this.questRepository.find({ where: { id: questId, userId: id } });
+        if (quest.length === 0) {
           throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
         }
 
