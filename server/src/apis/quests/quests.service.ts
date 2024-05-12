@@ -59,6 +59,8 @@ export class QuestsService {
     } finally {
       await queryRunner.release();
     }
+
+    return { message: 'success' };
   }
 
   async findAll(id: number) {

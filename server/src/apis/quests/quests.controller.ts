@@ -27,8 +27,7 @@ export class QuestsController {
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   async create(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateQuestDto) {
-    await this.questsService.create(user.id, createQuestDto);
-    return { message: 'success' };
+    return await this.questsService.create(user.id, createQuestDto);
   }
 
   @UseGuards(AuthGuard)
@@ -71,14 +70,14 @@ export class QuestsController {
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateSideQuestDto
   ) {
-    return this.questsService.updateSide(user.id, +id, updateQuestDto);
+    this.questsService.updateSide(user.id, +id, updateQuestDto);
   }
 
   @UseGuards(AuthGuard)
   @Delete('side/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   removeSide(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
-    return this.questsService.removeSide(user.id, +id);
+    this.questsService.removeSide(user.id, +id);
   }
 
   @UseGuards(AuthGuard)
