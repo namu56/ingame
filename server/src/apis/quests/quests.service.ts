@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from './entities/quest.entity';
 import { DataSource, Repository } from 'typeorm';
 import { sideQuest } from './entities/side-quest.entity';
+import { Status } from './enums/quest.enum';
 
 @Injectable()
 export class QuestsService {
@@ -18,7 +19,7 @@ export class QuestsService {
 
   async create(id: number, createQuestDto: CreateQuestDto) {
     const currentDate = new Date();
-    const { title, difficulty, mode, startDate, endDate, hidden, status } = createQuestDto;
+    const { title, difficulty, mode, side, startDate, endDate, hidden, status } = createQuestDto;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -33,10 +34,23 @@ export class QuestsService {
         startDate: startDate,
         endDate: endDate,
         hidden: hidden,
+        status: status ? status : Status.onProgress,
         createdAt: currentDate,
         updatedAt: currentDate,
       });
-      await queryRunner.manager.save(quest);
+      const savedQuest = await queryRunner.manager.save(quest);
+
+      for (const it of side) {
+        const { content } = it;
+        const side = this.sideQuestRepository.create({
+          questId: savedQuest.id,
+          content: content,
+          status: Status.onProgress,
+          createdAt: currentDate,
+          updatedAt: currentDate,
+        });
+        await queryRunner.manager.save(side);
+      }
 
       await queryRunner.commitTransaction();
     } catch (error) {
@@ -103,7 +117,7 @@ export class QuestsService {
           id: idx,
           questId: questId,
           content: content,
-          status: status,
+          status: status ? status : Status.onProgress,
           createdAt: createdAt ? new Date(createdAt) : currentDate,
           updatedAt: updatedAt ? new Date(updatedAt) : currentDate,
         });

@@ -31,7 +31,6 @@ export class CreateQuestDto {
   public hidden: isHidden;
 
   @IsEnum(Status)
-  @IsNotEmpty()
   public status: Status;
 
   @IsDateString()

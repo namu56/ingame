@@ -11,7 +11,6 @@ export class CreateSideQuestDto {
   public content: string;
 
   @IsEnum(Status)
-  @IsNotEmpty()
   public status: Status;
 
   @IsDateString()
