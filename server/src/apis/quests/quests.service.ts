@@ -117,7 +117,7 @@ export class QuestsService {
     await queryRunner.startTransaction();
 
     try {
-      for (const [idx, it] of createQuestDto.entries()) {
+      for (const it of createQuestDto) {
         const { questId, content, status, createdAt, updatedAt } = it;
 
         const quest = this.questRepository.find({ where: { id: questId, userId: id } });
@@ -126,7 +126,6 @@ export class QuestsService {
         }
 
         const side = this.sideQuestRepository.create({
-          id: idx,
           questId: questId,
           content: content,
           status: status ? status : Status.onProgress,
