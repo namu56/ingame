@@ -5,9 +5,9 @@ import { CreateSideQuestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from './entities/quest.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, FindManyOptions, Repository } from 'typeorm';
 import { sideQuest } from './entities/side-quest.entity';
-import { Status } from './enums/quest.enum';
+import { Difficulty, Mode, Status } from './enums/quest.enum';
 
 @Injectable()
 export class QuestsService {
@@ -29,7 +29,7 @@ export class QuestsService {
       const quest = this.questRepository.create({
         userId: id,
         title: title,
-        difficulty: difficulty,
+        difficulty: mode === Mode.Main ? difficulty : Difficulty.Easy,
         mode: mode,
         startDate: startDate,
         endDate: endDate,
@@ -40,16 +40,18 @@ export class QuestsService {
       });
       const savedQuest = await queryRunner.manager.save(quest);
 
-      for (const it of side) {
-        const { content } = it;
-        const side = this.sideQuestRepository.create({
-          questId: savedQuest.id,
-          content: content,
-          status: Status.onProgress,
-          createdAt: currentDate,
-          updatedAt: currentDate,
-        });
-        await queryRunner.manager.save(side);
+      if (mode === Mode.Main) {
+        for (const it of side) {
+          const { content } = it;
+          const side = this.sideQuestRepository.create({
+            questId: savedQuest.id,
+            content: content,
+            status: Status.onProgress,
+            createdAt: currentDate,
+            updatedAt: currentDate,
+          });
+          await queryRunner.manager.save(side);
+        }
       }
 
       await queryRunner.commitTransaction();
@@ -63,9 +65,9 @@ export class QuestsService {
     return { message: 'success' };
   }
 
-  async findAll(id: number) {
-    const quests = await this.questRepository.find({
-      where: { userId: id },
+  async findAll(id: number, mode: Mode) {
+    const mainOptions: FindManyOptions<Quest> = {
+      where: { userId: id, mode: Mode.Main },
       order: {
         id: 'DESC',
       },
@@ -82,7 +84,15 @@ export class QuestsService {
         'createdAt',
         'updatedAt',
       ],
-    });
+    };
+    const subOptions: FindManyOptions<Quest> = {
+      where: { userId: id, mode: Mode.Sub },
+      order: {
+        id: 'DESC',
+      },
+      select: ['id', 'title', 'hidden', 'status', 'createdAt', 'updatedAt'],
+    };
+    const quests = await this.questRepository.find(mode === Mode.Main ? mainOptions : subOptions);
 
     if (quests.length === 0) {
       throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);

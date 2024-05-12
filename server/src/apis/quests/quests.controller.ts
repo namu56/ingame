@@ -18,6 +18,7 @@ import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from '../../common/decorators/auth.decorator';
 import { JwtPayload } from '../auth/auth.interface';
+import { Mode } from './enums/quest.enum';
 
 @Controller('quests')
 export class QuestsController {
@@ -34,7 +35,7 @@ export class QuestsController {
   @Get('main')
   @HttpCode(HttpStatus.OK)
   async findAll(@CurrentUser() user: JwtPayload) {
-    return await this.questsService.findAll(user.id);
+    return await this.questsService.findAll(user.id, Mode.Main);
   }
 
   @UseGuards(AuthGuard)
@@ -84,7 +85,7 @@ export class QuestsController {
   @Get('sub')
   @HttpCode(HttpStatus.OK)
   findAllSub(@CurrentUser() user: JwtPayload) {
-    return this.questsService.findAll(user.id);
+    return this.questsService.findAll(user.id, Mode.Sub);
   }
 
   @UseGuards(AuthGuard)
