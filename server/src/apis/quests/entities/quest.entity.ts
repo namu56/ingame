@@ -38,11 +38,7 @@ export class Quest extends BaseEntity {
   @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.quests, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-    eager: true,
-  })
+  @ManyToOne(() => User, (user) => user.quests)
   user: User;
 
   @OneToMany(() => sideQuest, (sideQuest) => sideQuest.quest)

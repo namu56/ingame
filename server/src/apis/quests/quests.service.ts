@@ -68,9 +68,21 @@ export class QuestsService {
         id: 'DESC',
       },
       relations: ['sideQuests'],
+      select: [
+        'id',
+        'title',
+        'difficulty',
+        'mode',
+        'startDate',
+        'endDate',
+        'hidden',
+        'status',
+        'createdAt',
+        'updatedAt',
+      ],
     });
 
-    if (!quests) {
+    if (quests.length === 0) {
       throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
     }
 
