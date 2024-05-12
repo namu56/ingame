@@ -12,6 +12,23 @@ export interface Quest {
   updatedAt: string;
 }
 
+export interface SideContent {
+  content: string;
+  status: number;
+  action: string;
+}
+
+
+export interface modiMainQuest {
+  id: number;
+  title: string;
+  difficulty: number;
+  side: SideContent[];
+  startDate: string;
+  endDate: string;
+  hidden: QuestHiddenType;
+}
+
 export interface SubQuest {
   id: number;
   title: string;
