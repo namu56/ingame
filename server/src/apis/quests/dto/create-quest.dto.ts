@@ -1,5 +1,5 @@
 import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { SideQuestItem } from './create-side-quest.dto';
+import { CreateSideQuestDto } from './create-side-quest.dto';
 import { Difficulty, isHidden, Mode, Status } from '../enums/quest.enum';
 
 export class CreateQuestDto {
@@ -16,7 +16,7 @@ export class CreateQuestDto {
   public mode: Mode;
 
   @IsArray()
-  public side: SideQuestItem[];
+  public side: CreateSideQuestDto[];
 
   @IsDateString()
   @IsNotEmpty()

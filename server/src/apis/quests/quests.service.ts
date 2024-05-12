@@ -45,8 +45,6 @@ export class QuestsService {
     } finally {
       await queryRunner.release();
     }
-
-    return { message: 'success' };
   }
 
   async findAll(id: number) {
@@ -85,16 +83,15 @@ export class QuestsService {
     await this.questRepository.delete({ id: id });
   }
 
-  async createSide(id: number, createQuestDto: CreateSideQuestDto) {
+  async createSide(id: number, createQuestDto: CreateSideQuestDto[]) {
     const currentDate = new Date();
-    const { quests } = createQuestDto;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      for (const [idx, it] of quests.entries()) {
+      for (const [idx, it] of createQuestDto.entries()) {
         const { questId, content, status, createdAt, updatedAt } = it;
 
         const quest = this.questRepository.find({ where: { id: questId, userId: id } });

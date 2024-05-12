@@ -27,7 +27,8 @@ export class QuestsController {
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   async create(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateQuestDto) {
-    return await this.questsService.create(user.id, createQuestDto);
+    await this.questsService.create(user.id, createQuestDto);
+    return { message: 'success' };
   }
 
   @UseGuards(AuthGuard)
@@ -58,7 +59,7 @@ export class QuestsController {
   @UseGuards(AuthGuard)
   @Post('side')
   @HttpCode(HttpStatus.OK)
-  createSide(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateSideQuestDto) {
+  createSide(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateSideQuestDto[]) {
     return this.questsService.createSide(user.id, createQuestDto);
   }
 
