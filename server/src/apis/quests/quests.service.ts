@@ -53,7 +53,7 @@ export class QuestsService {
       order: {
         id: 'DESC',
       },
-      relations: ['side_quest'],
+      relations: ['sideQuests'],
     });
 
     if (!quests) {
