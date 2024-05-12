@@ -5,6 +5,7 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { ROUTERS } from '@/constant/route';
+import { useUser } from '@/hooks/useUser';
 
 interface DropdownProps {
   isOpen?: boolean;
@@ -15,6 +16,7 @@ const Dropdown = ({ isOpen = false }: DropdownProps) => {
   const dropdownRef = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
 
   const { userLogout } = useAuth();
+  const { userDelete } = useUser();
   return (
     <DropdownStyle $open={open} ref={dropdownRef}>
       <button className="toggle" onClick={() => setOpen(!open)}>
@@ -37,7 +39,7 @@ const Dropdown = ({ isOpen = false }: DropdownProps) => {
               <button onClick={userLogout}>로그아웃</button>
             </li>
             <li>
-              <button>회원 탈퇴</button>
+              <button onClick={userDelete}>회원 탈퇴</button>
             </li>
           </ul>
         </div>

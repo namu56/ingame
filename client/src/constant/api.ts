@@ -8,14 +8,12 @@ export const API_END_POINT = {
   RANK: '/ranking',
   // PROFILE modal
   PROFILE: '/profile',
-  // GET_USERINFO
-  GET_USERINFO: '/users/me',
-  // PATCH_USERINFO
-  PATCH_USERINFO: '/users/me',
+  // USERINFO
+  USERINFO: '/users/me',
   // QUESTS
   SUB_QUEST: '/quests/sub',
   // CREATE_MAIN_QUEST
   CREATE_QUEST: '/quests',
   // EDIT_MAIN_QUEST
-  PATCH_QUEST: '/quests/main/:id',
+  PATCH_QUEST: '/quests/main',
 };

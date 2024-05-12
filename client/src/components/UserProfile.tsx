@@ -9,7 +9,7 @@ import { media } from '@/styles/theme';
 
 const UserProfile = () => {
   const { data: userInfo } = useQuery({
-    queryKey: [...USER.GET_USERINFO],
+    queryKey: [...USER.USERINFO],
     queryFn: () => getUserInfo(),
   });
   return (

@@ -10,11 +10,16 @@ export const signup = async (data: Omit<SignupProps, 'confirmPassword' | 'code'>
 };
 
 export const patchUserProfile = async (data: UserProfile) => {
-  const response = await httpClient.patch(API_END_POINT.PATCH_USERINFO, { ...data });
+  const response = await httpClient.patch(API_END_POINT.USERINFO, { ...data });
   return response.data;
 };
 
 export const getUserInfo = async (): Promise<UserInfo> => {
-  const response = await httpClient.get(API_END_POINT.GET_USERINFO);
+  const response = await httpClient.get(API_END_POINT.USERINFO);
+  return response.data;
+};
+
+export const deleteUser = async () => {
+  const response = await httpClient.delete(API_END_POINT.USERINFO);
   return response.data;
 };
