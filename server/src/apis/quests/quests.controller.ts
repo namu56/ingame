@@ -33,6 +33,17 @@ export class QuestsController {
   }
 
   @UseGuards(AuthGuard)
+  @Patch(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateStatus(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Body() updateQuestDto: UpdateQuestDto
+  ) {
+    await this.questsService.update(user.id, +id, updateQuestDto);
+  }
+
+  @UseGuards(AuthGuard)
   @Get('main')
   @HttpCode(HttpStatus.OK)
   async findAll(@CurrentUser() user: JwtPayload) {

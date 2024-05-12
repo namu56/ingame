@@ -102,13 +102,18 @@ export class QuestsService {
   }
 
   async update(userId: number, id: number, updateQuestDto: UpdateQuestDto) {
+    const currentDate = new Date();
+
     const targetQuest = await this.questRepository.findOne({ where: { userId: userId, id: id } });
 
     if (!targetQuest) {
       throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
     }
 
-    const updatedQuest = this.questRepository.merge(targetQuest, updateQuestDto);
+    const updatedQuest = this.questRepository.merge(targetQuest, {
+      ...updateQuestDto,
+      updatedAt: currentDate,
+    });
     await this.questRepository.save(updatedQuest);
   }
 
@@ -160,6 +165,8 @@ export class QuestsService {
   }
 
   async updateSide(userId: number, id: number, updateQuestDto: UpdateSideQuestDto) {
+    const currentDate = new Date();
+
     const quest = await this.questRepository.findOne({
       where: { userId: userId, id: updateQuestDto.questId },
     });
@@ -174,7 +181,10 @@ export class QuestsService {
       throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
     }
 
-    const updatedQuest = this.sideQuestRepository.merge(targetQuest, updateQuestDto);
+    const updatedQuest = this.sideQuestRepository.merge(targetQuest, {
+      ...updateQuestDto,
+      updatedAt: currentDate,
+    });
     await this.questRepository.save(updatedQuest);
   }
 
