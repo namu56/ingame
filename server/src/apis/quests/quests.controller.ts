@@ -9,6 +9,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { QuestsService } from './quests.service';
 import { CreateQuestDto } from './dto/create-quest.dto';
@@ -84,8 +85,11 @@ export class QuestsController {
   @UseGuards(AuthGuard)
   @Get('sub')
   @HttpCode(HttpStatus.OK)
-  async findAllSub(@CurrentUser() user: JwtPayload) {
-    return await this.questsService.findAll(user.id, Mode.Sub);
+  async findAllSub(@CurrentUser() user: JwtPayload, @Query('date') query: string) {
+    const queryDate = query
+      ? new Date(query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3'))
+      : new Date();
+    return await this.questsService.findAll(user.id, Mode.Sub, queryDate);
   }
 
   @UseGuards(AuthGuard)

@@ -5,7 +5,7 @@ import { CreateSideQuestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from './entities/quest.entity';
-import { DataSource, FindManyOptions, Repository } from 'typeorm';
+import { DataSource, FindManyOptions, LessThan, Repository } from 'typeorm';
 import { sideQuest } from './entities/side-quest.entity';
 import { Difficulty, Mode, Status } from './enums/quest.enum';
 
@@ -65,7 +65,7 @@ export class QuestsService {
     return { message: 'success' };
   }
 
-  async findAll(id: number, mode: Mode) {
+  async findAll(id: number, mode: Mode, queryDate?: Date) {
     const mainOptions: FindManyOptions<Quest> = {
       where: { userId: id, mode: Mode.Main },
       order: {
@@ -86,7 +86,7 @@ export class QuestsService {
       ],
     };
     const subOptions: FindManyOptions<Quest> = {
-      where: { userId: id, mode: Mode.Sub },
+      where: { userId: id, mode: Mode.Sub, createdAt: LessThan(queryDate) },
       order: {
         id: 'DESC',
       },
