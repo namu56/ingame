@@ -3,7 +3,6 @@ import InputBox from '@/components/InputBox';
 import NavigationText from '@/components/NavigationText';
 import Title from '@/components/Title';
 import { ROUTERS } from '@/constant/route';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { useUser } from '@/hooks/useUser';
@@ -27,7 +26,7 @@ const SignUp = () => {
   const { userSignup } = useUser();
 
   const onSubmit = (formData: SignupProps) => {
-    const { confirmPassword, ...data } = formData;
+    const { confirmPassword, code, ...data } = formData;
     userSignup(data);
   };
 
@@ -43,7 +42,8 @@ const SignUp = () => {
               placeholder="이메일"
               {...register('email', { required: true, maxLength: 50 })}
             />
-            <button className="sendEmailBtn">인증하기</button>
+            {/** 20240511 이메일 인증 코드 구현 미뤄짐 */}
+            {/* <button className="sendEmailBtn">인증하기</button> */}
           </div>
           {errors.email && errors.email.type === 'required' && (
             <p className="error-text">이메일을 입력해주세요</p>
@@ -52,7 +52,8 @@ const SignUp = () => {
             <p className="error-text">이메일은 최대 50글자입니다</p>
           )}
         </fieldset>
-        <fieldset>
+        {/** 20240511 이메일 인증 코드 구현 미뤄짐 */}
+        {/* <fieldset>
           <InputBox
             inputIconType="code"
             inputType="text"
@@ -62,7 +63,7 @@ const SignUp = () => {
           {errors.code && errors.code.type === 'required' && (
             <p className="error-text">이메일 인증 코드를 입력해주세요</p>
           )}
-        </fieldset>
+        </fieldset> */}
         <fieldset>
           <InputBox
             inputIconType="nickname"
@@ -83,13 +84,16 @@ const SignUp = () => {
             inputType="password"
             placeholder="비밀번호"
             $endType="icon"
-            {...register('password', { required: true, maxLength: 100 })}
+            {...register('password', { required: true, maxLength: 30, minLength: 8 })}
           />
           {errors.password && errors.password.type === 'required' && (
             <p className="error-text">비밀번호를 입력해주세요</p>
           )}
           {errors.password && errors.password.type === 'maxLength' && (
-            <p className="error-text">비밀번호는 최대 100글자입니다</p>
+            <p className="error-text">비밀번호는 최대 30자리입니다</p>
+          )}
+          {errors.password && errors.password.type === 'minLength' && (
+            <p className="error-text">비밀번호는 최소 8자리입니다</p>
           )}
         </fieldset>
         <fieldset>

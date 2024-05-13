@@ -1,6 +1,5 @@
 export const BASE_KEY = {
   USER: 'USER',
-
 };
 
 export const USER = {

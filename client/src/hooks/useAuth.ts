@@ -4,9 +4,11 @@ import { LoginProps } from '@/pages/Login';
 import { removeToken, setToken } from '@/utils/tokenUtils';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useMessage } from './useMessage';
 
 export const useAuth = () => {
   const navigate = useNavigate();
+  const { showAlert } = useMessage();
 
   const userLogin = (data: LoginProps) => {
     loginMutation.mutate(data);
@@ -15,12 +17,12 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess(res) {
-      setToken(res.accessToken);
-      alert('로그인 성공');
+      setToken(res);
+      showAlert('로그인 성공');
       navigate(ROUTERS.MAIN);
     },
     onError(err) {
-      alert('로그인 실패');
+      showAlert('로그인 실패');
     },
   });
 
@@ -31,12 +33,12 @@ export const useAuth = () => {
   const logoutMutation = useMutation({
     mutationFn: logout,
     onSuccess(res) {
-      alert('로그아웃 성공');
+      showAlert('로그아웃 성공');
       removeToken();
       navigate(ROUTERS.AUTH.LOGIN);
     },
     onError(err) {
-      alert('로그아웃 실패');
+      showAlert('로그아웃 실패');
     },
   });
 

@@ -6,7 +6,7 @@ export const signup = http.post(`${API_END_POINT.SIGNUP}`, async () => {
   return new HttpResponse(JSON.stringify({ status: 'created', message: 'success' }));
 });
 
-export const getUserInfo = http.get(`${API_END_POINT.GET_USERINFO}`, async () => {
+export const getUserInfo = http.get(`${API_END_POINT.USERINFO}`, async () => {
   return new HttpResponse(
     JSON.stringify({
       ...mockUserInfo,
@@ -18,6 +18,6 @@ export const getUserInfo = http.get(`${API_END_POINT.GET_USERINFO}`, async () =>
   );
 });
 
-export const patchUserProfile = http.patch(`${API_END_POINT.PATCH_USERINFO}`, async () => {
+export const patchUserProfile = http.patch(`${API_END_POINT.USERINFO}`, async () => {
   return new HttpResponse(JSON.stringify({ status: 'updated', message: 'success' }));
 });
