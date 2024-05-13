@@ -3,5 +3,5 @@ export const BASE_KEY = {
 };
 
 export const USER = {
-  USERINFO: [BASE_KEY.USER],
+  GET_USERINFO: [BASE_KEY.USER],
 };
