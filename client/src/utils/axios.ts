@@ -3,7 +3,10 @@ import { getToken } from './tokenUtils';
 
 export const createClient = (config?: AxiosRequestConfig) => {
   const axiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_MOCK_API_URL,
+    baseURL:
+      process.env.NODE_ENV === 'development'
+        ? process.env.REACT_APP_MOCK_API_URL
+        : process.env.REACT_APP_SERVER_API_URL,
     headers: {
       'Content-Type': 'application/json',
     },
@@ -21,10 +24,13 @@ export const createClient = (config?: AxiosRequestConfig) => {
       return response;
     },
     (error) => {
-      // if (error.response.status == 401) {
-      //   window.location.href = '/login';
-      //   return;
-      // }
+      if (process.env.NODE_ENV === 'production') {
+        console.clear();
+      }
+      if (error.response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
       return Promise.reject(error);
     }
   );
