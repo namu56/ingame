@@ -23,9 +23,8 @@ export class sideQuest extends BaseEntity {
   updatedAt: Date;
 
   @ManyToOne(() => Quest, (quest) => quest.sideQuests, {
-    onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
-    eager: true,
+    onUpdate: 'CASCADE',
   })
   quest: Quest;
 }

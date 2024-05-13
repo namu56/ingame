@@ -1,7 +1,7 @@
-import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Status } from '../enums/quest.enum';
 
-export class SideQuestItem {
+export class CreateSideQuestDto {
   @IsNumber()
   @IsNotEmpty()
   public questId: number;
@@ -11,7 +11,6 @@ export class SideQuestItem {
   public content: string;
 
   @IsEnum(Status)
-  @IsNotEmpty()
   public status: Status;
 
   @IsDateString()
@@ -19,10 +18,4 @@ export class SideQuestItem {
 
   @IsDateString()
   public updatedAt: string;
-}
-
-export class CreateSideQuestDto {
-  @IsArray()
-  @IsNotEmpty()
-  public quests: SideQuestItem[];
 }

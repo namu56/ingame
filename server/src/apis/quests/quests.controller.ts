@@ -9,6 +9,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { QuestsService } from './quests.service';
 import { CreateQuestDto } from './dto/create-quest.dto';
@@ -18,6 +19,7 @@ import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from '../../common/decorators/auth.decorator';
 import { JwtPayload } from '../auth/auth.interface';
+import { Mode } from './enums/quest.enum';
 
 @Controller('quests')
 export class QuestsController {
@@ -31,10 +33,21 @@ export class QuestsController {
   }
 
   @UseGuards(AuthGuard)
+  @Patch(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateStatus(
+    @CurrentUser() user: JwtPayload,
+    @Param('id') id: string,
+    @Body() updateQuestDto: UpdateQuestDto
+  ) {
+    await this.questsService.update(user.id, +id, updateQuestDto);
+  }
+
+  @UseGuards(AuthGuard)
   @Get('main')
   @HttpCode(HttpStatus.OK)
   async findAll(@CurrentUser() user: JwtPayload) {
-    return await this.questsService.findAll(user.id);
+    return await this.questsService.findAll(user.id, Mode.Main);
   }
 
   @UseGuards(AuthGuard)
@@ -58,33 +71,36 @@ export class QuestsController {
   @UseGuards(AuthGuard)
   @Post('side')
   @HttpCode(HttpStatus.OK)
-  createSide(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateSideQuestDto) {
-    return this.questsService.createSide(user.id, createQuestDto);
+  async createSide(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateSideQuestDto[]) {
+    return await this.questsService.createSide(user.id, createQuestDto);
   }
 
   @UseGuards(AuthGuard)
   @Patch('side/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  updateSide(
+  async updateSide(
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateSideQuestDto
   ) {
-    return this.questsService.updateSide(user.id, +id, updateQuestDto);
+    await this.questsService.updateSide(user.id, +id, updateQuestDto);
   }
 
   @UseGuards(AuthGuard)
   @Delete('side/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeSide(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
-    return this.questsService.removeSide(user.id, +id);
+  async removeSide(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    await this.questsService.removeSide(user.id, +id);
   }
 
   @UseGuards(AuthGuard)
   @Get('sub')
   @HttpCode(HttpStatus.OK)
-  findAllSub(@CurrentUser() user: JwtPayload) {
-    return this.questsService.findAll(user.id);
+  async findAllSub(@CurrentUser() user: JwtPayload, @Query('date') query: string) {
+    const queryDate = query
+      ? new Date(query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3'))
+      : new Date();
+    return await this.questsService.findAll(user.id, Mode.Sub, queryDate);
   }
 
   @UseGuards(AuthGuard)
