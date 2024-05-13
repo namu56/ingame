@@ -9,6 +9,7 @@ import Ranking from '@/pages/Ranking';
 import Test from '@/pages/Test';
 import CreateMainQuest from '@/pages/CreateMainQuest';
 import EditMainQuest from '@/pages/EditMainQuest';
+import LoginProvider from '@/provider/loginProvider';
 
 type Route = {
   path: Routers;
@@ -39,7 +40,7 @@ const routeList: Route[] = [
   {
     path: ROUTERS.EDITQUEST,
     element: <EditMainQuest />,
-  }
+  },
 ];
 
 if (process.env.NODE_ENV === 'development') {
@@ -53,7 +54,11 @@ export const router = createBrowserRouter(
   routeList.map((item) => {
     return {
       ...item,
-      element: <Layout>{item.element}</Layout>,
+      element: (
+        <LoginProvider>
+          <Layout>{item.element}</Layout>
+        </LoginProvider>
+      ),
       errorElement: (
         <Layout>
           <Error />
