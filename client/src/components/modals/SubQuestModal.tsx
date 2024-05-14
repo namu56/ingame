@@ -8,7 +8,6 @@ import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
 import { QuestHiddenType } from '@/models/quest.model';
 import { useQuest } from '@/hooks/useQuest';
-import { on } from 'events';
 
 export interface SubQuestModifyProps {
   title: string;
