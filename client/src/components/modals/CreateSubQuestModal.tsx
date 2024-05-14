@@ -6,33 +6,37 @@ import CloseButton from '../CloseButton';
 import edit from '../../assets/images/edit.png';
 import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
-import { QuestHiddenType } from '@/models/quest.model';
+import { QuestHiddenType, QuestMode } from '@/models/quest.model';
 import { useQuest } from '@/hooks/useQuest';
-import { on } from 'events';
+import { formattedCalendar } from '@/utils/formatter';
 
-export interface SubQuestModifyProps {
+export interface CreateSubQuestProps {
   title: string;
-  id: number;
   hidden: QuestHiddenType;
+  startDate: string;
+  endDate: string;
+  mode: QuestMode;
 }
 
 interface SubQuestModalProps {
   onClose: () => void;
-  OriginTitle: string;
-  id: number;
-  OriginHidden: QuestHiddenType;
 }
 
-const SubQuestModal = ({ onClose, OriginTitle, id, OriginHidden }: SubQuestModalProps) => {
-  const [title, setTitle] = useState(OriginTitle);
-  const [hidden, setHidden] = useState(OriginHidden);
+const CreateSubQuestModal = ({ onClose }: SubQuestModalProps) => {
+  const [title, setTitle] = useState('');
+  const [hidden, setHidden] = useState<QuestHiddenType>('FALSE');
 
-  const { register, handleSubmit, setValue } = useForm<SubQuestModifyProps>();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<CreateSubQuestProps>();
 
-  const { modifySubQuest } = useQuest();
+  const { createSubQuest } = useQuest();
 
-  const onSubmit = (data: SubQuestModifyProps) => {
-    modifySubQuest(data).then(() => {
+  const onSubmit = (data: CreateSubQuestProps) => {
+    createSubQuest(data).then(() => {
       onClose();
     });
   };
@@ -45,7 +49,9 @@ const SubQuestModal = ({ onClose, OriginTitle, id, OriginHidden }: SubQuestModal
     <SubQuestModalStyle>
       <CloseButton onClick={onClose}></CloseButton>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <input type="hidden" value={id} {...register('id')} />
+        <input type="hidden" value={formattedCalendar(new Date())} {...register('startDate')} />
+        <input type="hidden" value={formattedCalendar(new Date())} {...register('endDate')} />
+        <input type="hidden" value={'SUB'} {...register('mode')} />
         <BoxStyle>
           <div className="box__title">
             <img src={edit} alt="edit" />
@@ -56,6 +62,9 @@ const SubQuestModal = ({ onClose, OriginTitle, id, OriginHidden }: SubQuestModal
             {...register('title', { required: true })}
             onChange={(e) => setTitle(e.target.value)}
           />
+          {errors.title && errors.title.type === 'required' && (
+            <p className="error-text">서브퀘스트는 필수입니다</p>
+          )}
         </BoxStyle>
         <BoxStyle $hidden={hidden}>
           <div className="box__title">
@@ -69,7 +78,7 @@ const SubQuestModal = ({ onClose, OriginTitle, id, OriginHidden }: SubQuestModal
           </div>
         </BoxStyle>
         <ButtonContainerStyle>
-          <Button type="submit" size="medium" color="green" children={'수정하기'} />
+          <Button type="submit" size="medium" color="green" children={'추가하기'} />
           <Button onClick={onClose} size="medium" color="grayNormalActive" children={'닫기'} />
         </ButtonContainerStyle>
       </form>
@@ -147,4 +156,4 @@ const ButtonContainerStyle = styled.div`
   gap: 1.5rem;
 `;
 
-export default SubQuestModal;
+export default CreateSubQuestModal;

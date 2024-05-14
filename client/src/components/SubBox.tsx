@@ -28,7 +28,7 @@ const SubBox = ({ content }: SubBoxProps) => {
         modifySubQuestStatus({ id: content.id, status: content.status });
       });
     } else {
-      showAlert('오늘의 퀘스트만 변경 가능합니다.');
+      showAlert('당일 퀘스트만 수정 가능합니다');
     }
   };
 

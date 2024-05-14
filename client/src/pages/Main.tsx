@@ -5,14 +5,10 @@ import SubBox from '@/components/SubBox';
 import WeekCalendar from '@/components/WeekCalendar';
 import { useQuest } from '@/hooks/useQuest';
 import Loading from '@/components/Loading';
-import { GrAddCircle } from 'react-icons/gr';
+import CreateSubQuestButton from '@/components/CreateSubQuestButton';
 
 const Main = () => {
-  const { quest } = useQuest();
-
-  const addSubQuest = () => {
-    console.log('addSubQuest');
-  };
+  const { quest, isLoading } = useQuest();
 
   return (
     <MainStyle>
@@ -22,15 +18,15 @@ const Main = () => {
       <section className="subQuestSection">
         <div className="questTitle">
           <h2>Sub Quest</h2>
-          <button className="subquestAdd" onClick={addSubQuest}>
-            <GrAddCircle />
-          </button>
+          <CreateSubQuestButton />
         </div>
         <div className="subquestList">
           {quest ? (
             quest.map((content) => <SubBox key={content.id} content={content} />)
-          ) : (
+          ) : isLoading ? (
             <Loading />
+          ) : (
+            <p>등록된 서브 퀘스트가 없습니다</p>
           )}
         </div>
       </section>
@@ -53,12 +49,6 @@ const MainStyle = styled.div`
       display: flex;
       align-items: center;
       gap: 0.5rem;
-
-      .subquestAdd {
-        background: none;
-        display: flex;
-        align-items: center;
-      }
     }
   }
 `;

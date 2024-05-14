@@ -1,5 +1,7 @@
-import { getSubQuest, modiSubQuest } from '@/api/quests.api';
+import { addSubQuest, getSubQuest, modiSubQuest } from '@/api/quests.api';
+import { CreateSubQuestProps } from '@/components/modals/CreateSubQuestModal';
 import { SubQuestModifyProps } from '@/components/modals/SubQuestModal';
+import { QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
 import { QuestStatus } from '@/models/quest.model';
 import { formattedCalendar } from '@/utils/formatter';
@@ -13,7 +15,7 @@ export const useQuest = () => {
   const queryClient = useQueryClient();
 
   const { data: subQuestList, isLoading } = useQuery({
-    queryKey: ['getSubQuest', params.get(QUERYSTRING.DATE)],
+    queryKey: [...QUEST.GET_QUEST, params.get(QUERYSTRING.DATE)],
     queryFn: () =>
       getSubQuest({
         date: params.get(QUERYSTRING.DATE) || formattedCalendar(new Date()),
@@ -27,7 +29,9 @@ export const useQuest = () => {
   const modifySubQuestMutation = useMutation({
     mutationFn: modiSubQuest,
     onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['getSubQuest', params.get(QUERYSTRING.DATE)] });
+      queryClient.invalidateQueries({
+        queryKey: [...QUEST.GET_QUEST, params.get(QUERYSTRING.DATE)],
+      });
     },
     onError(err) {},
   });
@@ -39,6 +43,20 @@ export const useQuest = () => {
 
   const modifySubQuestStatus = (data: ModifySubQuestStatusProps) => {};
 
+  const createSubQuest = async (data: CreateSubQuestProps) => {
+    createSubQuestMutation.mutate(data);
+  };
+
+  const createSubQuestMutation = useMutation({
+    mutationFn: addSubQuest,
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: [...QUEST.GET_QUEST, params.get(QUERYSTRING.DATE)],
+      });
+    },
+    onError(err) {},
+  });
+
   const date = params.get(QUERYSTRING.DATE) || formattedCalendar(new Date());
 
   return {
@@ -47,5 +65,6 @@ export const useQuest = () => {
     modifySubQuest,
     modifySubQuestStatus,
     date,
+    createSubQuest,
   };
 };

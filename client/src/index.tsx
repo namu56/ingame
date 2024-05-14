@@ -14,6 +14,11 @@ async function mountApp() {
     const { worker } = require('./mocks/browser');
 
     await worker.start();
+  } else {
+    console = window.console || {};
+    console.log = function no_console() {};
+    console.warn = function no_console() {};
+    console.error = function () {};
   }
   const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
   root.render(
