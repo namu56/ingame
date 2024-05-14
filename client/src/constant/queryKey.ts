@@ -8,5 +8,5 @@ export const USER = {
 };
 
 export const QUEST = {
-  GET_QUEST: [BASE_KEY.QUEST],
+  GET_SUBQUEST: [BASE_KEY.QUEST],
 };

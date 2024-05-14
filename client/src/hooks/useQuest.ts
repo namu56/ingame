@@ -15,7 +15,7 @@ export const useQuest = () => {
   const queryClient = useQueryClient();
 
   const { data: subQuestList, isLoading } = useQuery({
-    queryKey: [...QUEST.GET_QUEST, params.get(QUERYSTRING.DATE)],
+    queryKey: [...QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
     queryFn: () =>
       getSubQuest({
         date: params.get(QUERYSTRING.DATE) || formattedCalendar(new Date()),
@@ -30,7 +30,7 @@ export const useQuest = () => {
     mutationFn: modiSubQuest,
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [...QUEST.GET_QUEST, params.get(QUERYSTRING.DATE)],
+        queryKey: [...QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
       });
     },
     onError(err) {},
@@ -51,7 +51,7 @@ export const useQuest = () => {
     mutationFn: addSubQuest,
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [...QUEST.GET_QUEST, params.get(QUERYSTRING.DATE)],
+        queryKey: [...QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
       });
     },
     onError(err) {},
