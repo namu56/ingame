@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import Camera from '@/assets/images/camera.svg';
 import { useState } from 'react';
 import useOutsideClick from '@/hooks/useOutsideClick';
-import ChangeProfileImageModal from '@/components/modals/ChangeProfileImageModal';
+import ChangeProfileImageModal from '@/components/modals/ChangeProfileImageModal/ChangeProfileImageModal';
 import { rabbit, defaultImage as defaultProfile, tiger, lion, cat } from '@/assets';
 
 interface ProfileImageSecitonProps {
@@ -11,6 +11,7 @@ interface ProfileImageSecitonProps {
 
 const ProfileImageSection = ({ profilePhoto = 'defaultImage' }: ProfileImageSecitonProps) => {
   const [isOpen, setIsOpen] = useState(false);
+
   const ChangeProfileImageModalRef = useOutsideClick<HTMLDivElement>(isOpen, () =>
     setIsOpen(false)
   );
@@ -22,7 +23,7 @@ const ProfileImageSection = ({ profilePhoto = 'defaultImage' }: ProfileImageSeci
   return (
     <>
       <ProfileImageSectionStyle ref={ChangeProfileImageModalRef}>
-        <div className="profileImage" onClick={() => setIsOpen(!isOpen)}>
+        <div className="profile__img" onClick={() => setIsOpen(!isOpen)}>
           <img
             src={
               profileImage === 'cat'
@@ -39,8 +40,14 @@ const ProfileImageSection = ({ profilePhoto = 'defaultImage' }: ProfileImageSeci
           />
           <img className="camera" src={Camera} alt="camera" />
         </div>
+        {isOpen && (
+          <ChangeProfileImageModal
+            currentProfile={profileImage}
+            handleProfileImage={setProfileImage}
+            handleModal={setIsOpen}
+          />
+        )}
       </ProfileImageSectionStyle>
-      {isOpen && <ChangeProfileImageModal />}
     </>
   );
 };
@@ -58,7 +65,7 @@ const ProfileImageSectionStyle = styled.div`
     background-color: ${({ theme }) => theme.color.greenLightActive};
   }
 
-  .profileImage {
+  .profile__img {
     display: flex;
     align-items: center;
     position: relative;
