@@ -19,7 +19,7 @@ const ChangeProfileImageModal = ({
   handleModal,
   currentProfile,
 }: ChangeProfileIamgeModalProps) => {
-  const [selectedProfile, setSelectedProfile] = useState<string | null>(currentProfile);
+  const [selectedImage, setSelectedImage] = useState<string | null>(currentProfile);
 
   return (
     <ChangeProfileImageModalStyle>
@@ -28,11 +28,36 @@ const ChangeProfileImageModal = ({
       </CloseBtnWrapperStyle>
       <Title text="프로필 이미지 변경"></Title>
       <ProfileImageListStyle>
-        <ImageBadge imgSrc={defaultProfile} value={null} checked={selectedProfile === null} />
-        <ImageBadge imgSrc={tiger} value={null} checked={selectedProfile === 'tiger'} />
-        <ImageBadge imgSrc={cat} value={null} checked={selectedProfile === 'cat'} />
-        <ImageBadge imgSrc={rabbit} value={null} checked={selectedProfile === 'rabbit'} />
-        <ImageBadge imgSrc={lion} value={null} checked={selectedProfile === 'lion'} />
+        <ImageBadge
+          imgSrc={defaultProfile}
+          value={null}
+          checked={selectedImage === null}
+          handleSelectedImage={setSelectedImage}
+        />
+        <ImageBadge
+          imgSrc={tiger}
+          value={'tiger'}
+          checked={selectedImage === 'tiger'}
+          handleSelectedImage={setSelectedImage}
+        />
+        <ImageBadge
+          imgSrc={cat}
+          value={'cat'}
+          checked={selectedImage === 'cat'}
+          handleSelectedImage={setSelectedImage}
+        />
+        <ImageBadge
+          imgSrc={rabbit}
+          value={'rabbit'}
+          checked={selectedImage === 'rabbit'}
+          handleSelectedImage={setSelectedImage}
+        />
+        <ImageBadge
+          imgSrc={lion}
+          value={'lion'}
+          checked={selectedImage === 'lion'}
+          handleSelectedImage={setSelectedImage}
+        />
       </ProfileImageListStyle>
       <ButtonsStyle>
         <Button size="large" color="green">
@@ -71,9 +96,12 @@ const CloseBtnWrapperStyle = styled.div`
 
 const ProfileImageListStyle = styled.div`
   display: flex;
+  width: 100%;
   gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
+
+  padding: 0.5rem 0;
 `;
 
 const ButtonsStyle = styled.div`
