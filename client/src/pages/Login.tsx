@@ -48,13 +48,16 @@ const Login = () => {
             inputIconType="password"
             inputType="password"
             placeholder="비밀번호"
-            {...register('password', { required: true, maxLength: 100 })}
+            {...register('password', { required: true, maxLength: 30, minLength: 8 })}
           />
           {errors.password && errors.password.type === 'required' && (
             <p className="error-text">비밀번호를 확인해주세요</p>
           )}
           {errors.password && errors.password.type === 'maxLength' && (
-            <p className="error-text">비밀번호는 최대 100글자입니다</p>
+            <p className="error-text">비밀번호는 최대 30자리입니다</p>
+          )}
+          {errors.password && errors.password.type === 'minLength' && (
+            <p className="error-text">비밀번호는 최소 8자리입니다</p>
           )}
         </fieldset>
         <Button type="submit" size="medium" color="blue" children={'로그인'} />

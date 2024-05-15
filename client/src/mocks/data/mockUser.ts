@@ -8,3 +8,4 @@ export const mockUserInfo: UserInfo = {
   profilePhoto: 'cat',
   point: 3000,
 };
+

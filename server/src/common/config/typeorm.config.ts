@@ -8,12 +8,12 @@ export const typeORMConfig = async (
   return {
     type: 'mysql',
     host: configService.get<string>('DB_HOST'),
-    port: configService.get<number>('DB_PORT', { infer: true }),
+    port: parseInt(configService.get<string>('DB_PORT')),
     username: configService.get<string>('DB_USERNAME'),
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_DATABASE'),
-    entities: [__dirname + '/../**/*.entity.{js,ts}'],
-    synchronize: configService.get<boolean>('DB_SYNCHRONIZE', { infer: true }),
+    entities: [__dirname + '/../../**/*.entity.{js,ts}'],
+    synchronize: true,
     namingStrategy: new SnakeNamingStrategy(),
   };
 };

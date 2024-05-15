@@ -20,6 +20,12 @@ const color = {
   grayDarkActive: '#8d8d8d',
 };
 
+const statusColor = {
+  completed: color.greenOpactiy30,
+  fail: color.coralOpacity70,
+  on_progress: color.white,
+};
+
 const font = {
   xsmall: '0.75rem',
   small: '1rem',
@@ -76,6 +82,7 @@ export const media = {
 
 export const theme: DefaultTheme = {
   color,
+  statusColor,
   font,
   media,
   borderRadius,

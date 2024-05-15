@@ -25,6 +25,12 @@ declare module 'styled-components' {
       grayDarkActive: string;
     };
 
+    statusColor: {
+      completed: string;
+      fail: string;
+      on_progress: string;
+    };
+
     font: {
       xsmall: string;
       small: string;
@@ -65,6 +71,7 @@ declare module 'styled-components' {
 
   export const theme: DefaultTheme = {
     color,
+    statusColor,
     font,
     media,
     borderRadius,

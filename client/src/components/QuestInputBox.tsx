@@ -1,27 +1,19 @@
-import React, { useState, ForwardedRef } from 'react';
+import React, { ForwardedRef } from 'react';
 import { styled } from 'styled-components';
 
 interface QuestInputBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
-  inputType?: 'text' | 'number';
 }
 
 const QuestInputBox = React.forwardRef(
-  ({ placeholder }: QuestInputBoxProps, ref: ForwardedRef<HTMLInputElement>) => {
-    const [questTitle, setQuestTitle] = useState(placeholder);
-
-    const onChangeHandler = (event: any) => {
-      event.preventDefault();
-      setQuestTitle(event.target.value);
-    };
+  ({ placeholder, ...props }: QuestInputBoxProps, ref: ForwardedRef<HTMLInputElement>) => {
 
     return (
       <QuestInputBoxLayoutStyle>
         <QuestInputBoxStyle
           placeholder={placeholder}
           ref={ref}
-          value={questTitle}
-          onChange={onChangeHandler}
+          {...props}
         />
       </QuestInputBoxLayoutStyle>
     );
@@ -38,7 +30,6 @@ const QuestInputBoxLayoutStyle = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.small};
-  margin-bottom: 10px;
 `;
 
 const QuestInputBoxStyle = styled.input`
@@ -48,7 +39,7 @@ const QuestInputBoxStyle = styled.input`
   border: none;
   background: none;
   font-size: ${({ theme }) => theme.font.xsmall};
-  color: ${({ theme }) => theme.color.grayDark};
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export default QuestInputBox;

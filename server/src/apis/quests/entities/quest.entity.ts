@@ -1,34 +1,47 @@
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { sideQuest } from './side-quest.entity';
+import { Difficulty, isHidden, Mode, Status } from '../enums/quest.enum';
 
 @Entity('quest')
 export class Quest extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column('int', { nullable: false })
   userId: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   title: string;
 
-  @Column()
-  difficulty: number;
+  @Column({ type: 'enum', name: 'difficulty', enum: Difficulty })
+  difficulty!: Difficulty;
 
-  @Column()
-  mode: number;
+  @Column({ type: 'enum', name: 'mode', enum: Mode })
+  mode!: Mode;
 
-  @Column('timestamp')
+  @Column('timestamp', { nullable: false })
   startDate: Date;
 
-  @Column('timestamp')
+  @Column('timestamp', { nullable: true })
   endDate: Date;
 
-  @Column()
-  hidden: number;
+  @Column({ type: 'enum', name: 'hidden', enum: isHidden })
+  hidden!: isHidden;
 
-  @ManyToOne(() => User, (user) => user.quests)
+  @Column({ type: 'enum', name: 'status', enum: Status, default: Status.onProgress })
+  status!: Status;
+
+  @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
+  updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.quests, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: User;
 
   @OneToMany(() => sideQuest, (sideQuest) => sideQuest.quest)
