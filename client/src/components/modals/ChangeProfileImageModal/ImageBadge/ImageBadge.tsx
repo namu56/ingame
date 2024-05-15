@@ -28,6 +28,7 @@ const ImageBadgeStyle = styled.div<{ $checked: boolean }>`
   &:hover {
     cursor: pointer;
     border-color: ${({ theme }) => theme.color.white};
+    background-color: ${({ theme, $checked }) => !$checked && theme.color.grayDark};
   }
 `;
 
