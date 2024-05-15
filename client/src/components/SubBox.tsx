@@ -83,6 +83,7 @@ const SubBoxStyle = styled.div<{ status: QuestStatus }>`
     width: 100%;
     display: flex;
     justify-content: space-between;
+    cursor: pointer;
 
     .EditBtn {
       background: none;

@@ -34,3 +34,10 @@ export const addSubQuest = async (data: CreateSubQuestProps) => {
   const response = await httpClient.post(API_END_POINT.CREATE_QUEST, { ...data });
   return response.data;
 };
+
+export const modiSubQuestStatus = async (data: SubQuestModifyProps) => {
+  const response = await httpClient.patch(API_END_POINT.SUB_QUEST + `/${data.id}`, {
+    ...data,
+  });
+  return response.data;
+};
