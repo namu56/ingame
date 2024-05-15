@@ -1,4 +1,4 @@
-import { addSubQuest, getSubQuest, modiSubQuest } from '@/api/quests.api';
+import { addSubQuest, getSubQuest, modiSubQuest, modiSubQuestStatus } from '@/api/quests.api';
 import { CreateSubQuestProps } from '@/components/modals/CreateSubQuestModal';
 import { SubQuestModifyProps } from '@/components/modals/SubQuestModal';
 import { QUEST } from '@/constant/queryKey';
@@ -42,6 +42,16 @@ export const useQuest = () => {
   }
 
   const modifySubQuestStatus = (data: ModifySubQuestStatusProps) => {};
+
+  const modifySubQuestStatusMutation = useMutation({
+    mutationFn: modiSubQuestStatus,
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: [...QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
+      });
+    },
+    onError(err) {},
+  });
 
   const createSubQuest = async (data: CreateSubQuestProps) => {
     createSubQuestMutation.mutate(data);

@@ -35,6 +35,6 @@ export interface SubQuest {
   status: QuestStatus;
 }
 
-export type QuestStatus = 'completed' | 'fail' | 'on_progress';
+export type QuestStatus = 'COMPLETED' | 'FAIL' | 'ON_PROGRESS';
 export type QuestHiddenType = 'TRUE' | 'FALSE';
 export type QuestMode = 'MAIN' | 'SUB';

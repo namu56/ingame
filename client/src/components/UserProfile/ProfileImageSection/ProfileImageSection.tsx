@@ -47,7 +47,6 @@ const ProfileImageSection = ({ profilePhoto = 'null' }: ProfileImageSecitonProps
 const ProfileImageSectionStyle = styled.div`
   display: flex;
   align-items: center;
-  width: 100%;
   height: 90px;
   padding: 10px;
   border-radius: ${({ theme }) => theme.borderRadius.xlarge};
