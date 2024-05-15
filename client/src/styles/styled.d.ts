@@ -26,9 +26,9 @@ declare module 'styled-components' {
     };
 
     statusColor: {
-      completed: string;
-      fail: string;
-      on_progress: string;
+      COMPLETED: string;
+      FAIL: string;
+      ON_PROGRESS: string;
     };
 
     font: {
