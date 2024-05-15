@@ -2,60 +2,29 @@ import styled from 'styled-components';
 import { CiLock } from "react-icons/ci";
 import { CiUnlock } from "react-icons/ci";
 import { GoPlusCircle } from "react-icons/go";
-import { useState } from 'react';
 import { Button } from 'antd';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-
-import { Quest, QuestHiddenType } from '@/models/quest.model';
-import { useNavigate } from 'react-router-dom';
-import { createMainQuest } from '@/api/quests.api';
-
-interface SideContent {
-  content: string;
-}
-
-interface CreateMainQuestProps extends Quest {
-  title: string;
-  difficulty: number;
-  side: SideContent[];
-  startDate: string;
-  endDate: string;
-  hidden: QuestHiddenType;
-}
+import { useCreateQuest } from '@/hooks/useCreateQuest';
 
 const CreateMainQuest = () => {
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [isDifficulty, setIsDifficulty] = useState(0);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const today = new Date().toISOString().substring(0, 10);
-  const navigate = useNavigate();
-
-  const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
-  const {} = useFieldArray({
+  const {
+    isPrivate,
+    setIsPrivate,
+    isDifficulty,
+    setIsDifficulty,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    today,
+    register,
     control,
-    name: "side"
-  });
-
-  const onSubmit = handleSubmit((data) => {
-    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const newData = {...data, hidden, difficulty: isDifficulty};
-    CreateQuestMutation.mutate(newData);
-  });
-
-  const CreateQuestMutation = useMutation({
-    mutationFn: createMainQuest,
-    onSuccess(res) {
-      // navigate('/');
-    },
-    onError(err) {
-      navigate('/error');
-    },
-  });
-
+    handleSubmit,
+    onSubmit,
+    CreateQuestMutation
+  } = useCreateQuest();
+  
   return (
     <CreateMainQuestStyle>
       <header>

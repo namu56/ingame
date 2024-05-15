@@ -2,55 +2,25 @@ import styled from 'styled-components';
 import { CiLock } from "react-icons/ci";
 import { CiUnlock } from "react-icons/ci";
 import { GoPlusCircle } from "react-icons/go";
-import { useState } from 'react';
 import { Button } from 'antd';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
-import { useNavigate } from 'react-router-dom';
-import { modiMainQuest } from '@/api/quests.api';
-
-interface EditMainQuestQuestProps extends Quest {
-  title: string;
-  difficulty: number;
-  side: SideContent[];
-  startDate: string;
-  endDate: string;
-  hidden: QuestHiddenType;
-}
+import { useEditQuest } from '@/hooks/useEditQuest';
 
 const EditMainQuestQuest = () => {
-  const [isPrivate, setIsPrivate] = useState(false); // 이것도
-  const [isDifficulty, setIsDifficulty] = useState(0); // 나중에 Main에서 기존 difficulty 받아오기
-  const [startDate, setStartDate] = useState(''); // 전부
-  const [endDate, setEndDate] = useState(''); // 다
-  const today = new Date().toISOString().substring(0, 10);
-  const navigate = useNavigate();
-
-  const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
-  const {} = useFieldArray({
-    control,
-    name: "side"
-  });
-
-  const onSubmit = handleSubmit((data) => {
-    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const status = data.side.map(side => side.status ? 'complete' : 'on progress');
-    const newData = {...data, hidden, difficulty: isDifficulty, side: data.side.map((side, index) => ({...side, status: status[index]}))};
-    EditQuestMutation.mutate(newData);
-  });
-
-  const EditQuestMutation = useMutation({
-    mutationFn: modiMainQuest,
-    onSuccess(res) {
-      // navigate('/');
-    },
-    onError(err) {
-      navigate('/error');
-    },
-  });
+  const {
+    isPrivate,
+    setIsPrivate,
+    isDifficulty,
+    setIsDifficulty,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    today,
+    register,
+    onSubmit
+  } = useEditQuest();
 
   return (
     <EditMainQuestQuestStyle>
