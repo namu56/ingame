@@ -1,5 +1,5 @@
 import { API_END_POINT } from '@/constant/api';
-import { UserProfile } from '@/models/user.model';
+import { ProfilePhoto, UserProfile } from '@/models/user.model';
 import { SignupProps } from '@/pages/SignUp';
 import { httpClient } from '@/utils/axios';
 import { UserInfo } from '@/models/userInfo.model';
@@ -21,5 +21,10 @@ export const getUserInfo = async (): Promise<UserInfo> => {
 
 export const deleteUser = async () => {
   const response = await httpClient.delete(API_END_POINT.USERINFO);
+  return response.data;
+};
+
+export const patchUserProfilePhoto = async (data: ProfilePhoto) => {
+  const response = await httpClient.patch(API_END_POINT.PATCH_PROFILEPHOTO, { ...data });
   return response.data;
 };

@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import defaultProfile from '../assets/images/Profile-PNG-File.png';
 import { useQuery } from '@tanstack/react-query';
 import { USER } from '@/constant/queryKey';
 import { getUserInfo } from '@/api/users.api';
-import EditProfileButton from './EditProfileButton';
-import ProgressBar from './ProgressBar';
+import EditProfileButton from '../EditProfileButton';
+import ProgressBar from '../ProgressBar';
 import { media } from '@/styles/theme';
+import ProfileImageSection from './ProfileImageSection/ProfileImageSection';
 
 const UserProfile = () => {
   const { data: userInfo } = useQuery({
@@ -16,9 +16,7 @@ const UserProfile = () => {
     <UserProfileStyle>
       {userInfo && (
         <UserInfoStyle>
-          <UserImageStyle>
-            <img src={defaultProfile} alt="profileImage" />
-          </UserImageStyle>
+          <ProfileImageSection profilePhoto={userInfo.profilePhoto} />
           <UserDetailInfoStyle>
             <div className="basic__info">
               <p className="nickname">
@@ -51,23 +49,15 @@ const UserInfoStyle = styled.div`
   gap: 1rem;
 `;
 
-const UserImageStyle = styled.div`
-  width: 100%;
-  img {
-    width: 70px;
-    height: 70px;
-  }
-`;
-
 const UserDetailInfoStyle = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   width: 100%;
-  max-width: 328px;
+  max-width: 308px;
 
   ${media.mobile} {
-    width: calc(100vw - 140px);
+    width: calc(100vw - 170px);
   }
 
   .basic__info {

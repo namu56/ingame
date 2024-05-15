@@ -1,6 +1,6 @@
 import Dropdown from '@/components/Dropdown';
 import styled from 'styled-components';
-import UserProfile from '@/components/UserProfile';
+import UserProfile from '@/components/UserProfile/UserProfile';
 import SubBox from '@/components/SubBox';
 import WeekCalendar from '@/components/WeekCalendar';
 import { useQuest } from '@/hooks/useQuest';

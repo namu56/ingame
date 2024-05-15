@@ -10,3 +10,7 @@ export interface UserProfile {
   nickname: string;
   intro: string;
 }
+
+export interface ProfilePhoto {
+  profilePhoto: string | null;
+}

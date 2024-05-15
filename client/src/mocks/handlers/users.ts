@@ -18,6 +18,10 @@ export const getUserInfo = http.get(`${API_END_POINT.USERINFO}`, async () => {
   );
 });
 
+export const patchUserProfilePhoto = http.patch(`${API_END_POINT.PATCH_PROFILEPHOTO}`, async () => {
+  return new HttpResponse(JSON.stringify({ status: 'updated', message: 'success' }));
+});
+
 export const patchUserProfile = http.patch(`${API_END_POINT.USERINFO}`, async () => {
   return new HttpResponse(JSON.stringify({ status: 'updated', message: 'success' }));
 });

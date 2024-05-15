@@ -9,6 +9,8 @@ const color = {
   purple: '#A259FF',
   blue: '#1ABCFE',
   green: '#0ACF83',
+  greenLight: '#D1eae7',
+  greenLightActive: '#90c5bf;',
   greenOpactiy30: 'rgba(10, 207, 131, 0.3)',
   grayLight: '#FDFDFD',
   grayLightActive: '#F9F9F9',

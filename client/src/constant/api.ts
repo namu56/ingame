@@ -10,6 +10,8 @@ export const API_END_POINT = {
   PROFILE: '/profile',
   // USERINFO
   USERINFO: '/users/me',
+  // PATCH PROFILE_PHOTO
+  PATCH_PROFILEPHOTO: '/users/me/profile-photo',
   // QUESTS
   SUB_QUEST: '/quests/sub',
   // CREATE_MAIN_QUEST
