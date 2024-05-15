@@ -25,7 +25,8 @@ export const getSubQuest = async (param: GetSubQuestParam) => {
 
 export const modiSubQuest = async (data: SubQuestModifyProps) => {
   const response = await httpClient.patch(API_END_POINT.SUB_QUEST + `/${data.id}`, {
-    ...data,
+    title: data.title,
+    hidden: data.hidden,
   });
   return response.data;
 };
