@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ingame-fe
+  namespace: ingame
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: ingame-fe
+  template:
+    metadata:
+      labels:
+        run: ingame-fe
+    spec:
+      containers:
+        - name: ingame-frontend
+          image: ${REPO}/${IMAGE}:${TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REACT_APP_MOCK_API_URL
+              value: ${CORS_ORIGIN}/api
+            - name: REACT_APP_SERVER_API_URL
+              value: ${CORS_ORIGIN}/api
+      imagePullSecrets:
+        - name: aws-ecr-cred
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: ingame-fe
+  labels:
+    run: ingame-fe
+  namespace: ingame
+spec:
+  type: NodePort
+  selector:
+    run: ingame-fe
+  ports:
+    - port: 3000
+      nodePort: 30000

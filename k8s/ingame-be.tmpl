@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingame-be-config
+  namespace: ingame
+data:
+  PORT: '8080'
+  DB_PORT: '33006'
+  DB_HOST: ${DB_HOST}
+  DB_USERNAME: ${DB_USERNAME}
+  DB_PASSWORD: ${DB_PASSWORD}
+  DB_DATABASE: ${DB_DATABASE}
+  SALT_ROUNDS: ${SALT_ROUNDS}
+  SECRET_KEY: ${SECRET_KEY}
+  EXPIRES_IN: ${EXPIRES_IN}
+  CORS_ORIGIN: ${CORS_ORIGIN}
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ingame-be
+  namespace: ingame
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: ingame-be
+  template:
+    metadata:
+      labels:
+        run: ingame-be
+    spec:
+      containers:
+        - name: ingame-backend
+          image: ${REPO}/${IMAGE}:${TAG}
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: ingame-be-config
+      imagePullSecrets:
+        - name: aws-ecr-cred
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: ingame-be
+  labels:
+    run: ingame-be
+  namespace: ingame
+spec:
+  type: NodePort
+  selector:
+    run: ingame-be
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080

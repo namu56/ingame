@@ -1,0 +1,40 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'server/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: server/node_modules
+          key: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('server/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-
+      - name: Install Dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+      - name: Run test
+        run: npm run test
+      - name: Run build
+        run: npm run build
