@@ -18,7 +18,6 @@ export interface SideContent {
   action: string;
 }
 
-
 export interface modiMainQuest {
   id: number;
   title: string;
@@ -38,3 +37,4 @@ export interface SubQuest {
 
 export type QuestStatus = 'completed' | 'fail' | 'on_progress';
 export type QuestHiddenType = 'TRUE' | 'FALSE';
+export type QuestMode = 'MAIN' | 'SUB';

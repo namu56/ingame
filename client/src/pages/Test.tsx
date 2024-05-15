@@ -1,21 +1,7 @@
-import Button from '@/components/Button';
-import Dropdown from '@/components/Dropdown';
-import InputBox from '@/components/InputBox';
 import styled from 'styled-components';
 
-import { useForm } from 'react-hook-form';
-import { RxHamburgerMenu } from 'react-icons/rx';
-import Top from '@/components/Top';
-import { getToken } from '@/utils/tokenUtils';
-
 const Test = () => {
-  const useform = useForm();
-  const { register, handleSubmit, watch } = useform;
-  return (
-    <TestStyle>
-      {/* <WeekCalander /> */}
-    </TestStyle>
-  );
+  return <TestStyle></TestStyle>;
 };
 
 const TestStyle = styled.div`
