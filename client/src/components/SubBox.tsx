@@ -21,8 +21,10 @@ const SubBox = ({ content }: SubBoxProps) => {
       let message = '';
       if (content.status === 'ON_PROGRESS') {
         message = '퀘스트를 완료하시겠습니까?';
+        content.status = 'COMPLETED';
       } else if (content.status === 'COMPLETED') {
         message = '퀘스트를 진행중으로 변경하시겠습니까?';
+        content.status = 'ON_PROGRESS';
       } else {
         return;
       }
