@@ -7,7 +7,7 @@ import ProfileModal from './modals/ProfileModal';
 interface EditProfileButtonProps {
   isOpen?: boolean;
   nickname: string;
-  intro: string;
+  intro: string | null;
 }
 
 const EditProfileButton = ({ isOpen = false, nickname, intro }: EditProfileButtonProps) => {
