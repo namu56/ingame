@@ -9,7 +9,6 @@ import { useChangeProfilePhotoMutation } from '@/hooks/useProfile';
 
 interface ChangeProfileIamgeModalProps {
   isOpen?: boolean;
-  handleProfileImage: React.Dispatch<SetStateAction<string>>;
   handleModal: React.Dispatch<SetStateAction<boolean>>;
   currentProfile: string | null;
 }

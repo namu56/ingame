@@ -9,16 +9,12 @@ interface ProfileImageSecitonProps {
   profilePhoto?: string;
 }
 
-const ProfileImageSection = ({ profilePhoto = 'defaultImage' }: ProfileImageSecitonProps) => {
+const ProfileImageSection = ({ profilePhoto = 'null' }: ProfileImageSecitonProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const ChangeProfileImageModalRef = useOutsideClick<HTMLDivElement>(isOpen, () =>
     setIsOpen(false)
   );
-
-  const [profileImage, setProfileImage] = useState(profilePhoto);
-
-  console.log(profileImage);
 
   return (
     <>
@@ -26,13 +22,13 @@ const ProfileImageSection = ({ profilePhoto = 'defaultImage' }: ProfileImageSeci
         <div className="profile__img" onClick={() => setIsOpen(!isOpen)}>
           <img
             src={
-              profileImage === 'cat'
+              profilePhoto === 'cat'
                 ? cat
-                : profileImage === 'lion'
+                : profilePhoto === 'lion'
                   ? lion
-                  : profileImage === 'rabbit'
+                  : profilePhoto === 'rabbit'
                     ? rabbit
-                    : profileImage === 'tiger'
+                    : profilePhoto === 'tiger'
                       ? tiger
                       : defaultProfile
             }
@@ -41,11 +37,7 @@ const ProfileImageSection = ({ profilePhoto = 'defaultImage' }: ProfileImageSeci
           <img className="camera" src={Camera} alt="camera" />
         </div>
         {isOpen && (
-          <ChangeProfileImageModal
-            currentProfile={profileImage}
-            handleProfileImage={setProfileImage}
-            handleModal={setIsOpen}
-          />
+          <ChangeProfileImageModal currentProfile={profilePhoto} handleModal={setIsOpen} />
         )}
       </ProfileImageSectionStyle>
     </>
