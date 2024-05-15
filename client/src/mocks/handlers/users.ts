@@ -17,3 +17,7 @@ export const getUserInfo = http.get(`${API_END_POINT.GET_USERINFO}`, async () =>
     }
   );
 });
+
+export const patchUserProfilePhoto = http.patch(`${API_END_POINT.PATCH_PROFILEPHOTO}`, async () => {
+  return new HttpResponse(JSON.stringify({ status: 'updated', message: 'success' }));
+});

@@ -5,6 +5,7 @@ import Title from '@/components/Title';
 import ImageBadge from './ImageBadge/ImageBadge';
 import { rabbit, defaultImage as defaultProfile, tiger, lion, cat } from '@/assets';
 import Button from '@/components/Button';
+import { useChangeProfilePhotoMutation } from '@/hooks/useProfile';
 
 interface ChangeProfileIamgeModalProps {
   isOpen?: boolean;
@@ -13,13 +14,9 @@ interface ChangeProfileIamgeModalProps {
   currentProfile: string | null;
 }
 
-const ChangeProfileImageModal = ({
-  isOpen,
-  handleProfileImage,
-  handleModal,
-  currentProfile,
-}: ChangeProfileIamgeModalProps) => {
+const ChangeProfileImageModal = ({ handleModal, currentProfile }: ChangeProfileIamgeModalProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(currentProfile);
+  const { mutate: changeProfilePhotoMutate } = useChangeProfilePhotoMutation();
 
   return (
     <ChangeProfileImageModalStyle>
@@ -60,7 +57,14 @@ const ChangeProfileImageModal = ({
         />
       </ProfileImageListStyle>
       <ButtonsStyle>
-        <Button size="large" color="green">
+        <Button
+          size="large"
+          color="green"
+          onClick={() => {
+            changeProfilePhotoMutate({ profilePhoto: selectedImage });
+            handleModal(false);
+          }}
+        >
           변경하기
         </Button>
         <Button size="large" color="grayNormalActive" onClick={() => handleModal(false)}>

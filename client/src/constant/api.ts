@@ -10,4 +10,5 @@ export const API_END_POINT = {
   PROFILE: '/profile',
   // GET_USERINFO
   GET_USERINFO: '/users/me',
+  PATCH_PROFILEPHOTO: '/users/me/profile-photo',
 };
