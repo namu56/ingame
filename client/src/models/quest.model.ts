@@ -3,18 +3,39 @@ export interface Quest {
   userId: number;
   title: string;
   difficulty: number;
-  mode: number;
+  mode: QuestMode;
   startDate: string;
   endDate: string;
   hidden: QuestHiddenType;
-  status: number;
+  status: QuestStatus;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface getSideQuest {
+  id: number;
+  content: string;
+  status: QuestStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface getQuest {
+  id: number;
+  title: string;
+  difficulty: number;
+  mode: QuestMode;
+  sideQuests: getSideQuest[];
+  startDate: string;
+  endDate: string;
+  hidden: QuestHiddenType;
+  status: QuestStatus;
+  createdAt: string;
+}
+
 export interface SideContent {
   content: string;
-  status: number;
+  status: QuestStatus;
   action: string;
 }
 
