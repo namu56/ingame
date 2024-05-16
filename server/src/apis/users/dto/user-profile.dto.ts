@@ -42,4 +42,11 @@ export class UserProfileDto {
     required: true,
   })
   point: number;
+
+  @ApiProperty({
+    example: 1,
+    description: '레벨',
+    required: true,
+  })
+  level: number;
 }

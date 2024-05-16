@@ -10,6 +10,7 @@ import { UserProfileDto } from './dto/user-profile.dto';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
+import { LevelCalculatorService } from 'src/common/level-calculator/level-calculator.service';
 
 @Injectable()
 export class UsersService {
@@ -18,7 +19,8 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(UserInfo) private userInfoRepository: Repository<UserInfo>,
     @InjectRepository(ProfilePhoto) private profilePhotoRepository: Repository<ProfilePhoto>,
-    private readonly dataSource: DataSource
+    private readonly dataSource: DataSource,
+    private levelCalculatorService: LevelCalculatorService
   ) {}
   async createUser(createUserDto: CreateUserDto) {
     const { email, password, nickname } = createUserDto;
@@ -134,6 +136,8 @@ export class UsersService {
   }
 
   private toUserResponse(user: User): UserProfileDto {
+    const level = this.levelCalculatorService.findLevel(user.userInfo.point).level;
+
     return {
       id: user.id,
       email: user.email,
@@ -141,6 +145,7 @@ export class UsersService {
       intro: user.userInfo.intro ?? null,
       profilePhoto: user.profilePhoto.profilePhoto ?? null,
       point: user.userInfo.point,
+      level,
     };
   }
 }
