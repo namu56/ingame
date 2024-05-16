@@ -11,7 +11,7 @@ import { WinstonLoggerModule } from './common/logger/winston-logger.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SchedulerService } from './common/scheduler/taskservice.service';
+import { SchedulerService } from './common/scheduler/scheduler.service';
 import { SchedulerModule } from './common/scheduler/scheduler.module';
 
 @Module({

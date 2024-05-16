@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Quest } from '../../apis/quests/entities/quest.entity';
-import { SchedulerService } from './taskservice.service';
+import { SchedulerService } from './scheduler.service';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
