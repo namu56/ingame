@@ -11,7 +11,8 @@ import { WinstonLoggerModule } from './common/logger/winston-logger.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TaskService } from './common/scheduler/TaskService';
+import { SchedulerService } from './common/scheduler/taskservice.service';
+import { SchedulerModule } from './common/scheduler/scheduler.module';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { TaskService } from './common/scheduler/TaskService';
       useFactory: (configService: ConfigService) => typeORMConfig(configService),
     }),
     WinstonLoggerModule,
-    ScheduleModule.forRoot(),
+    SchedulerModule,
     UsersModule,
     AuthModule,
     QuestsModule,
@@ -36,7 +37,6 @@ import { TaskService } from './common/scheduler/TaskService';
       provide: APP_FILTER,
       useClass: AllExceptionFilter,
     },
-    TaskService,
   ],
 })
 export class AppModule implements NestModule {
