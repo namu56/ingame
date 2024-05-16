@@ -10,6 +10,8 @@ import { WinstonLoggerMiddleware } from './common/middleware/winston-logger.midd
 import { WinstonLoggerModule } from './common/logger/winston-logger.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TaskService } from './common/scheduler/TaskService';
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { AllExceptionFilter } from './common/filters/all-exception.filter';
       useFactory: (configService: ConfigService) => typeORMConfig(configService),
     }),
     WinstonLoggerModule,
+    ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     QuestsModule,
@@ -33,6 +36,7 @@ import { AllExceptionFilter } from './common/filters/all-exception.filter';
       provide: APP_FILTER,
       useClass: AllExceptionFilter,
     },
+    TaskService,
   ],
 })
 export class AppModule implements NestModule {
