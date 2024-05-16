@@ -6,18 +6,18 @@ import { Button } from 'antd';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useCreateQuest } from '@/hooks/useCreateQuest';
+import { useState } from 'react';
 
 const CreateMainQuest = () => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const today = new Date().toISOString().substring(0, 10);
+
   const {
     isPrivate,
     setIsPrivate,
     isDifficulty,
     setIsDifficulty,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    today,
     register,
     control,
     handleSubmit,
@@ -28,7 +28,7 @@ const CreateMainQuest = () => {
   return (
     <CreateMainQuestStyle>
       <header>
-        <p>Main Quest</p>
+        <p>메인 퀘스트 생성</p>
         <div className='lockIcons'>
           {isPrivate ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
         </div>

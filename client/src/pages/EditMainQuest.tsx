@@ -5,19 +5,20 @@ import { GoPlusCircle } from "react-icons/go";
 import { Button } from 'antd';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
+import { useState } from 'react';
 import { useEditQuest } from '@/hooks/useEditQuest';
 
 const EditMainQuestQuest = () => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const today = new Date().toISOString().substring(0, 10);
+  
+
   const {
     isPrivate,
     setIsPrivate,
     isDifficulty,
     setIsDifficulty,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    today,
     register,
     onSubmit
   } = useEditQuest();
@@ -25,7 +26,7 @@ const EditMainQuestQuest = () => {
   return (
     <EditMainQuestQuestStyle>
       <header>
-        <p>Main Quest</p>
+        <p>메인 퀘스트 수정</p>
         <div className='lockIcons'>
         {isPrivate ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
         </div>
