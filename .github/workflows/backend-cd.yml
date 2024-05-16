@@ -131,9 +131,6 @@ jobs:
               --patch="{\"data\":{\".dockerconfigjson\":\"${ENCODED_JSON}\"}}"
           fi
 
-      - name: Set TAG
-        run: echo "TAG=${{ needs.build.outputs.TAG }}"
-
       - name: Render Deployment YAML
         uses: nowactions/envsubst@v1
         with:
