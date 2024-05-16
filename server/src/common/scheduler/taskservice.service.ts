@@ -33,4 +33,9 @@ export class SchedulerService {
 
     this.logger.log(`[${new Date().toISOString()}] Updating quest status success!`);
   }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  serviceHealthCheck() {
+    this.logger.log(`Service health OK at ${new Date().toISOString()}`);
+  }
 }
