@@ -7,7 +7,7 @@ import edit from '../../assets/images/edit.png';
 import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
 import { QuestHiddenType } from '@/models/quest.model';
-import { useQuest } from '@/hooks/useQuest';
+import { useQuest } from '@/hooks/useSubQuest';
 
 export interface SubQuestModifyProps {
   title: string;

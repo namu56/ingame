@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import UserProfile from '@/components/UserProfile/UserProfile';
 import SubBox from '@/components/SubBox';
 import WeekCalendar from '@/components/WeekCalendar';
-import { useQuest } from '@/hooks/useQuest';
+import { useQuest } from '@/hooks/useSubQuest';
 import Loading from '@/components/Loading';
 import CreateSubQuestButton from '@/components/CreateSubQuestButton';
+import { BiNotepad } from 'react-icons/bi';
 import CreateMainQuestButton from '@/components/CreateMainQuestButton';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import MainBox from '@/components/MainBox';
@@ -21,23 +22,23 @@ const Main = () => {
       <UserProfile />
       <MainQuestStyle>
         <div className="mainquestTitle">
+          <BiNotepad />
           <h2>Main Quest</h2>
           <CreateMainQuestButton />
         </div>
-        <div className='mainquestList'>
-         {
-          mainQuest ? (
+        <div className="mainquestList">
+          {mainQuest ? (
             mainQuest.map((content) => <MainBox key={content.id} content={content} />)
           ) : isLoading ? (
             <Loading />
           ) : (
             <p>등록된 메인 퀘스트가 없습니다</p>
-          )
-         }
+          )}
         </div>
       </MainQuestStyle>
       <section className="subQuestSection">
-        <div className="questTitle">
+        <div className="subquestTitle">
+          <BiNotepad />
           <h2>Sub Quest</h2>
           <CreateSubQuestButton />
         </div>
@@ -66,10 +67,9 @@ const MainStyle = styled.div`
     flex-direction: column;
     gap: 0.5rem;
 
-    .questTitle {
+    .subquestTitle {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
     }
   }
 `;
