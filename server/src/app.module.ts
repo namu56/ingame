@@ -11,6 +11,7 @@ import { WinstonLoggerModule } from './common/logger/winston-logger.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
 import { LevelCalculatorModule } from './common/level-calculator/level-calculator.module';
+import { PointModule } from './apis/point/point.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { LevelCalculatorModule } from './common/level-calculator/level-calculato
     QuestsModule,
     RankingModule,
     LevelCalculatorModule,
+    PointModule,
   ],
   providers: [
     {
