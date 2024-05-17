@@ -16,8 +16,7 @@ export class PointService {
 
   async updatePoint(userId: number, updatePointDto: UpdatePointDto) {
     const { questId, status } = updatePointDto;
-    console.log('questId:', questId);
-    console.log('status:', status);
+    const currentDate = new Date();
     const userInfo = await this.userInfoRepository.findOne({ where: { userId } });
     if (!userInfo) {
       throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
@@ -38,6 +37,7 @@ export class PointService {
     try {
       const difficultyPoint = this.getPointByDifficulty(quest.difficulty);
       quest.status = status;
+      quest.updatedAt = currentDate;
       const completedSideQuestsCount = quest.sideQuests.filter(
         (sideQuest) => sideQuest.status === Status.Completed
       ).length;
