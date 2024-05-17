@@ -13,13 +13,13 @@ import { formattedCalendar } from '@/utils/formatter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 
-export const useQuest = () => {
+export const useSubQuest = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
 
   const queryClient = useQueryClient();
 
-  const { data: subQuestList, isLoading } = useQuery({
+  const { data: subQuestList, isLoading: isSubLoading } = useQuery({
     queryKey: [...QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
     queryFn: () =>
       getSubQuest({
@@ -73,7 +73,7 @@ export const useQuest = () => {
 
   return {
     quest: subQuestList,
-    isLoading,
+    isSubLoading,
     modifySubQuest,
     modifySubQuestStatus,
     date,

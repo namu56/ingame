@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { QuestStatus, SubQuest } from '@/models/quest.model';
-import { useQuest } from '@/hooks/useSubQuest';
+import { useSubQuest } from '@/hooks/useSubQuest';
 import { useMessage } from '@/hooks/useMessage';
 import { formattedCalendar } from '@/utils/formatter';
 import { BsThreeDots } from 'react-icons/bs';
@@ -12,7 +12,7 @@ interface SubBoxProps {
 }
 
 const SubBox = ({ content }: SubBoxProps) => {
-  const { modifySubQuestStatus, date } = useQuest();
+  const { modifySubQuestStatus, date } = useSubQuest();
   const { showConfirm, showAlert } = useMessage();
   const [open, setOpen] = useState(false);
 

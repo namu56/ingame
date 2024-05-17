@@ -7,7 +7,7 @@ import edit from '../../assets/images/edit.png';
 import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
 import { QuestHiddenType, QuestMode } from '@/models/quest.model';
-import { useQuest } from '@/hooks/useSubQuest';
+import { useSubQuest } from '@/hooks/useSubQuest';
 import { formattedCalendar } from '@/utils/formatter';
 
 export interface CreateSubQuestProps {
@@ -33,7 +33,7 @@ const CreateSubQuestModal = ({ onClose }: SubQuestModalProps) => {
     formState: { errors },
   } = useForm<CreateSubQuestProps>();
 
-  const { createSubQuest } = useQuest();
+  const { createSubQuest } = useSubQuest();
 
   const onSubmit = (data: CreateSubQuestProps) => {
     createSubQuest(data).then(() => {

@@ -7,7 +7,7 @@ import edit from '../../assets/images/edit.png';
 import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
 import { QuestHiddenType } from '@/models/quest.model';
-import { useQuest } from '@/hooks/useSubQuest';
+import { useSubQuest } from '@/hooks/useSubQuest';
 
 export interface SubQuestModifyProps {
   title: string;
@@ -28,7 +28,7 @@ const SubQuestModal = ({ onClose, OriginTitle, id, OriginHidden }: SubQuestModal
 
   const { register, handleSubmit, setValue } = useForm<SubQuestModifyProps>();
 
-  const { modifySubQuest } = useQuest();
+  const { modifySubQuest } = useSubQuest();
 
   const onSubmit = (data: SubQuestModifyProps) => {
     modifySubQuest(data).then(() => {
