@@ -70,7 +70,4 @@ export class SideQuestRequestDto extends OmitType(CreateSideQuestDto, [
   'updatedAt',
 ]) {}
 
-export class UpdateSideQuestRequestDto extends PickType(CreateSideQuestDto, [
-  'content',
-  'status',
-]) {}
+export class UpdateSideQuestRequestDto extends PickType(CreateSideQuestDto, ['status']) {}
