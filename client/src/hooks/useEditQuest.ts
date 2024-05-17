@@ -24,7 +24,7 @@ export const useEditQuest = () => {
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
     const status = data.side.map(side => side.status ? 'COMPLETED' : 'ON_PROGRESS');
-    const newData = {...data, hidden, difficulty: isDifficulty, side: data.side.map((side, index) => ({...side, status: status[index]}))};
+    const newData = {...data, hidden, side: data.side.map((side, index) => ({...side, status: status[index]}))};
     EditQuestMutation.mutate(newData);
     EditSideQuestMutation.mutate(data.id);
   });
