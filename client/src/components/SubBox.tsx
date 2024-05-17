@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { QuestStatus, SubQuest } from '@/models/quest.model';
-import { useQuest } from '@/hooks/useQuest';
+import { useQuest } from '@/hooks/useSubQuest';
 import { useMessage } from '@/hooks/useMessage';
 import { formattedCalendar } from '@/utils/formatter';
 import { BsThreeDots } from 'react-icons/bs';
@@ -33,7 +33,7 @@ const SubBox = ({ content }: SubBoxProps) => {
         modifySubQuestStatus({ id: content.id, status: content.status });
       });
     } else {
-      showAlert('당일 퀘스트만 수정 가능합니다');
+      showAlert('당일 퀘스트만 변경 가능합니다');
     }
   };
 
