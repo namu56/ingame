@@ -34,7 +34,7 @@ export const useCreateQuest = () => {
   const CreateQuestMutation = useMutation({
     mutationFn: createMainQuest,
     onSuccess(res) {
-      // navigate('/');
+      navigate('/');
     },
     onError(err) {
       navigate('/error');

@@ -3,6 +3,10 @@ import { RankingItem } from '@/models/ranking.model';
 import { httpClient } from '@/utils/axios';
 
 export const getRanking = async (): Promise<RankingItem[]> => {
-  const response = await httpClient.get(API_END_POINT.RANK);
-  return response.data.ranking as RankingItem[];
+  try {
+    const response = await httpClient.get(API_END_POINT.RANK);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
