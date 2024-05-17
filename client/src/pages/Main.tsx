@@ -37,7 +37,7 @@ const Main = () => {
         </div>
       </MainQuestStyle>
       <section className="subQuestSection">
-        <div className="questTitle">
+        <div className="subquestTitle">
           <BiNotepad />
           <h2>Sub Quest</h2>
           <CreateSubQuestButton />
@@ -67,7 +67,7 @@ const MainStyle = styled.div`
     flex-direction: column;
     gap: 0.5rem;
 
-    .questTitle {
+    .subquestTitle {
       display: flex;
       align-items: center;
     }
