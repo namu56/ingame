@@ -57,7 +57,6 @@ export class PointService {
     } finally {
       await queryRunner.release();
     }
-    return quest;
   }
 
   private getPointByDifficulty(difficulty: Difficulty): number {
