@@ -43,7 +43,6 @@ export interface modiMainQuest {
   id: number;
   title: string;
   difficulty: number;
-  side: SideContent[];
   startDate: string;
   endDate: string;
   hidden: QuestHiddenType;

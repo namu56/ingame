@@ -25,6 +25,7 @@ export const modiMainQuest = async (data: Quest) => {
 
 export const modiSideQuest = async (param: number) => {
   const response = await httpClient.patch(API_END_POINT.SIDE_QUEST + `/${param}`);
+  console.log(response.data);
   return response.data;
 }
 

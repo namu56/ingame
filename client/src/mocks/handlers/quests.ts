@@ -12,7 +12,7 @@ export const createMainQuest = http.post(`${API_END_POINT.CREATE_QUEST}`, async 
   return new HttpResponse(JSON.stringify({ status: 'created', message: 'success' }));
 });
 
-export const modiMainQuest = http.patch(`${API_END_POINT.MAIN_QUEST}/:id`, async ({ request, params}) => {
+export const modiMainQuest = http.patch(`${API_END_POINT.MAIN_QUEST}/:id`, async ({ request, params }) => {
   const data = (await request.json()) as Omit<Quest, 'status'>;
   mockMainQuests.map((quest) => {
     if (quest.id === Number(params.id)) {
