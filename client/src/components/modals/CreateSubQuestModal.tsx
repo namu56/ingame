@@ -7,7 +7,7 @@ import edit from '../../assets/images/edit.png';
 import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
 import { QuestHiddenType, QuestMode } from '@/models/quest.model';
-import { useQuest } from '@/hooks/useQuest';
+import { useQuest } from '@/hooks/useSubQuest';
 import { formattedCalendar } from '@/utils/formatter';
 
 export interface CreateSubQuestProps {
@@ -43,7 +43,8 @@ const CreateSubQuestModal = ({ onClose }: SubQuestModalProps) => {
 
   useEffect(() => {
     setValue('hidden', hidden);
-  }, [hidden, setValue]);
+    setValue('title', title);
+  }, [hidden, setValue, title]);
 
   return (
     <SubQuestModalStyle>
@@ -117,6 +118,11 @@ const BoxStyle = styled.div<BoxStyleProps>`
   gap: 0.75rem;
   margin-bottom: 10px;
   width: 100%;
+
+  .error-text {
+    color: ${({ theme }) => theme.color.red};
+    font-size: ${({ theme }) => theme.font.xsmall};
+  }
 
   .box__title {
     display: flex;
