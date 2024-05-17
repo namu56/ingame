@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Quest, QuestHiddenType } from '@/models/quest.model';
+import { Quest, QuestDifficulty, QuestHiddenType, QuestMode } from '@/models/quest.model';
 import { createMainQuest } from '@/api/quests.api';
 
 interface SideContent {
@@ -11,8 +11,9 @@ interface SideContent {
 
 interface CreateMainQuestProps extends Quest {
   title: string;
-  difficulty: number;
-  side: SideContent[];
+  difficulty: QuestDifficulty;
+  mode: QuestMode;
+  sideQuests: SideContent[];
   startDate: string;
   endDate: string;
   hidden: QuestHiddenType;
@@ -27,17 +28,19 @@ export const useCreateQuest = () => {
 
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const newData = {...data, hidden, difficulty: isDifficulty};
+    const difficulty = isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : 'HARD' as QuestDifficulty;
+    const mode = 'MAIN' as QuestMode;
+    const newData = {...data, hidden, difficulty: difficulty, mode: mode};
     CreateQuestMutation.mutate(newData);
   });
 
   const CreateQuestMutation = useMutation({
     mutationFn: createMainQuest,
     onSuccess(res) {
-      navigate('/');
+      // navigate('/');
     },
     onError(err) {
-      navigate('/error');
+      // navigate('/error');
     },
   });
 
@@ -50,6 +53,7 @@ export const useCreateQuest = () => {
     control,
     handleSubmit,
     onSubmit,
-    CreateQuestMutation
+    CreateQuestMutation,
+    navigate
   };
 };

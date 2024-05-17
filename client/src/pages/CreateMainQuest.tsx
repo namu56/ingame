@@ -8,6 +8,7 @@ import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useCreateQuest } from '@/hooks/useCreateQuest';
 import { useState } from 'react';
+import CloseButton from '@/components/CloseButton';
 
 const CreateMainQuest = () => {
   const [startDate, setStartDate] = useState('');
@@ -22,13 +23,13 @@ const CreateMainQuest = () => {
     isDifficulty,
     setIsDifficulty,
     register,
-    control,
-    handleSubmit,
     onSubmit,
-    CreateQuestMutation
+    navigate
   } = useCreateQuest();
   
   return (
+    <>
+    <CloseButton onClick={() => navigate('/')} />
     <CreateMainQuestStyle>
       <header>
         <p>메인 퀘스트 생성</p>
@@ -59,7 +60,7 @@ const CreateMainQuest = () => {
         <InnerQuests>
           {Array(plusQuest - minusQuest).fill(0).map((_, index) => 
           (
-            <QuestInputBox key={index} placeholder='퀘스트 제목' {...register(`side.${index}.content` as const)} />
+            <QuestInputBox key={index} placeholder='퀘스트 제목' {...register(`sideQuests.${index}.content` as const)} />
           )
           )}
         </InnerQuests>
@@ -87,6 +88,7 @@ const CreateMainQuest = () => {
         </div>
       </form>
     </CreateMainQuestStyle>
+    </>
   );
 };
 
