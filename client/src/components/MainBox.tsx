@@ -30,7 +30,7 @@ const MainBox = ({content}: MainBoxProps) => {
   const fraction = `${checkedCount} / ${content.sideQuests.length}`;
 
   const handleNavigate = () => {
-
+    navigate(`/editquest/${content.id}`, { state: { content } });
   }
 
   const handleToggleAccordion = () => {
