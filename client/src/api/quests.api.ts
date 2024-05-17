@@ -1,7 +1,7 @@
 import { CreateSubQuestProps } from '@/components/modals/CreateSubQuestModal';
 import { SubQuestModifyProps } from '@/components/modals/SubQuestModal';
 import { API_END_POINT } from '@/constant/api';
-import { Quest, SubQuest, getQuest, QuestStatus, SubQuest } from '@/models/quest.model';
+import { Quest, SubQuest, getQuest, QuestStatus } from '@/models/quest.model';
 
 import { httpClient } from '@/utils/axios';
 
