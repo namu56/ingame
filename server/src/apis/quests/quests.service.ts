@@ -6,14 +6,14 @@ import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from './entities/quest.entity';
 import { DataSource, FindManyOptions, Repository } from 'typeorm';
-import { sideQuest } from './entities/side-quest.entity';
+import { SideQuest } from './entities/side-quest.entity';
 import { Difficulty, Mode, Status } from './enums/quest.enum';
 
 @Injectable()
 export class QuestsService {
   constructor(
     @InjectRepository(Quest) private readonly questRepository: Repository<Quest>,
-    @InjectRepository(sideQuest) private readonly sideQuestRepository: Repository<sideQuest>,
+    @InjectRepository(SideQuest) private readonly sideQuestRepository: Repository<SideQuest>,
     private readonly dataSource: DataSource
   ) {}
 
@@ -115,6 +115,13 @@ export class QuestsService {
       updatedAt: currentDate,
     });
     await this.questRepository.save(updatedQuest);
+
+    if (updateQuestDto.side) {
+      for (const it of updateQuestDto.side) {
+        const sideId = it.id;
+        await this.updateSide(userId, sideId, it);
+      }
+    }
   }
 
   async remove(userId: number, id: number) {

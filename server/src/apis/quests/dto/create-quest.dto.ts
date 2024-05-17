@@ -3,6 +3,7 @@ import {
   CreateSideQuestDto,
   SideQuestRequestDto,
   SideQuestResponseDto,
+  UpdateSideQuestRequestDto,
 } from './create-side-quest.dto';
 import { Difficulty, isHidden, Mode, Status } from '../enums/quest.enum';
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
@@ -143,7 +144,25 @@ export class UpdateQuestRequestDto extends OmitType(CreateQuestDto, [
   'status',
   'createdAt',
   'updatedAt',
-]) {}
+]) {
+  @ApiProperty({
+    type: [UpdateSideQuestRequestDto],
+    example: [
+      {
+        id: 1,
+        content: '사이드 퀘스트 1',
+        status: 'ON_PROGRESS',
+      },
+      {
+        id: 2,
+        content: '사이드 퀘스트 2',
+        status: 'ON_PROGRESS',
+      },
+    ],
+    description: '사이드 퀘스트',
+  })
+  public side: UpdateSideQuestRequestDto[];
+}
 
 export class UpdateSubQuestRequestDto extends PickType(CreateQuestDto, ['title', 'hidden']) {}
 
