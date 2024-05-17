@@ -1,17 +1,13 @@
 import styled from 'styled-components';
 import RankingCard from './RankingCard';
-import { useQuery } from '@tanstack/react-query';
-import { getRanking } from '@/api/ranking.api';
+import { useRank } from '@/hooks/useRank';
 
 const RankingCardList = () => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['ranking'],
-    queryFn: () => getRanking(),
-  });
+  const { rankingData } = useRank();
   return (
     <>
       <RankingCardListStyle>
-        {data?.map((item, index) => <RankingCard key={item.id} {...item} />)}
+        {rankingData?.map((item, index) => <RankingCard key={item.id} {...item} />)}
       </RankingCardListStyle>
     </>
   );

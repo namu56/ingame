@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import UserProfile from '@/components/UserProfile/UserProfile';
 import SubBox from '@/components/SubBox';
 import WeekCalendar from '@/components/WeekCalendar';
-import { useQuest } from '@/hooks/useQuest';
+import { useQuest } from '@/hooks/useSubQuest';
 import Loading from '@/components/Loading';
 import CreateSubQuestButton from '@/components/CreateSubQuestButton';
+import { BiNotepad } from 'react-icons/bi';
 
 const Main = () => {
   const { quest, isLoading } = useQuest();
@@ -17,6 +18,7 @@ const Main = () => {
       <UserProfile />
       <section className="subQuestSection">
         <div className="questTitle">
+          <BiNotepad />
           <h2>Sub Quest</h2>
           <CreateSubQuestButton />
         </div>
@@ -48,7 +50,6 @@ const MainStyle = styled.div`
     .questTitle {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
     }
   }
 `;
