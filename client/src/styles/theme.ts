@@ -21,9 +21,9 @@ const color = {
 };
 
 const statusColor = {
-  completed: color.greenOpactiy30,
-  fail: color.coralOpacity70,
-  on_progress: color.white,
+  COMPLETED: color.greenOpactiy30,
+  FAIL: color.coralOpacity70,
+  ON_PROGRESS: color.white,
 };
 
 const font = {

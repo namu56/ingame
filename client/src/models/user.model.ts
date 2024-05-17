@@ -8,7 +8,7 @@ export interface User {
 
 export interface UserProfile {
   nickname: string;
-  intro: string;
+  intro: string | null;
 }
 
 export interface ProfilePhoto {

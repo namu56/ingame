@@ -1,0 +1,146 @@
+name: Backend CD
+
+on:
+  workflow_run:
+    workflows: ['Backend CI']
+    types:
+      - completed
+
+env:
+  IMAGE: ingame-be
+  K8S_CONFIG_PATH: k8s/ingame-be
+  K8S_NAMESPACE: ingame
+  REPO: ${{ secrets.REPO }}
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_USERNAME: ${{ secrets.DB_USERNAME }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_DATABASE: ${{ secrets.DB_DATABASE }}
+  SALT_ROUNDS: ${{ secrets.SALT_ROUNDS }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  EXPIRES_IN: ${{ secrets.EXPIRES_IN }}
+  CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+  TAG: ${{ github.sha }}
+
+jobs:
+  build:
+    name: Build and Push to ECR
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: server/node_modules
+          key: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('server/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
+      - name: Run build
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: ECR login
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Docker build
+        run: |
+          docker build --platform linux/amd64 -t ${{ env.IMAGE }} .
+
+      - name: ECR push
+        run: |
+          aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.REPO }}
+          docker tag ${{ env.IMAGE }} ${{ secrets.REPO }}/${{ env.IMAGE }}:${{ env.TAG }}
+          docker push ${{ secrets.REPO }}/${{ env.IMAGE }}:${{ env.TAG }}
+
+  deploy:
+    name: Deploy to Minikube
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: ECR login
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Setup Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > $HOME/.kube/config
+          kubectl config use-context ingame
+
+      - name: Check if secret exists
+        id: secret-exist
+        run: |
+          if kubectl get secret aws-ecr-cred --namespace ${{ env.K8S_NAMESPACE }}; then
+            echo "secret_exist=true" >> $GITHUB_ENV
+          else
+            echo "secret_exist=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create or update Kubernetes secrets for ECR
+        run: |
+          TOKEN=$(aws ecr get-authorization-token --region ap-northeast-2 --output text --query "authorizationData[].authorizationToken" | base64 --decode | cut -d: -f2)
+          if [ "${{ env.secret_exist }}" == "false" ]; then
+            echo "Creating secret..."
+            kubectl create secret docker-registry aws-ecr-cred \
+              --docker-server=${{ secrets.REPO }} \
+              --docker-username=AWS \
+              --docker-password="${TOKEN}" \
+              --namespace ${{ env.K8S_NAMESPACE }}
+          else
+            echo "Updating secret..."
+              ENCODED_JSON=$(echo -n '{"auths":{"'${{ secrets.REPO }}'":{"username":"AWS","password":"'"${TOKEN}"'"}}}' | base64 | tr -d '\n')
+              kubectl patch secret aws-ecr-cred \
+              --namespace ${{ env.K8S_NAMESPACE }} \
+              --type='strategic' \
+              --patch="{\"data\":{\".dockerconfigjson\":\"${ENCODED_JSON}\"}}"
+          fi
+
+      - name: Render Deployment YAML
+        uses: nowactions/envsubst@v1
+        with:
+          input: ${{ env.K8S_CONFIG_PATH }}.tmpl
+          output: ${{ env.K8S_CONFIG_PATH }}.yaml
+
+      - name: Print rendered YAML
+        run: cat k8s/ingame-be.yaml
+
+      - name: Deploy Application
+        run: |
+          kubectl apply -f ${{ env.K8S_CONFIG_PATH }}.yaml
+          kubectl rollout status deployment/ingame-be -n ${{ env.K8S_NAMESPACE }}

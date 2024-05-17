@@ -12,19 +12,20 @@ import { useState } from 'react';
 
 interface ProfileModifyProps {
   nickname: string,
-  intro: string
+  intro: string | null,
 }
 
 interface ProfileProps {
   onClose: () => void;
   OriginNickname: string;
-  OriginIntro: string;
+  OriginIntro: string | null;
 }
+
 
 const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) => {
   const [nickname, setNickname] = useState(OriginNickname);
   const [intro, setIntro] = useState(OriginIntro);
-  const [inputCount, setInputCount] = useState(OriginIntro.length);
+  const [inputCount, setInputCount] = useState<number>(OriginIntro === null ? 0 : OriginIntro.length);
   const [profileIntro, setprofileIntro] = useState(intro);
 
   const { register, handleSubmit } = useForm<ProfileModifyProps>();
@@ -64,7 +65,7 @@ const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) =>
             <FaUserPen size={24} />
             <p className="title">자기소개 변경</p>
           </div>
-          <ProfileIntroInputBox placeholder={intro} value={intro} inputCount={inputCount} {...register('intro')} onChange={(e) => {
+          <ProfileIntroInputBox placeholder={intro === null ? '' : intro} value={intro === null ? '' : intro} inputCount={inputCount} {...register('intro')} onChange={(e) => {
             setIntro(e.target.value);
             setInputCount(e.target.value.length);
             setprofileIntro(e.target.value);
