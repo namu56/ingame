@@ -53,7 +53,12 @@ const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) =>
             <FaUser size={24} />
             <p className="title">닉네임변경</p>
           </div>
-          <QuestInputBox placeholder={nickname} value={nickname} {...register('nickname', {required: true})} onChange={(e) => setNickname(e.target.value)} />
+          <QuestInputBox 
+            placeholder={nickname} 
+            value={nickname}           
+            {...register('nickname', {required: true})} 
+            onChange={(e) => setNickname(e.target.value)}
+             />
         </BoxStyle>
         <BoxStyle>
           <div className="box__title">

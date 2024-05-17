@@ -12,6 +12,7 @@ const UserProfile = () => {
     queryKey: [...USER.GET_USERINFO],
     queryFn: () => getUserInfo(),
   });
+
   return (
     <UserProfileStyle>
       {userInfo && (
