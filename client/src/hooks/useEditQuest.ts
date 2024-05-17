@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
-import { modiMainQuest } from '@/api/quests.api';
+import { modiMainQuest, modiSideQuest } from '@/api/quests.api';
 
 interface EditMainQuestQuestProps extends Quest {
+  id: number;
   title: string;
   difficulty: number;
   side: SideContent[];
@@ -16,10 +17,6 @@ interface EditMainQuestQuestProps extends Quest {
 
 export const useEditQuest = () => {
   const [isPrivate, setIsPrivate] = useState(false);
-  const [isDifficulty, setIsDifficulty] = useState(0);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const today = new Date().toISOString().substring(0, 10);
   const navigate = useNavigate();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
@@ -29,6 +26,7 @@ export const useEditQuest = () => {
     const status = data.side.map(side => side.status ? 'COMPLETED' : 'ON_PROGRESS');
     const newData = {...data, hidden, difficulty: isDifficulty, side: data.side.map((side, index) => ({...side, status: status[index]}))};
     EditQuestMutation.mutate(newData);
+    EditSideQuestMutation.mutate(data.id);
   });
 
   const EditQuestMutation = useMutation({
@@ -41,20 +39,23 @@ export const useEditQuest = () => {
     },
   });
 
+  const EditSideQuestMutation = useMutation({
+    mutationFn: modiSideQuest,
+    onSuccess(res) {
+      // navigate('/');
+    },
+    onError(err) {
+      navigate('/error');
+    },
+  })
+
   return {
     isPrivate,
     setIsPrivate,
-    isDifficulty,
-    setIsDifficulty,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    today,
     register,
     control,
     handleSubmit,
     onSubmit,
-    EditQuestMutation
+    EditQuestMutation,
   };
 };

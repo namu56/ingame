@@ -3,4 +3,5 @@ export interface RankingItem {
   nickname: string;
   point: number;
   rank: number;
+  level: number;
 }

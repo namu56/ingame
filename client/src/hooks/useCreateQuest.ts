@@ -21,9 +21,6 @@ interface CreateMainQuestProps extends Quest {
 export const useCreateQuest = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [isDifficulty, setIsDifficulty] = useState(0);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const today = new Date().toISOString().substring(0, 10);
   const navigate = useNavigate();
 
   const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
@@ -49,11 +46,6 @@ export const useCreateQuest = () => {
     setIsPrivate,
     isDifficulty,
     setIsDifficulty,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    today,
     register,
     control,
     handleSubmit,

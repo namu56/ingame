@@ -1,23 +1,26 @@
 import styled from 'styled-components';
 import { CiLock } from "react-icons/ci";
 import { CiUnlock } from "react-icons/ci";
-import { GoPlusCircle } from "react-icons/go";
+import { FiPlusCircle } from "react-icons/fi";
+import { FiMinusCircle } from "react-icons/fi";
 import { Button } from 'antd';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useCreateQuest } from '@/hooks/useCreateQuest';
+import { useState } from 'react';
 
 const CreateMainQuest = () => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [plusQuest, setPlusQuest] = useState(1);
+  const [minusQuest, setMinusQuest] = useState(0);
+  const today = new Date().toISOString().substring(0, 10);
+
   const {
     isPrivate,
     setIsPrivate,
     isDifficulty,
     setIsDifficulty,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    today,
     register,
     control,
     handleSubmit,
@@ -28,7 +31,7 @@ const CreateMainQuest = () => {
   return (
     <CreateMainQuestStyle>
       <header>
-        <p>Main Quest</p>
+        <p>메인 퀘스트 생성</p>
         <div className='lockIcons'>
           {isPrivate ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
         </div>
@@ -36,16 +39,25 @@ const CreateMainQuest = () => {
       <form onSubmit={onSubmit}>
         <QuestInputBox placeholder='퀘스트 제목' {...register('title')} />
         <QuestButtonContainer>
-          <Button className='easyButton' onClick={() => setIsDifficulty(0)}>EASY</Button>
-          <Button className='normalButton' onClick={() => setIsDifficulty(1)}>NORMAL</Button>
-          <Button className='hardButton' onClick={() => setIsDifficulty(2)}>HARD</Button>
+          <Button className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(0)}>EASY</Button>
+          <Button className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(1)}>NORMAL</Button>
+          <Button className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(2)}>HARD</Button>
         </QuestButtonContainer>
         <div className='plusContainer'>
-          <h1>단계</h1>
-          <GoPlusCircle onClick={() => isDifficulty === 2 ? '' : setIsDifficulty(isDifficulty + 1)} />
+          <h1>퀘스트 추가</h1>
+          <FiPlusCircle onClick={() => {
+            if (plusQuest - minusQuest < 5) {
+              setPlusQuest(plusQuest + 1);
+            }
+          }} />
+          <FiMinusCircle onClick={() => {
+            if (minusQuest < plusQuest && plusQuest - minusQuest !== 1) {
+              setMinusQuest(minusQuest + 1);
+            }
+          }} />
         </div>
         <InnerQuests>
-          {Array(isDifficulty + 3).fill(0).map((_, index) => 
+          {Array(plusQuest - minusQuest).fill(0).map((_, index) => 
           (
             <QuestInputBox key={index} placeholder='퀘스트 제목' {...register(`side.${index}.content` as const)} />
           )
@@ -155,6 +167,10 @@ const QuestButtonContainer = styled.div`
 
   button {
     width: 31%;
+  }
+
+  .isActive {
+    background-color: pink;
   }
   .easyButton {
     color: ${({ theme }) => theme.color.purple};

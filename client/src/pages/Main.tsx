@@ -7,15 +7,35 @@ import { useQuest } from '@/hooks/useSubQuest';
 import Loading from '@/components/Loading';
 import CreateSubQuestButton from '@/components/CreateSubQuestButton';
 import { BiNotepad } from 'react-icons/bi';
+import CreateMainQuestButton from '@/components/CreateMainQuestButton';
+import { useMainQuest } from '@/hooks/useMainQuest';
+import MainBox from '@/components/MainBox';
 
 const Main = () => {
   const { quest, isLoading } = useQuest();
+  const { mainQuest } = useMainQuest();
 
   return (
     <MainStyle>
       <Dropdown />
       <WeekCalendar />
       <UserProfile />
+      <MainQuestStyle>
+        <div className="mainquestTitle">
+          <BiNotepad />
+          <h2>Main Quest</h2>
+          <CreateMainQuestButton />
+        </div>
+        <div className="mainquestList">
+          {mainQuest ? (
+            mainQuest.map((content) => <MainBox key={content.id} content={content} />)
+          ) : isLoading ? (
+            <Loading />
+          ) : (
+            <p>등록된 메인 퀘스트가 없습니다</p>
+          )}
+        </div>
+      </MainQuestStyle>
       <section className="subQuestSection">
         <div className="questTitle">
           <BiNotepad />
@@ -51,6 +71,14 @@ const MainStyle = styled.div`
       display: flex;
       align-items: center;
     }
+  }
+`;
+
+const MainQuestStyle = styled.div`
+  .mainquestTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
   }
 `;
 

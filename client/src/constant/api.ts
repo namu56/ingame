@@ -17,5 +17,7 @@ export const API_END_POINT = {
   // CREATE_MAIN_QUEST
   CREATE_QUEST: '/quests',
   // EDIT_MAIN_QUEST
-  PATCH_QUEST: '/quests/main',
+  MAIN_QUEST: '/quests/main',
+  // SIDE_QUEST
+  SIDE_QUEST: '/quests/side',
 };

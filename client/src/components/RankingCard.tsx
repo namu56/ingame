@@ -4,7 +4,7 @@ import { RankingItem } from '@/models/ranking.model';
 
 interface RankingCardProps extends RankingItem {}
 
-const RankingCard = ({ id, nickname, point, rank }: RankingCardProps) => {
+const RankingCard = ({ id, nickname, point, rank, level }: RankingCardProps) => {
   return (
     <>
       <RankingCardStyle>
@@ -17,7 +17,7 @@ const RankingCard = ({ id, nickname, point, rank }: RankingCardProps) => {
         <section className="nlContainer">
           <h2 className="nickname">{nickname}</h2>
           <div className="lpContainer">
-            <p className="level">LV {Math.floor(point / 1024)}</p>
+            <p className="level">LV {level}</p>
             <p className="point">P {point}</p>
           </div>
         </section>
