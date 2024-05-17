@@ -1,26 +1,31 @@
 import styled from 'styled-components';
 import { CiLock } from "react-icons/ci";
 import { CiUnlock } from "react-icons/ci";
-import { GoPlusCircle } from "react-icons/go";
 import { Button } from 'antd';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useState } from 'react';
 import { useEditQuest } from '@/hooks/useEditQuest';
+import { useLocation } from 'react-router-dom';
+import { getSideQuest } from '@/models/quest.model';
+import { FiMinusCircle, FiPlusCircle } from 'react-icons/fi';
 
 const EditMainQuestQuest = () => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const today = new Date().toISOString().substring(0, 10);
+  // MainBox에서 Content 값
+  const { state } = useLocation();
+  const [startDate, setStartDate] = useState(state.content.startDate);
+  const [endDate, setEndDate] = useState(state.content.endDate);
+  const [title, setTitle] = useState(state.content.title);
+  const [isDifficulty, setIsDifficulty] = useState(state.content.difficulty);
+  const [plusQuest, setPlusQuest] = useState(state.content.sideQuests.length);
+  const [minusQuest, setMinusQuest] = useState(0);
+  const [sideQuests, setSideQuests] = useState(state.content.sideQuests);
   
-
   const {
     isPrivate,
     setIsPrivate,
-    isDifficulty,
-    setIsDifficulty,
     register,
-    onSubmit
+    onSubmit,
   } = useEditQuest();
 
   return (
@@ -28,32 +33,60 @@ const EditMainQuestQuest = () => {
       <header>
         <p>메인 퀘스트 수정</p>
         <div className='lockIcons'>
-        {isPrivate ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
+        {state.content.hidden ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
         </div>
       </header>
       <form onSubmit={onSubmit}>
-        <QuestInputBox placeholder='퀘스트 제목' {...register('title')} />
+        <input type='hidden' value={isDifficulty} {...register('difficulty')} />
+        <input type='hidden' value={state.content.id} {...register('id')} />
+        <QuestInputBox 
+          value={title} 
+          {...register('title')}
+          onChange={(e) => setTitle(e.target.value)}
+          />
         <QuestButtonContainer>
-          <Button className='easyButton' onClick={() => setIsDifficulty(0)}>EASY</Button>
-          <Button className='normalButton' onClick={() => setIsDifficulty(1)}>NORMAL</Button>
-          <Button className='hardButton' onClick={() => setIsDifficulty(2)}>HARD</Button>
+          <Button className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(0)}>EASY</Button>
+          <Button className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(1)}>NORMAL</Button>
+          <Button className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(2)}>HARD</Button>
         </QuestButtonContainer>
         <div className='plusContainer'>
           <h1>단계</h1>
-          <GoPlusCircle onClick={() => isDifficulty === 2 ? '' : setIsDifficulty(isDifficulty + 1)} />
+          <FiPlusCircle onClick={() => {
+            if (plusQuest - minusQuest < 5) {
+              setPlusQuest(plusQuest + 1);
+            }
+          }} />
+          <FiMinusCircle onClick={() => {
+            if (minusQuest < plusQuest && plusQuest - minusQuest !== 1) {
+              setMinusQuest(minusQuest + 1);
+            }
+          }} />
         </div>
         <InnerQuests>
-        {Array(isDifficulty + 3).fill(0).map((quest, index) => 
+        {state.content.sideQuests && state.content.sideQuests.map((sideQuest: getSideQuest, index:number) => 
           (
             <SideBoxContainer key={index}>
               <input 
                 className='checkBoxInput'
-                type='checkbox' 
-                {...register(`side.${index}.status` as const)}
+                type='checkbox'             
+                checked={sideQuest.status === 'completed'} // models에서 대문자로 바꾼뒤 다시 코드 고치기
+                {...register(`side.${index}.status`)}
+                onChange={(e) => {
+                  const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
+                  const newSideQuests = [...sideQuests];
+                  newSideQuests[index].status = newStatus;
+                  setSideQuests(newSideQuests);
+                }}
               />
               <QuestInputBox  
-                placeholder='퀘스트 제목' 
-                {...register(`side.${index}.content` as const)} 
+                value={sideQuest.content}
+                {...register(`side.${index}.content`)}
+                onChange={(e) => {
+                  const newContent = e.target.value;
+                  const newSideQuests = [...sideQuests];
+                  newSideQuests[index].content = newContent;
+                  setSideQuests(newSideQuests);
+                }}
               />
             </SideBoxContainer>
           )
@@ -64,7 +97,7 @@ const EditMainQuestQuest = () => {
           <input 
             className='startDate'
             type='date' 
-            value={today} 
+            value={startDate} 
             {...register('startDate', { 
               required: true, 
               onChange: e => setStartDate(e.target.value)
@@ -73,6 +106,7 @@ const EditMainQuestQuest = () => {
           <input 
             className='endDate'
             type='date'
+            value={endDate}
             {...register('endDate', {
               required: true,            
               onChange: e => setEndDate(e.target.value)          
@@ -169,6 +203,9 @@ const QuestButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
 
+  .isActive {
+    background-color: pink;
+  }
   button {
     width: 31%;
   }
