@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { CiLock } from "react-icons/ci";
 import { CiUnlock } from "react-icons/ci";
-import { Button } from 'antd';
+import Button from '@/components/Button';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useState } from 'react';
@@ -45,9 +45,9 @@ const EditMainQuestQuest = () => {
           onChange={(e) => setTitle(e.target.value)}
           />
         <QuestButtonContainer>
-          <Button className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(0)}>EASY</Button>
-          <Button className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(1)}>NORMAL</Button>
-          <Button className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(2)}>HARD</Button>
+          <Button className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(0)} children={'EASY'} size={'small'} color={'black'}></Button>
+          <Button className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(1)} children={'NORMAL'} size={'small'} color={'black'}></Button>
+          <Button className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(2)} children={'HARD'} size={'small'} color={'black'}></Button>
         </QuestButtonContainer>
         <div className='plusContainer'>
           <h1>단계</h1>
@@ -69,7 +69,7 @@ const EditMainQuestQuest = () => {
               <input 
                 className='checkBoxInput'
                 type='checkbox'             
-                checked={sideQuest.status === 'completed'} // models에서 대문자로 바꾼뒤 다시 코드 고치기
+                checked={sideQuest.status === 'COMPLETED'} // models에서 대문자로 바꾼뒤 다시 코드 고치기
                 {...register(`side.${index}.status`)}
                 onChange={(e) => {
                   const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
@@ -114,8 +114,8 @@ const EditMainQuestQuest = () => {
           />
         </div>
         <div className='modifiyAndClose'>
-          <Button className='modifiyButton' htmlType='submit'>수정</Button>
-          <Button className='closeButton'>닫기</Button>          
+          <Button className='modifiyButton' type={'submit'} children={'수정'} size={'small'} color={'black'} />
+          <Button className='closeButton' children={'닫기'} size={'small'} color={'black'} />  
         </div>
       </form>
     </EditMainQuestQuestStyle>
