@@ -32,7 +32,7 @@ export const InnerStyle = styled.div`
   justify-content: flex-start;
   align-items: center;
   max-width: 480px;
-  border: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+  border: 1px solid ${({ theme }) => theme.color.grayNormal};
   border-radius: ${({ theme }) => theme.borderRadius.large};
   height: 800px;
 

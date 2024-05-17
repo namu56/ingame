@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { CiLock } from "react-icons/ci";
-import { CiUnlock } from "react-icons/ci";
+import { CiLock } from 'react-icons/ci';
+import { CiUnlock } from 'react-icons/ci';
 import Button from '@/components/Button';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
@@ -20,102 +20,128 @@ const EditMainQuestQuest = () => {
   const [plusQuest, setPlusQuest] = useState(state.content.sideQuests.length);
   const [minusQuest, setMinusQuest] = useState(0);
   const [sideQuests, setSideQuests] = useState(state.content.sideQuests);
-  
-  const {
-    isPrivate,
-    setIsPrivate,
-    register,
-    onSubmit,
-  } = useEditQuest();
+
+  const { isPrivate, setIsPrivate, register, onSubmit } = useEditQuest();
 
   return (
     <EditMainQuestQuestStyle>
       <header>
         <p>메인 퀘스트 수정</p>
-        <div className='lockIcons'>
-        {state.content.hidden ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
+        <div className="lockIcons">
+          {state.content.hidden ? (
+            <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} />
+          ) : (
+            <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />
+          )}
         </div>
       </header>
       <form onSubmit={onSubmit}>
-        <input type='hidden' value={isDifficulty} {...register('difficulty')} />
-        <input type='hidden' value={state.content.id} {...register('id')} />
-        <QuestInputBox 
-          value={title} 
+        <input type="hidden" value={isDifficulty} {...register('difficulty')} />
+        <input type="hidden" value={state.content.id} {...register('id')} />
+        <QuestInputBox
+          value={title}
           {...register('title')}
           onChange={(e) => setTitle(e.target.value)}
-          />
+        />
         <QuestButtonContainer>
-          <Button className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(0)} children={'EASY'} size={'small'} color={'black'}></Button>
-          <Button className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(1)} children={'NORMAL'} size={'small'} color={'black'}></Button>
-          <Button className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(2)} children={'HARD'} size={'small'} color={'black'}></Button>
+          <Button
+            className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`}
+            onClick={() => setIsDifficulty(0)}
+            children={'EASY'}
+            size={'small'}
+            color={'black'}
+          ></Button>
+          <Button
+            className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`}
+            onClick={() => setIsDifficulty(1)}
+            children={'NORMAL'}
+            size={'small'}
+            color={'black'}
+          ></Button>
+          <Button
+            className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`}
+            onClick={() => setIsDifficulty(2)}
+            children={'HARD'}
+            size={'small'}
+            color={'black'}
+          ></Button>
         </QuestButtonContainer>
-        <div className='plusContainer'>
+        <div className="plusContainer">
           <h1>단계</h1>
-          <FiPlusCircle onClick={() => {
-            if (plusQuest - minusQuest < 5) {
-              setPlusQuest(plusQuest + 1);
-            }
-          }} />
-          <FiMinusCircle onClick={() => {
-            if (minusQuest < plusQuest && plusQuest - minusQuest !== 1) {
-              setMinusQuest(minusQuest + 1);
-            }
-          }} />
+          <FiPlusCircle
+            onClick={() => {
+              if (plusQuest - minusQuest < 5) {
+                setPlusQuest(plusQuest + 1);
+              }
+            }}
+          />
+          <FiMinusCircle
+            onClick={() => {
+              if (minusQuest < plusQuest && plusQuest - minusQuest !== 1) {
+                setMinusQuest(minusQuest + 1);
+              }
+            }}
+          />
         </div>
         <InnerQuests>
-        {state.content.sideQuests && state.content.sideQuests.map((sideQuest: getSideQuest, index:number) => 
-          (
-            <SideBoxContainer key={index}>
-              <input 
-                className='checkBoxInput'
-                type='checkbox'             
-                checked={sideQuest.status === 'COMPLETED'} // models에서 대문자로 바꾼뒤 다시 코드 고치기
-                {...register(`side.${index}.status`)}
-                onChange={(e) => {
-                  const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
-                  const newSideQuests = [...sideQuests];
-                  newSideQuests[index].status = newStatus;
-                  setSideQuests(newSideQuests);
-                }}
-              />
-              <QuestInputBox  
-                value={sideQuest.content}
-                {...register(`side.${index}.content`)}
-                onChange={(e) => {
-                  const newContent = e.target.value;
-                  const newSideQuests = [...sideQuests];
-                  newSideQuests[index].content = newContent;
-                  setSideQuests(newSideQuests);
-                }}
-              />
-            </SideBoxContainer>
-          )
-        )}
+          {state.content.sideQuests &&
+            state.content.sideQuests.map((sideQuest: getSideQuest, index: number) => (
+              <SideBoxContainer key={index}>
+                <input
+                  className="checkBoxInput"
+                  type="checkbox"
+                  checked={sideQuest.status === 'COMPLETED'} // models에서 대문자로 바꾼뒤 다시 코드 고치기
+                  {...register(`side.${index}.status`)}
+                  onChange={(e) => {
+                    const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
+                    const newSideQuests = [...sideQuests];
+                    newSideQuests[index].status = newStatus;
+                    setSideQuests(newSideQuests);
+                  }}
+                />
+                <QuestInputBox
+                  value={sideQuest.content}
+                  {...register(`side.${index}.content`)}
+                  onChange={(e) => {
+                    const newContent = e.target.value;
+                    const newSideQuests = [...sideQuests];
+                    newSideQuests[index].content = newContent;
+                    setSideQuests(newSideQuests);
+                  }}
+                />
+              </SideBoxContainer>
+            ))}
         </InnerQuests>
-        <h3 className='period'>기간</h3>
-        <div className='dateContainer'>
-          <input 
-            className='startDate'
-            type='date' 
-            value={startDate} 
-            {...register('startDate', { 
-              required: true, 
-              onChange: e => setStartDate(e.target.value)
-            })} 
+        <h3 className="period">기간</h3>
+        <div className="dateContainer">
+          <input
+            className="startDate"
+            type="date"
+            value={startDate}
+            {...register('startDate', {
+              required: true,
+              onChange: (e) => setStartDate(e.target.value),
+            })}
           />
-          <input 
-            className='endDate'
-            type='date'
+          <input
+            className="endDate"
+            type="date"
             value={endDate}
             {...register('endDate', {
-              required: true,            
-              onChange: e => setEndDate(e.target.value)          
+              required: true,
+              onChange: (e) => setEndDate(e.target.value),
             })}
           />
         </div>
-        <div className='modifiyAndClose'>
-          <Button className='modifiyButton' type={'submit'} children={'수정'} size={'small'} color={'black'} />
-          <Button className='closeButton' children={'닫기'} size={'small'} color={'black'} />  
+        <div className="modifiyAndClose">
+          <Button
+            className="modifiyButton"
+            type={'submit'}
+            children={'수정'}
+            size={'small'}
+            color={'black'}
+          />
+          <Button className="closeButton" children={'닫기'} size={'small'} color={'black'} />
         </div>
       </form>
     </EditMainQuestQuestStyle>
@@ -169,14 +195,14 @@ const EditMainQuestQuestStyle = styled.div`
   .dateContainer {
     display: flex;
     justify-content: space-between;
-    
+
     input {
       width: 47%;
       padding: 0.2rem;
       border: 1px solid rgba(0, 0, 0, 0.2);
       border-radius: 5px;
       font-size: 0.8rem;
-      background-color: ${({ theme }) => theme.color.grayLightActive};
+      background-color: ${({ theme }) => theme.color.grayLight};
     }
   }
 
@@ -194,7 +220,7 @@ const EditMainQuestQuestStyle = styled.div`
       background-color: ${({ theme }) => theme.color.green};
     }
     .closeButton {
-      background-color: ${({ theme }) => theme.color.grayNormalActive};
+      background-color: ${({ theme }) => theme.color.grayNormal};
     }
   }
 `;
@@ -223,12 +249,12 @@ const QuestButtonContainer = styled.div`
   }
 `;
 
-const InnerQuests = styled.div` 
+const InnerQuests = styled.div`
   min-height: 230px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-`
+`;
 
 const SideBoxContainer = styled.div`
   display: flex;

@@ -67,7 +67,7 @@ const SubBoxStyle = styled.div<{ status: QuestStatus }>`
   height: 50px;
 
   background: ${({ theme, status }) => theme.statusColor[status]};
-  color: ${({ theme, status }) => status !== 'ON_PROGRESS' && theme.color.grayDarkActive};
+  color: ${({ theme, status }) => status !== 'ON_PROGRESS' && theme.color.grayDark};
   text-decoration: ${({ status }) => status !== 'ON_PROGRESS' && 'line-through'};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};

@@ -76,7 +76,7 @@ const DropdownStyle = styled.div<DropdownStyleProps>`
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
     border-radius: ${({ theme }) => theme.borderRadius.small};
     z-index: 100;
-    border: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+    border: 1px solid ${({ theme }) => theme.color.grayNormal};
     font-size: ${({ theme }) => theme.font.small};
     color: ${({ theme }) => theme.color.black};
 
@@ -87,10 +87,10 @@ const DropdownStyle = styled.div<DropdownStyleProps>`
 
       li {
         padding: 10px;
-        border-bottom: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+        border-bottom: 1px solid ${({ theme }) => theme.color.grayNormal};
         text-align: center;
         &:hover {
-          background-color: ${({ theme }) => theme.color.grayLightActive};
+          background-color: ${({ theme }) => theme.colorActive.grayLight};
           cursor: pointer;
         }
 

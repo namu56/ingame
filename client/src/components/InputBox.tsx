@@ -52,7 +52,7 @@ const InputBox = React.forwardRef(
 );
 
 const InputBoxLayoutStyle = styled.div`
-  border: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+  border: 1px solid ${({ theme }) => theme.color.grayNormal};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   display: flex;
   align-items: center;
@@ -67,7 +67,7 @@ const InputBoxStyle = styled.input`
   border-radius: ${({ theme }) => theme.borderRadius.small};
   flex-grow: 1;
   &::placeholder {
-    color: ${({ theme }) => theme.color.grayNormalActive};
+    color: ${({ theme }) => theme.color.grayNormal};
     font-family: 'Pretendard400';
   }
 `;
@@ -77,14 +77,14 @@ const InputIconSpan = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.color.grayDarkActive};
-  border-right: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+  color: ${({ theme }) => theme.color.grayDark};
+  border-right: 1px solid ${({ theme }) => theme.color.grayNormal};
   height: inherit;
 `;
 
 const InputEndIconSpan = styled.span<Pick<InputBoxProps, '$endType'>>`
   width: 2.25rem;
-  color: ${({ theme }) => theme.color.grayDarkActive};
+  color: ${({ theme }) => theme.color.grayDark};
   display: flex;
   align-items: center;
   justify-content: center;
