@@ -9,7 +9,7 @@ import { CreateSubQuestProps } from '@/components/modals/CreateSubQuestModal';
 import { SubQuestModifyProps } from '@/components/modals/SubQuestModal';
 import { QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
-import { formattedCalendar } from '@/utils/formatter';
+import { formattedDate } from '@/utils/formatter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ export const useSubQuest = () => {
     queryKey: [...QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
     queryFn: () =>
       getSubQuest({
-        date: params.get(QUERYSTRING.DATE) || formattedCalendar(new Date()),
+        date: params.get(QUERYSTRING.DATE) || formattedDate(new Date()),
       }),
   });
 
@@ -69,7 +69,7 @@ export const useSubQuest = () => {
     onError(err) {},
   });
 
-  const date = params.get(QUERYSTRING.DATE) || formattedCalendar(new Date());
+  const date = params.get(QUERYSTRING.DATE) || formattedDate(new Date());
 
   return {
     quest: subQuestList,

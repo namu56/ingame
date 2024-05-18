@@ -8,7 +8,7 @@ import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
 import { QuestHiddenType, QuestMode } from '@/models/quest.model';
 import { useSubQuest } from '@/hooks/useSubQuest';
-import { formattedCalendar } from '@/utils/formatter';
+import { formattedDate } from '@/utils/formatter';
 
 export interface CreateSubQuestProps {
   title: string;
@@ -50,8 +50,8 @@ const CreateSubQuestModal = ({ onClose }: SubQuestModalProps) => {
     <SubQuestModalStyle>
       <CloseButton onClick={onClose}></CloseButton>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <input type="hidden" value={formattedCalendar(new Date())} {...register('startDate')} />
-        <input type="hidden" value={formattedCalendar(new Date())} {...register('endDate')} />
+        <input type="hidden" value={formattedDate(new Date())} {...register('startDate')} />
+        <input type="hidden" value={formattedDate(new Date())} {...register('endDate')} />
         <input type="hidden" value={'SUB'} {...register('mode')} />
         <BoxStyle>
           <div className="box__title">

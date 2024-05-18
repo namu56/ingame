@@ -69,7 +69,7 @@ const SubQuestModal = ({ onClose, OriginTitle, id, OriginHidden }: SubQuestModal
         </BoxStyle>
         <ButtonContainerStyle>
           <Button type="submit" size="medium" color="green" children={'수정하기'} />
-          <Button onClick={onClose} size="medium" color="grayNormalActive" children={'닫기'} />
+          <Button onClick={onClose} size="medium" color="grayNormal" children={'닫기'} />
         </ButtonContainerStyle>
       </form>
     </SubQuestModalStyle>

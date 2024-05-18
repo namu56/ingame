@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { ROUTERS } from '@/constant/route';
 import { useUser } from '@/hooks/useUser';
+import { useMessage } from '@/hooks/useMessage';
 
 interface DropdownProps {
   isOpen?: boolean;
@@ -17,6 +18,11 @@ const Dropdown = ({ isOpen = false }: DropdownProps) => {
 
   const { userLogout } = useAuth();
   const { userDelete } = useUser();
+  const { showConfirm } = useMessage();
+
+  const handleLogout = () => {
+    showConfirm('로그아웃 하시겠습니까?', userLogout);
+  };
   return (
     <DropdownStyle $open={open} ref={dropdownRef}>
       <button className="toggle" onClick={() => setOpen(!open)}>
@@ -36,7 +42,7 @@ const Dropdown = ({ isOpen = false }: DropdownProps) => {
               </Link>
             </li>
             <li>
-              <button onClick={userLogout}>로그아웃</button>
+              <button onClick={handleLogout}>로그아웃</button>
             </li>
             <li>
               <button onClick={userDelete}>회원 탈퇴</button>

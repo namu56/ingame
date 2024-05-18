@@ -66,7 +66,7 @@ const ChangeProfileImageModal = ({ handleModal, currentProfile }: ChangeProfileI
         >
           변경하기
         </Button>
-        <Button size="large" color="grayNormalActive" onClick={() => handleModal(false)}>
+        <Button size="large" color="grayNormal" onClick={() => handleModal(false)}>
           닫기
         </Button>
       </ButtonsStyle>
