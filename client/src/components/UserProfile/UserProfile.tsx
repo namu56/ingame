@@ -21,7 +21,7 @@ const UserProfile = () => {
           <UserDetailInfoStyle>
             <div className="basic__info">
               <p className="nickname">
-                Lv {userInfo.level} {userInfo.nickname}
+                Lv {userInfo.level}. {userInfo.nickname}
               </p>
               <EditProfileButton nickname={userInfo.nickname} intro={userInfo.intro} />
             </div>
