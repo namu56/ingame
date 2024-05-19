@@ -24,7 +24,7 @@ const EditMainQuestQuest = () => {
   const [minusQuest, setMinusQuest] = useState(0);
   const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const [isPrivate, setIsPrivate] = useState(false);
-  const { EditQuestMutation } = useMainQuest();
+  const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
   const navigate = useNavigate();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
@@ -32,6 +32,7 @@ const EditMainQuestQuest = () => {
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
     const newData = {...data, hidden: hidden};
+    console.log(newData);
     EditQuestMutation.mutate(newData);
   });
 
@@ -75,16 +76,17 @@ const EditMainQuestQuest = () => {
         {content.sideQuests && content.sideQuests.map((sideQuest: SideContent, index:number) => 
           (
             <SideBoxContainer key={index}>
+              <input type='hidden' value={sideQuest.id} {...register(`sideQuests.${index}.id`)} />
               <input 
                 className='checkBoxInput'
                 type='checkbox'             
                 checked={sideQuest.status === 'COMPLETED'}
                 {...register(`sideQuests.${index}.status`)}
                 onChange={(e) => {
-                  const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
+                  const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';              
                   const newSideQuests = [...sideQuests];
                   newSideQuests[index].status = newStatus;
-                  setSideQuests(newSideQuests);
+                  setSideQuests(newSideQuests);                  
                 }}
               />
               <QuestInputBox  
@@ -124,7 +126,9 @@ const EditMainQuestQuest = () => {
         </div>
         <div className='modifiyAndClose'>
           <Button className='modifiyButton' type={'submit'} children={'수정'} size={'medium'} color={'black'} />
-          <Button className='closeButton' children={'닫기'} size={'medium'} color={'black'} onClick={() => navigate('/')} />  
+          <Button className='closeButton' children={'삭제'} size={'medium'} color={'black'} onClick={() => {
+              DeleteMainQuestsMutation.mutate(content.id);
+            }} />  
         </div>
       </form>
     </EditMainQuestQuestStyle>

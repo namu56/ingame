@@ -1,4 +1,4 @@
-import { ModifyQuestStatusProps, createMainQuest, getMainQuest, modiMainQuest, modiQuestStatus, modiSideQuest } from '@/api/quests.api';
+import { ModifyQuestStatusProps, createMainQuest, deleteMainQuest, getMainQuest, modiMainQuest, modiQuestStatus, modiSideQuest } from '@/api/quests.api';
 import { BASE_KEY, QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
 import { Quest, QuestDifficulty, QuestHiddenType, QuestMode, SideContent } from '@/models/quest.model';
@@ -37,17 +37,27 @@ export const useMainQuest = () => {
   const CreateQuestMutation = useMutation({
     mutationFn: createMainQuest,
     onSuccess(res) {
-      // navigate('/');
+      navigate('/');
     },
     onError(err) {
-      // navigate('/error');
+      navigate('/error');
     },
   });
 
   const EditQuestMutation = useMutation({
     mutationFn: modiMainQuest,
     onSuccess(res) {
-      // navigate('/');
+      navigate('/');
+    },
+    onError(err) {
+      navigate('/error');
+    },
+  });
+
+  const DeleteMainQuestsMutation = useMutation({
+    mutationFn: (id: number) => deleteMainQuest(id),
+    onSuccess() {
+      navigate('/');
     },
     onError(err) {
       navigate('/error');
@@ -87,6 +97,7 @@ export const useMainQuest = () => {
     EditQuestMutation,
     modifyMainQuestStatus,
     patchSideMutation,
+    DeleteMainQuestsMutation,
     date,
   }
 };
