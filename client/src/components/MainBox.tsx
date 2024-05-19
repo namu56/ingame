@@ -27,7 +27,7 @@ const MainBox = ({content}: MainBoxProps) => {
   const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
   const checkedCount = checked.reduce((count, isChecked) => isChecked ? count + 1 : count, 0);
   const fraction = `${checkedCount} / ${content.sideQuests.length}`;
-
+  
   const handleChangeStatue = () => {
     if (date === formattedCalendar(new Date())) {
       let message = '';
@@ -59,11 +59,13 @@ const MainBox = ({content}: MainBoxProps) => {
 
   const handleNavigate = (event: React.MouseEvent) => {
     event.stopPropagation();
+    if (content.status === 'COMPLETED') return;
     navigate(`/editquest/${content.id}`, { state: { content } });
   }
 
   const handleToggleAccordion = (event: React.MouseEvent) => {
     event.stopPropagation();
+    if (content.status === 'COMPLETED') return;
     setisAccordion(prevState => !prevState);
   }
 
@@ -76,7 +78,9 @@ const MainBox = ({content}: MainBoxProps) => {
           <p className='fDisplay'>{fraction}</p>
         </header>
         <h1 className='title'>{content.title}</h1>
-        <button className='eButton' onClick={handleNavigate}><BsThreeDots /></button>
+        <div>
+          <button className='eButton' onClick={handleNavigate}><BsThreeDots /></button>
+        </div>
       </MainBoxStyle>
       <SideBoxContainer>
       {content && content.sideQuests ? content.sideQuests.map((quest, index) => (
