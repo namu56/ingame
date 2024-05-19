@@ -136,7 +136,7 @@ export class CreateQuestRequestDto extends OmitType(CreateQuestDto, [
     description: '퀘스트 설명 (메인 퀘스트 전용)',
     required: false,
   })
-  public side: Omit<SideQuestRequestDto, 'questId'>[];
+  public sideQuests: Omit<SideQuestRequestDto, 'questId'>[];
 }
 
 export class UpdateQuestRequestDto extends OmitType(CreateQuestDto, [
@@ -162,7 +162,7 @@ export class UpdateQuestRequestDto extends OmitType(CreateQuestDto, [
     ],
     description: '사이드 퀘스트',
   })
-  public side: UpdateSideQuestRequestDto[];
+  public sideQuests: UpdateSideQuestRequestDto[];
 }
 
 export class UpdateSubQuestRequestDto extends PickType(CreateQuestDto, ['title', 'hidden']) {}
