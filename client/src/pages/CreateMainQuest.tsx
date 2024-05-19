@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { CiLock } from "react-icons/ci";
-import { CiUnlock } from "react-icons/ci";
-import { FiPlusCircle } from "react-icons/fi";
-import { FiMinusCircle } from "react-icons/fi";
+import { CiLock } from 'react-icons/ci';
+import { CiUnlock } from 'react-icons/ci';
+import { FiPlusCircle } from 'react-icons/fi';
+import { FiMinusCircle } from 'react-icons/fi';
 import { Button } from 'antd';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
@@ -28,74 +28,102 @@ const CreateMainQuest = () => {
 
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const difficulty = isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : 'HARD' as QuestDifficulty;
+    const difficulty =
+      isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : ('HARD' as QuestDifficulty);
     const mode = 'MAIN' as QuestMode;
-    const newData = {...data, hidden, difficulty: difficulty, mode: mode};
+    const newData = { ...data, hidden, difficulty: difficulty, mode: mode };
     CreateQuestMutation.mutate(newData);
   });
 
-  
   return (
     <>
-    <CloseButton onClick={() => navigate('/')} />
-    <CreateMainQuestStyle>
-      <header>
-        <p>메인 퀘스트 생성</p>
-        <div className='lockIcons'>
-          {isPrivate ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
-        </div>
-      </header>
-      <form onSubmit={onSubmit}>
-        <QuestInputBox placeholder='퀘스트 제목' {...register('title')} />
-        <QuestButtonContainer>
-          <Button className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(0)}>EASY</Button>
-          <Button className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(1)}>NORMAL</Button>
-          <Button className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(2)}>HARD</Button>
-        </QuestButtonContainer>
-        <div className='plusContainer'>
-          <h1>퀘스트 추가</h1>
-          <FiPlusCircle onClick={() => {
-            if (plusQuest - minusQuest < 5) {
-              setPlusQuest(plusQuest + 1);
-            }
-          }} />
-          <FiMinusCircle onClick={() => {
-            if (minusQuest < plusQuest && plusQuest - minusQuest !== 1) {
-              setMinusQuest(minusQuest + 1);
-            }
-          }} />
-        </div>
-        <InnerQuests>
-          {Array(plusQuest - minusQuest).fill(0).map((_, index) => 
-          (
-            <QuestInputBox key={index} placeholder='퀘스트 제목' {...register(`sideQuests.${index}.content` as const)} />
-          )
-          )}
-        </InnerQuests>
-        <h3 className='period'>기간</h3>
-        <div className='dateContainer'>
-          <input 
-            className='startDate'
-            type='date' 
-            value={today} 
-            {...register('startDate', { 
-              required: true, 
-              onChange: e => setStartDate(e.target.value)
-            })} 
-          />
-          <input 
-            className='endDate'
-            type='date' 
-            {...register('endDate', {
-              required: true, 
-              onChange: e => setEndDate(e.target.value)
-            })} />
-        </div>
-        <div className='modifiyAndClose'>
-          <Button htmlType='submit' children={'추가하기'} />
-        </div>
-      </form>
-    </CreateMainQuestStyle>
+      <CloseButton onClick={() => navigate('/')} />
+      <CreateMainQuestStyle>
+        <header>
+          <p>메인 퀘스트 생성</p>
+          <div className="lockIcons">
+            {isPrivate ? (
+              <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} />
+            ) : (
+              <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />
+            )}
+          </div>
+        </header>
+        <form onSubmit={onSubmit}>
+          <QuestInputBox placeholder="퀘스트 제목" {...register('title')} />
+          <QuestButtonContainer>
+            <Button
+              className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty(0)}
+            >
+              EASY
+            </Button>
+            <Button
+              className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty(1)}
+            >
+              NORMAL
+            </Button>
+            <Button
+              className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty(2)}
+            >
+              HARD
+            </Button>
+          </QuestButtonContainer>
+          <div className="plusContainer">
+            <h1>퀘스트 추가</h1>
+            <FiPlusCircle
+              onClick={() => {
+                if (plusQuest - minusQuest < 5) {
+                  setPlusQuest(plusQuest + 1);
+                }
+              }}
+            />
+            <FiMinusCircle
+              onClick={() => {
+                if (minusQuest < plusQuest && plusQuest - minusQuest !== 1) {
+                  setMinusQuest(minusQuest + 1);
+                }
+              }}
+            />
+          </div>
+          <InnerQuests>
+            {Array(plusQuest - minusQuest)
+              .fill(0)
+              .map((_, index) => (
+                <QuestInputBox
+                  key={index}
+                  placeholder="퀘스트 제목"
+                  {...register(`sideQuests.${index}.content` as const)}
+                />
+              ))}
+          </InnerQuests>
+          <h3 className="period">기간</h3>
+          <div className="dateContainer">
+            <input
+              className="startDate"
+              type="date"
+              value={today}
+              {...register('startDate', {
+                required: true,
+                onChange: (e) => setStartDate(e.target.value),
+              })}
+            />
+            <input
+              className="endDate"
+              type="date"
+              {...register('endDate', {
+                required: true,
+                onChange: (e) => setEndDate(e.target.value),
+              })}
+            />
+          </div>
+          <div className="modifiyAndClose">
+            <Button htmlType="submit" children={'추가하기'} />
+          </div>
+        </form>
+      </CreateMainQuestStyle>
     </>
   );
 };
@@ -147,13 +175,13 @@ const CreateMainQuestStyle = styled.div`
   .dateContainer {
     display: flex;
     justify-content: space-between;
-    
+
     input {
       width: 47%;
       padding: 0.2rem;
       border: 1px solid rgba(0, 0, 0, 0.2);
       border-radius: 5px;
-      background-color: ${({ theme }) => theme.color.grayLightActive};
+      background-color: ${({ theme }) => theme.color.grayLight};
     }
   }
 
@@ -196,13 +224,11 @@ const QuestButtonContainer = styled.div`
   }
 `;
 
-const InnerQuests = styled.div` 
+const InnerQuests = styled.div`
   min-height: 230px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-`
+`;
 
 export default CreateMainQuest;
-
-

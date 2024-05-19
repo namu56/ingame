@@ -7,8 +7,8 @@ import edit from '../../assets/images/edit.png';
 import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
 import { QuestHiddenType, QuestMode } from '@/models/quest.model';
-import { useQuest } from '@/hooks/useSubQuest';
-import { formattedCalendar } from '@/utils/formatter';
+import { useSubQuest } from '@/hooks/useSubQuest';
+import { formattedDate } from '@/utils/formatter';
 
 export interface CreateSubQuestProps {
   title: string;
@@ -33,7 +33,7 @@ const CreateSubQuestModal = ({ onClose }: SubQuestModalProps) => {
     formState: { errors },
   } = useForm<CreateSubQuestProps>();
 
-  const { createSubQuest } = useQuest();
+  const { createSubQuest } = useSubQuest();
 
   const onSubmit = (data: CreateSubQuestProps) => {
     createSubQuest(data).then(() => {
@@ -50,8 +50,8 @@ const CreateSubQuestModal = ({ onClose }: SubQuestModalProps) => {
     <SubQuestModalStyle>
       <CloseButton onClick={onClose}></CloseButton>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <input type="hidden" value={formattedCalendar(new Date())} {...register('startDate')} />
-        <input type="hidden" value={formattedCalendar(new Date())} {...register('endDate')} />
+        <input type="hidden" value={formattedDate(new Date())} {...register('startDate')} />
+        <input type="hidden" value={formattedDate(new Date())} {...register('endDate')} />
         <input type="hidden" value={'SUB'} {...register('mode')} />
         <BoxStyle>
           <div className="box__title">
@@ -80,7 +80,7 @@ const CreateSubQuestModal = ({ onClose }: SubQuestModalProps) => {
         </BoxStyle>
         <ButtonContainerStyle>
           <Button type="submit" size="medium" color="green" children={'추가하기'} />
-          <Button onClick={onClose} size="medium" color="grayNormalActive" children={'닫기'} />
+          <Button onClick={onClose} size="medium" color="grayNormal" children={'닫기'} />
         </ButtonContainerStyle>
       </form>
     </SubQuestModalStyle>
