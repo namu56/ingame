@@ -60,7 +60,8 @@ export class CreateQuestDto {
     required: false,
   })
   @IsArray()
-  public side: CreateSideQuestDto[];
+  @IsNotEmpty()
+  public sideQuests: CreateSideQuestDto[];
 
   @ApiProperty({
     example: '2024-05-15',
@@ -118,7 +119,7 @@ export class CreateQuestDto {
 
 export class CreateQuestRequestDto extends OmitType(CreateQuestDto, [
   'status',
-  'side',
+  'sideQuests',
   'createdAt',
   'updatedAt',
 ]) {
@@ -135,12 +136,12 @@ export class CreateQuestRequestDto extends OmitType(CreateQuestDto, [
     description: '퀘스트 설명 (메인 퀘스트 전용)',
     required: false,
   })
-  public side: Omit<SideQuestRequestDto, 'questId'>[];
+  public sideQuests: Omit<SideQuestRequestDto, 'questId'>[];
 }
 
 export class UpdateQuestRequestDto extends OmitType(CreateQuestDto, [
   'mode',
-  'side',
+  'sideQuests',
   'status',
   'createdAt',
   'updatedAt',
@@ -161,7 +162,7 @@ export class UpdateQuestRequestDto extends OmitType(CreateQuestDto, [
     ],
     description: '사이드 퀘스트',
   })
-  public side: UpdateSideQuestRequestDto[];
+  public sideQuests: UpdateSideQuestRequestDto[];
 }
 
 export class UpdateSubQuestRequestDto extends PickType(CreateQuestDto, ['title', 'hidden']) {}
