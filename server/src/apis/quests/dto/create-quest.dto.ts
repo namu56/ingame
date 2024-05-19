@@ -60,7 +60,8 @@ export class CreateQuestDto {
     required: false,
   })
   @IsArray()
-  public side: CreateSideQuestDto[];
+  @IsNotEmpty()
+  public sideQuests: CreateSideQuestDto[];
 
   @ApiProperty({
     example: '2024-05-15',
@@ -118,7 +119,7 @@ export class CreateQuestDto {
 
 export class CreateQuestRequestDto extends OmitType(CreateQuestDto, [
   'status',
-  'side',
+  'sideQuests',
   'createdAt',
   'updatedAt',
 ]) {
@@ -140,7 +141,7 @@ export class CreateQuestRequestDto extends OmitType(CreateQuestDto, [
 
 export class UpdateQuestRequestDto extends OmitType(CreateQuestDto, [
   'mode',
-  'side',
+  'sideQuests',
   'status',
   'createdAt',
   'updatedAt',
