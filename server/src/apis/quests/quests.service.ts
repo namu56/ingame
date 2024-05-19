@@ -28,7 +28,7 @@ export class QuestsService {
       const quest = this.questRepository.create({
         userId: id,
         title: title,
-        difficulty: mode === Mode.Main ? difficulty : Difficulty.Easy,
+        difficulty: mode === Mode.Main ? difficulty : Difficulty.Default,
         mode: mode,
         startDate: startDate,
         endDate: endDate,
