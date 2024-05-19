@@ -42,7 +42,7 @@ export const useMainQuest = () => {
 
   const {
     data: mainQuest,
-    isLoading,
+    isLoading: isMainLoading,
     error,
   } = useQuery({
     queryKey: [BASE_KEY.QUEST],
@@ -89,6 +89,7 @@ export const useMainQuest = () => {
 
   return {
     mainQuest,
+    isMainLoading,
     CreateQuestMutation,
     EditQuestMutation,
     modifyMainQuestStatus,
