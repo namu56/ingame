@@ -57,11 +57,13 @@ const MainBox = ({content}: MainBoxProps) => {
     })
   };
 
-  const handleNavigate = () => {
+  const handleNavigate = (event: React.MouseEvent) => {
+    event.stopPropagation();
     navigate(`/editquest/${content.id}`, { state: { content } });
   }
 
-  const handleToggleAccordion = () => {
+  const handleToggleAccordion = (event: React.MouseEvent) => {
+    event.stopPropagation();
     setisAccordion(prevState => !prevState);
   }
 
