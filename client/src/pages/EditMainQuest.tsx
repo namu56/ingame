@@ -32,7 +32,6 @@ const EditMainQuestQuest = () => {
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
     const newData = {...data, hidden: hidden};
-    console.log(newData);
     EditQuestMutation.mutate(newData);
   });
 
