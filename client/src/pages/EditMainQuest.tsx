@@ -15,13 +15,14 @@ import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
 const EditMainQuestQuest = () => {
   // MainBox에서 Content 값
   const { state } = useLocation();
-  const [startDate, setStartDate] = useState(state.content.startDate);
-  const [endDate, setEndDate] = useState(state.content.endDate);
-  const [title, setTitle] = useState(state.content.title);
-  const [isDifficulty, setIsDifficulty] = useState(state.content.difficulty);
-  const [plusQuest, setPlusQuest] = useState(state.content.sideQuests.length);
+  const content = state.content;
+  const [startDate, setStartDate] = useState(content.startDate);
+  const [endDate, setEndDate] = useState(content.endDate);
+  const [title, setTitle] = useState(content.title);
+  const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
+  const [plusQuest, setPlusQuest] = useState(content.sideQuests.length);
   const [minusQuest, setMinusQuest] = useState(0);
-  const [sideQuests, setSideQuests] = useState(state.content.sideQuests);
+  const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const [isPrivate, setIsPrivate] = useState(false);
   const { EditQuestMutation } = useMainQuest();
   const navigate = useNavigate();
@@ -41,12 +42,12 @@ const EditMainQuestQuest = () => {
       <header>
         <p>메인 퀘스트 수정</p>
         <div className='lockIcons'>
-        {state.content.hidden ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
+        {content.hidden ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
         </div>
       </header>
       <form onSubmit={onSubmit}>
         <input type='hidden' value={isDifficulty} {...register('difficulty')} />
-        <input type='hidden' value={state.content.id} {...register('id')} />
+        <input type='hidden' value={content.id} {...register('id')} />
         <QuestInputBox 
           value={title} 
           {...register('title')}
@@ -71,7 +72,7 @@ const EditMainQuestQuest = () => {
           }} />
         </div>
         <InnerQuests>
-        {state.content.sideQuests && state.content.sideQuests.map((sideQuest: SideContent, index:number) => 
+        {content.sideQuests && content.sideQuests.map((sideQuest: SideContent, index:number) => 
           (
             <SideBoxContainer key={index}>
               <input 

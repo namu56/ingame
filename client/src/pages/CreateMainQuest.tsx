@@ -31,7 +31,6 @@ const CreateMainQuest = () => {
     const difficulty = isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : 'HARD' as QuestDifficulty;
     const mode = 'MAIN' as QuestMode;
     const newData = {...data, hidden, difficulty: difficulty, mode: mode};
-    console.log(newData);
     CreateQuestMutation.mutate(newData);
   });
 
