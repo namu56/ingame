@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { QuestStatus, SubQuest } from '@/models/quest.model';
-import { useQuest } from '@/hooks/useSubQuest';
+import { useSubQuest } from '@/hooks/useSubQuest';
 import { useMessage } from '@/hooks/useMessage';
-import { formattedCalendar } from '@/utils/formatter';
+import { formattedDate } from '@/utils/formatter';
 import { BsThreeDots } from 'react-icons/bs';
 import SubQuestModal from './modals/SubQuestModal';
 import { useState } from 'react';
@@ -12,12 +12,12 @@ interface SubBoxProps {
 }
 
 const SubBox = ({ content }: SubBoxProps) => {
-  const { modifySubQuestStatus, date } = useQuest();
+  const { modifySubQuestStatus, date } = useSubQuest();
   const { showConfirm, showAlert } = useMessage();
   const [open, setOpen] = useState(false);
 
   const handleChangeStatue = () => {
-    if (date === formattedCalendar(new Date())) {
+    if (date === formattedDate(new Date())) {
       let message = '';
       if (content.status === 'ON_PROGRESS') {
         message = '퀘스트를 완료하시겠습니까?';
@@ -67,7 +67,7 @@ const SubBoxStyle = styled.div<{ status: QuestStatus }>`
   height: 50px;
 
   background: ${({ theme, status }) => theme.statusColor[status]};
-  color: ${({ theme, status }) => status !== 'ON_PROGRESS' && theme.color.grayDarkActive};
+  color: ${({ theme, status }) => status !== 'ON_PROGRESS' && theme.color.grayDark};
   text-decoration: ${({ status }) => status !== 'ON_PROGRESS' && 'line-through'};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};
@@ -86,6 +86,7 @@ const SubBoxStyle = styled.div<{ status: QuestStatus }>`
     display: flex;
     justify-content: space-between;
     cursor: pointer;
+    align-items: center;
 
     .EditBtn {
       background: none;

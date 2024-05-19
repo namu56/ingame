@@ -18,11 +18,18 @@ declare module 'styled-components' {
       greenLightActive: string;
       greenOpactiy30: string;
       grayLight: string;
-      grayLightActive: string;
       grayNormal: string;
-      grayNormalActive: string;
       grayDark: string;
-      grayDarkActive: string;
+    };
+
+    colorActive: {
+      blue: string;
+      purple: string;
+      coral: string;
+      green: string;
+      grayLight: string;
+      grayNormal: string;
+      grayDark: string;
     };
 
     statusColor: {
@@ -71,6 +78,7 @@ declare module 'styled-components' {
 
   export const theme: DefaultTheme = {
     color,
+    colorActive,
     statusColor,
     font,
     media,

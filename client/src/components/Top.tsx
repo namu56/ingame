@@ -42,7 +42,7 @@ const TopButton = styled.button`
   cursor: pointer;
   color: ${({ theme }) => theme.color.grayDark};
   &:hover {
-    color: ${({ theme }) => theme.color.grayDarkActive};
+    color: ${({ theme }) => theme.color.grayDark};
   }
 `;
 

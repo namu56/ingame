@@ -1,8 +1,22 @@
-import { ModifyQuestStatusProps, createMainQuest, deleteMainQuest, getMainQuest, modiMainQuest, modiQuestStatus, modiSideQuest } from '@/api/quests.api';
+import {
+  ModifyQuestStatusProps,
+  createMainQuest,
+  deleteMainQuest,
+  getMainQuest,
+  modiMainQuest,
+  modiQuestStatus,
+  modiSideQuest,
+} from '@/api/quests.api';
 import { BASE_KEY, QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
-import { Quest, QuestDifficulty, QuestHiddenType, QuestMode, SideContent } from '@/models/quest.model';
-import { formattedCalendar } from '@/utils/formatter';
+import {
+  Quest,
+  QuestDifficulty,
+  QuestHiddenType,
+  QuestMode,
+  SideContent,
+} from '@/models/quest.model';
+import { formattedDate } from '@/utils/formatter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -20,7 +34,6 @@ export interface CreateMainQuestProps extends Quest {
   hidden: QuestHiddenType;
 }
 
-
 export const useMainQuest = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -28,8 +41,11 @@ export const useMainQuest = () => {
 
   const queryClient = useQueryClient();
 
-
-  const { data: mainQuest, isLoading, error } = useQuery({
+  const {
+    data: mainQuest,
+    isLoading: isMainLoading,
+    error,
+  } = useQuery({
     queryKey: [BASE_KEY.QUEST],
     queryFn: () => getMainQuest(),
   });
@@ -64,7 +80,6 @@ export const useMainQuest = () => {
     },
   });
 
-
   const modifyMainQuestStatus = (data: ModifyQuestStatusProps) => {
     modifyQuestStatusMutation.mutate(data);
   };
@@ -81,23 +96,22 @@ export const useMainQuest = () => {
 
   const patchSideMutation = useMutation({
     mutationFn: modiSideQuest,
-    onSuccess(res) {
-      // navigate('/');
-    },
+    onSuccess(res) {},
     onError(err) {
       navigate('/error');
     },
   });
 
-  const date = params.get(QUERYSTRING.DATE) || formattedCalendar(new Date());
+  const date = params.get(QUERYSTRING.DATE) || formattedDate(new Date());
 
   return {
     mainQuest,
+    isMainLoading,
     CreateQuestMutation,
     EditQuestMutation,
     modifyMainQuestStatus,
     patchSideMutation,
     DeleteMainQuestsMutation,
     date,
-  }
+  };
 };
