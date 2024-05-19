@@ -27,7 +27,7 @@ const MainBox = ({ content }: MainBoxProps) => {
   const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
   const checkedCount = checked.reduce((count, isChecked) => (isChecked ? count + 1 : count), 0);
   const fraction = `${checkedCount} / ${content.sideQuests.length}`;
-
+  
   const handleChangeStatue = () => {
     if (date === formattedDate(new Date())) {
       let message = '';
@@ -57,13 +57,18 @@ const MainBox = ({ content }: MainBoxProps) => {
     });
   };
 
-  const handleNavigate = () => {
+  const handleNavigate = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (content.status === 'COMPLETED') return;
     navigate(`/editquest/${content.id}`, { state: { content } });
   };
 
-  const handleToggleAccordion = () => {
-    setisAccordion((prevState) => !prevState);
-  };
+
+  const handleToggleAccordion = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (content.status === 'COMPLETED') return;
+    setisAccordion(prevState => !prevState);
+  }
 
   return (
     <>

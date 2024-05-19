@@ -24,7 +24,7 @@ const EditMainQuestQuest = () => {
   const [minusQuest, setMinusQuest] = useState(0);
   const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const [isPrivate, setIsPrivate] = useState(false);
-  const { EditQuestMutation } = useMainQuest();
+  const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
   const navigate = useNavigate();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
@@ -101,6 +101,7 @@ const EditMainQuestQuest = () => {
             {content.sideQuests &&
               content.sideQuests.map((sideQuest: SideContent, index: number) => (
                 <SideBoxContainer key={index}>
+                  <input type='hidden' value={sideQuest.id} {...register(`sideQuests.${index}.id`)} />
                   <input
                     className="checkBoxInput"
                     type="checkbox"
@@ -157,10 +158,12 @@ const EditMainQuestQuest = () => {
             />
             <Button
               className="closeButton"
-              children={'닫기'}
+              children={'삭제'}
               size={'medium'}
               color={'black'}
-              onClick={() => navigate('/')}
+              onClick={() => {
+                DeleteMainQuestsMutation.mutate(content.id);
+              }}
             />
           </div>
         </form>

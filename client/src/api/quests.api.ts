@@ -26,6 +26,11 @@ export const modiMainQuest = async (data: ModifyQuestData) => {
   return response.data;
 };
 
+export const deleteMainQuest = async (id: number) => {
+  const response = await httpClient.delete(API_END_POINT.MAIN_QUEST + `/${id}`);
+  return response.data;
+}
+
 export const getMainQuest = async () => {
   const response = await httpClient.get<Quest[]>(API_END_POINT.MAIN_QUEST);
   return response.data;

@@ -1,6 +1,7 @@
 import {
   ModifyQuestStatusProps,
   createMainQuest,
+  deleteMainQuest,
   getMainQuest,
   modiMainQuest,
   modiQuestStatus,
@@ -51,13 +52,29 @@ export const useMainQuest = () => {
 
   const CreateQuestMutation = useMutation({
     mutationFn: createMainQuest,
-    onSuccess(res) {},
-    onError(err) {},
+    onSuccess(res) {
+      navigate('/');
+    },
+    onError(err) {
+      navigate('/error');
+    },
   });
 
   const EditQuestMutation = useMutation({
     mutationFn: modiMainQuest,
-    onSuccess(res) {},
+    onSuccess(res) {
+      navigate('/');
+    },
+    onError(err) {
+      navigate('/error');
+    },
+  });
+
+  const DeleteMainQuestsMutation = useMutation({
+    mutationFn: (id: number) => deleteMainQuest(id),
+    onSuccess() {
+      navigate('/');
+    },
     onError(err) {
       navigate('/error');
     },
@@ -94,6 +111,7 @@ export const useMainQuest = () => {
     EditQuestMutation,
     modifyMainQuestStatus,
     patchSideMutation,
+    DeleteMainQuestsMutation,
     date,
   };
 };
