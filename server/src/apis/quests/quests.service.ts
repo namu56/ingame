@@ -67,7 +67,7 @@ export class QuestsService {
     return { message: 'success' };
   }
 
-  async findAll(userId: number, mode: Mode, queryDate?: Date) {
+  async findAll(userId: number, mode: Mode, queryDate?: string) {
     const mainOptions: FindManyOptions<Quest> = {
       where: { userId: userId, mode: Mode.Main },
       order: {
@@ -127,7 +127,10 @@ export class QuestsService {
 
       if (updateQuestDto.sideQuests) {
         const deleteSideQuestIdList = targetSideQuest
-          .filter((sideQuest) => !updateQuestDto.sideQuests.some((sideQuestItem) => sideQuestItem.id === sideQuest.id))
+          .filter(
+            (sideQuest) =>
+              !updateQuestDto.sideQuests.some((sideQuestItem) => sideQuestItem.id === sideQuest.id)
+          )
           .map((sideQuest) => sideQuest.id);
         const updateSideQuestList = updateQuestDto.sideQuests.filter((it) => it.id);
 
