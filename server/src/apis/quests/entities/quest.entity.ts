@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { sideQuest } from './side-quest.entity';
+import { SideQuest } from './side-quest.entity';
 import { Difficulty, isHidden, Mode, Status } from '../enums/quest.enum';
 
 @Entity('quest')
@@ -44,6 +44,6 @@ export class Quest extends BaseEntity {
   })
   user: User;
 
-  @OneToMany(() => sideQuest, (sideQuest) => sideQuest.quest)
-  sideQuests: sideQuest[];
+  @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest)
+  sideQuests: SideQuest[];
 }

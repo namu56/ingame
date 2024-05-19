@@ -4,6 +4,7 @@ import { useRank } from '@/hooks/useRank';
 
 const RankingCardList = () => {
   const { rankingData } = useRank();
+  
   return (
     <>
       <RankingCardListStyle>

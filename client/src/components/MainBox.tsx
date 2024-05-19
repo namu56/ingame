@@ -5,19 +5,49 @@ import { MdArrowDropUp } from "react-icons/md";
 import { useState } from 'react';
 import { sideQuestList } from '@/shared/dummy';
 import SideBox from './SideBox';
-import { getQuest } from '@/models/quest.model';
-import { useMutation } from '@tanstack/react-query';
-import { modiSideQuest } from '@/api/quests.api';
+import { Quest, QuestStatus, SideContent } from '@/models/quest.model';
 import { useNavigate } from 'react-router-dom';
+import { useMainQuest } from '@/hooks/useMainQuest';
+import { formattedCalendar } from '@/utils/formatter';
+import { useMessage } from '@/hooks/useMessage';
+
+interface MainQuest extends Quest {
+  sideQuests: SideContent[];
+}
 
 interface MainBoxProps {
-  content: getQuest;
+  content: MainQuest;
 }
 
 const MainBox = ({content}: MainBoxProps) => {
+  const { modifyMainQuestStatus, patchSideMutation, date } = useMainQuest();
+  const { showConfirm, showAlert } = useMessage();
+  const navigate = useNavigate();
   const [isAccordion, setisAccordion] = useState(false);
   const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
-  const navigate = useNavigate();
+  const checkedCount = checked.reduce((count, isChecked) => isChecked ? count + 1 : count, 0);
+  const fraction = `${checkedCount} / ${content.sideQuests.length}`;
+
+  const handleChangeStatue = () => {
+    if (date === formattedCalendar(new Date())) {
+      let message = '';
+      if (content.status === 'ON_PROGRESS') {
+        message = '퀘스트를 완료하시겠습니까?';
+        content.status = 'COMPLETED';
+      } else if (content.status === 'COMPLETED') {
+        message = '퀘스트를 진행중으로 변경하시겠습니까?';
+        content.status = 'ON_PROGRESS';
+      } else {
+        return;
+      }
+
+      showConfirm(message, () => {
+        modifyMainQuestStatus({ id: content.id, status: content.status });
+      });
+    } else {
+      showAlert('당일 퀘스트만 변경 가능합니다');
+    }
+  };
 
   const handleCheckboxClick = (index: number) => {
     setChecked(prevState => {
@@ -26,8 +56,6 @@ const MainBox = ({content}: MainBoxProps) => {
       return newState;
     })
   };
-  const checkedCount = checked.reduce((count, isChecked) => isChecked ? count + 1 : count, 0);
-  const fraction = `${checkedCount} / ${content.sideQuests.length}`;
 
   const handleNavigate = () => {
     navigate(`/editquest/${content.id}`, { state: { content } });
@@ -37,40 +65,33 @@ const MainBox = ({content}: MainBoxProps) => {
     setisAccordion(prevState => !prevState);
   }
 
-  const patchSideMutation = useMutation({
-    mutationFn: modiSideQuest,
-    onSuccess(res) {
-      // navigate('/');
-    },
-    onError(err) {
-      navigate('/error');
-    },
-  });
-
   return (
     <>
     <MainBoxContainer>
-      <MainBoxStyle onClick={handleToggleAccordion}>
+      <MainBoxStyle status={content.status} onClick={handleChangeStatue}>
         <header className='aFContainer'>
-          <button className='aButton'>{isAccordion ? (<MdArrowDropUp size={30} />) : (<MdArrowDropDown size={30} />)}</button>
+          <button className='aButton' onClick={handleToggleAccordion}>{isAccordion ? (<MdArrowDropUp size={30} />) : (<MdArrowDropDown size={30} />)}</button>
           <p className='fDisplay'>{fraction}</p>
         </header>
         <h1 className='title'>{content.title}</h1>
         <button className='eButton' onClick={handleNavigate}><BsThreeDots /></button>
       </MainBoxStyle>
       <SideBoxContainer>
-        {content.sideQuests.map((quest, index) => (
-          <SideBox
-            key={index}
-            isAccordion={isAccordion}
-            checked={checked[index]}
-            onClick={() => {
+      {content && content.sideQuests ? content.sideQuests.map((quest, index) => (
+        quest.content ? 
+        <SideBox
+          key={index}
+          isAccordion={isAccordion}
+          checked={checked[index]}
+          onClick={() => {
+            if (quest.id !== undefined) {
               patchSideMutation.mutate(quest.id); 
-              handleCheckboxClick(index)
-            }}
-            content={quest.content}
-          />
-        ))}
+              handleCheckboxClick(index);
+            }
+          }}
+        content={quest.content}
+        /> : null
+      )) : <div>내용이 없습니다.</div>}
       </SideBoxContainer>
     </MainBoxContainer>
   </>
@@ -85,10 +106,13 @@ const MainBoxContainer = styled.div`
   align-items: center;
 `;
 
-const MainBoxStyle = styled.div`
+const MainBoxStyle = styled.div<{ status: QuestStatus }>`
   width: 100%;
   height: 55px;
-  background: ${({ theme }) => theme.color.white};
+  
+  background: ${({ theme, status }) => theme.statusColor[status]};
+  color: ${({ theme, status }) => status !== 'ON_PROGRESS' && theme.color.grayDarkActive};
+  text-decoration: ${({ status }) => status !== 'ON_PROGRESS' && 'line-through'};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 

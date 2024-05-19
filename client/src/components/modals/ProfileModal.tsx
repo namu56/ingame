@@ -6,9 +6,10 @@ import { FaUser } from 'react-icons/fa';
 import { FaUserPen } from 'react-icons/fa6';
 import Button from '../Button';
 import CloseButton from '../CloseButton';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { patchUserProfile } from '@/api/users.api';
 import { useState } from 'react';
+import { USER } from '@/constant/queryKey';
 
 interface ProfileModifyProps {
   nickname: string,
@@ -27,6 +28,7 @@ const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) =>
   const [intro, setIntro] = useState(OriginIntro);
   const [inputCount, setInputCount] = useState<number>(OriginIntro === null ? 0 : OriginIntro.length);
   const [profileIntro, setprofileIntro] = useState(intro);
+  const queryClient = useQueryClient();
 
   const { register, handleSubmit } = useForm<ProfileModifyProps>();
 
@@ -37,6 +39,9 @@ const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) =>
   const ProfileMutation = useMutation({
     mutationFn: patchUserProfile,
     onSuccess(res) {
+      queryClient.invalidateQueries({
+        queryKey: [...USER.GET_USERINFO]
+      })
       onClose();
     },
     onError(err) {

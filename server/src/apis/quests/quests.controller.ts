@@ -20,11 +20,7 @@ import {
   UpdateSubQuestRequestDto,
 } from './dto/create-quest.dto';
 import { UpdateQuestDto } from './dto/update-quest.dto';
-import {
-  CreateSideQuestDto,
-  SideQuestRequestDto,
-  UpdateSideQuestRequestDto,
-} from './dto/create-side-quest.dto';
+import { UpdateSideQuestRequestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from '../../common/decorators/auth.decorator';
@@ -129,49 +125,22 @@ export class QuestsController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('side')
-  @ApiOperation({ summary: '사이드 퀘스트 생성' })
-  @ApiBearerAuth('accessToken')
-  @ApiBody({ type: [SideQuestRequestDto] })
-  @ApiCreatedResponse({ description: 'success' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
-  @HttpCode(HttpStatus.OK)
-  async createSide(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateSideQuestDto[]) {
-    return await this.questsService.createSide(user.id, createQuestDto);
-  }
-
-  @UseGuards(AuthGuard)
   @Patch('side/:id')
-  @ApiOperation({ summary: '사이드 퀘스트 개별 수정' })
+  @ApiOperation({ summary: '사이드 퀘스트 상태 수정' })
   @ApiBearerAuth('accessToken')
-  @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
+  @ApiQuery({ name: 'id', type: Number, description: '사이드 퀘스트 ID' })
   @ApiBody({ type: UpdateSideQuestRequestDto })
   @ApiNoContentResponse({ description: 'success' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateSide(
+  async updateSideStatus(
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateSideQuestDto
   ) {
-    await this.questsService.updateSide(user.id, +id, updateQuestDto);
-  }
-
-  @UseGuards(AuthGuard)
-  @Delete('side/:id')
-  @ApiOperation({ summary: '사이드 퀘스트 개별 삭제' })
-  @ApiBearerAuth('accessToken')
-  @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
-  @ApiNoContentResponse({ description: 'success' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiNotFoundResponse({ description: 'fail - Quests not found' })
-  @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async removeSide(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
-    await this.questsService.removeSide(user.id, +id);
+    await this.questsService.updateSideStatus(user.id, +id, updateQuestDto);
   }
 
   @UseGuards(AuthGuard)

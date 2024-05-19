@@ -5,6 +5,14 @@ import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 export class CreateSideQuestDto {
   @ApiProperty({
     example: 1,
+    description: '사이드 퀘스트 ID',
+    required: false,
+  })
+  @IsNumber()
+  public id: number;
+
+  @ApiProperty({
+    example: 1,
     description: '메인 퀘스트 ID',
     required: true,
   })
@@ -62,7 +70,4 @@ export class SideQuestRequestDto extends OmitType(CreateSideQuestDto, [
   'updatedAt',
 ]) {}
 
-export class UpdateSideQuestRequestDto extends PickType(CreateSideQuestDto, [
-  'content',
-  'status',
-]) {}
+export class UpdateSideQuestRequestDto extends PickType(CreateSideQuestDto, ['status']) {}
