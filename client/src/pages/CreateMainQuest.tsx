@@ -6,29 +6,38 @@ import { FiMinusCircle } from "react-icons/fi";
 import { Button } from 'antd';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
-import { useCreateQuest } from '@/hooks/useCreateQuest';
 import { useState } from 'react';
+import CloseButton from '@/components/CloseButton';
+import { CreateMainQuestProps, useMainQuest } from '@/hooks/useMainQuest';
+import { QuestDifficulty, QuestHiddenType, QuestMode } from '@/models/quest.model';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 const CreateMainQuest = () => {
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [isDifficulty, setIsDifficulty] = useState(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [plusQuest, setPlusQuest] = useState(1);
   const [minusQuest, setMinusQuest] = useState(0);
   const today = new Date().toISOString().substring(0, 10);
+  const navigate = useNavigate();
+  const { CreateQuestMutation } = useMainQuest();
 
-  const {
-    isPrivate,
-    setIsPrivate,
-    isDifficulty,
-    setIsDifficulty,
-    register,
-    control,
-    handleSubmit,
-    onSubmit,
-    CreateQuestMutation
-  } = useCreateQuest();
+  const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
+
+  const onSubmit = handleSubmit((data) => {
+    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
+    const difficulty = isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : 'HARD' as QuestDifficulty;
+    const mode = 'MAIN' as QuestMode;
+    const newData = {...data, hidden, difficulty: difficulty, mode: mode};
+    CreateQuestMutation.mutate(newData);
+  });
+
   
   return (
+    <>
+    <CloseButton onClick={() => navigate('/')} />
     <CreateMainQuestStyle>
       <header>
         <p>메인 퀘스트 생성</p>
@@ -59,7 +68,7 @@ const CreateMainQuest = () => {
         <InnerQuests>
           {Array(plusQuest - minusQuest).fill(0).map((_, index) => 
           (
-            <QuestInputBox key={index} placeholder='퀘스트 제목' {...register(`side.${index}.content` as const)} />
+            <QuestInputBox key={index} placeholder='퀘스트 제목' {...register(`sideQuests.${index}.content` as const)} />
           )
           )}
         </InnerQuests>
@@ -87,6 +96,7 @@ const CreateMainQuest = () => {
         </div>
       </form>
     </CreateMainQuestStyle>
+    </>
   );
 };
 

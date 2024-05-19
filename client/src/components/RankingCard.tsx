@@ -4,7 +4,8 @@ import { RankingItem } from '@/models/ranking.model';
 
 interface RankingCardProps extends RankingItem {}
 
-const RankingCard = ({ id, nickname, point, rank, level }: RankingCardProps) => {
+const RankingCard = ({ nickname, point, rank, level }: RankingCardProps) => {
+  
   return (
     <>
       <RankingCardStyle>

@@ -5,49 +5,58 @@ import Button from '@/components/Button';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useState } from 'react';
-import { useEditQuest } from '@/hooks/useEditQuest';
-import { useLocation } from 'react-router-dom';
-import { getSideQuest } from '@/models/quest.model';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FiMinusCircle, FiPlusCircle } from 'react-icons/fi';
+import { QuestHiddenType, SideContent } from '@/models/quest.model';
+import CloseButton from '@/components/CloseButton';
+import { useForm } from 'react-hook-form';
+import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
 
 const EditMainQuestQuest = () => {
   // MainBox에서 Content 값
   const { state } = useLocation();
-  const [startDate, setStartDate] = useState(state.content.startDate);
-  const [endDate, setEndDate] = useState(state.content.endDate);
-  const [title, setTitle] = useState(state.content.title);
-  const [isDifficulty, setIsDifficulty] = useState(state.content.difficulty);
-  const [plusQuest, setPlusQuest] = useState(state.content.sideQuests.length);
+  const content = state.content;
+  const [startDate, setStartDate] = useState(content.startDate);
+  const [endDate, setEndDate] = useState(content.endDate);
+  const [title, setTitle] = useState(content.title);
+  const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
+  const [plusQuest, setPlusQuest] = useState(content.sideQuests.length);
   const [minusQuest, setMinusQuest] = useState(0);
-  const [sideQuests, setSideQuests] = useState(state.content.sideQuests);
+  const [sideQuests, setSideQuests] = useState(content.sideQuests);
+  const [isPrivate, setIsPrivate] = useState(false);
+  const { EditQuestMutation } = useMainQuest();
+  const navigate = useNavigate();
+
+  const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
   
-  const {
-    isPrivate,
-    setIsPrivate,
-    register,
-    onSubmit,
-  } = useEditQuest();
+  const onSubmit = handleSubmit((data) => {
+    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
+    const newData = {...data, hidden: hidden};
+    EditQuestMutation.mutate(newData);
+  });
 
   return (
+    <>
+    <CloseButton onClick={() => navigate('/')} />
     <EditMainQuestQuestStyle>
       <header>
         <p>메인 퀘스트 수정</p>
         <div className='lockIcons'>
-        {state.content.hidden ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
+        {content.hidden ? <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} /> : <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />}
         </div>
       </header>
       <form onSubmit={onSubmit}>
         <input type='hidden' value={isDifficulty} {...register('difficulty')} />
-        <input type='hidden' value={state.content.id} {...register('id')} />
+        <input type='hidden' value={content.id} {...register('id')} />
         <QuestInputBox 
           value={title} 
           {...register('title')}
           onChange={(e) => setTitle(e.target.value)}
-          />
+        />
         <QuestButtonContainer>
-          <Button className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(0)} children={'EASY'} size={'small'} color={'black'}></Button>
-          <Button className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(1)} children={'NORMAL'} size={'small'} color={'black'}></Button>
-          <Button className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(2)} children={'HARD'} size={'small'} color={'black'}></Button>
+          <Button className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(0)} children={'EASY'} size={'medium'} color={'black'}></Button>
+          <Button className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(1)} children={'NORMAL'} size={'medium'} color={'black'}></Button>
+          <Button className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`} onClick={() => setIsDifficulty(2)} children={'HARD'} size={'medium'} color={'black'}></Button>
         </QuestButtonContainer>
         <div className='plusContainer'>
           <h1>단계</h1>
@@ -63,14 +72,14 @@ const EditMainQuestQuest = () => {
           }} />
         </div>
         <InnerQuests>
-        {state.content.sideQuests && state.content.sideQuests.map((sideQuest: getSideQuest, index:number) => 
+        {content.sideQuests && content.sideQuests.map((sideQuest: SideContent, index:number) => 
           (
             <SideBoxContainer key={index}>
               <input 
                 className='checkBoxInput'
                 type='checkbox'             
-                checked={sideQuest.status === 'COMPLETED'} // models에서 대문자로 바꾼뒤 다시 코드 고치기
-                {...register(`side.${index}.status`)}
+                checked={sideQuest.status === 'COMPLETED'}
+                {...register(`sideQuests.${index}.status`)}
                 onChange={(e) => {
                   const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
                   const newSideQuests = [...sideQuests];
@@ -80,7 +89,7 @@ const EditMainQuestQuest = () => {
               />
               <QuestInputBox  
                 value={sideQuest.content}
-                {...register(`side.${index}.content`)}
+                {...register(`sideQuests.${index}.content`)}
                 onChange={(e) => {
                   const newContent = e.target.value;
                   const newSideQuests = [...sideQuests];
@@ -114,11 +123,12 @@ const EditMainQuestQuest = () => {
           />
         </div>
         <div className='modifiyAndClose'>
-          <Button className='modifiyButton' type={'submit'} children={'수정'} size={'small'} color={'black'} />
-          <Button className='closeButton' children={'닫기'} size={'small'} color={'black'} />  
+          <Button className='modifiyButton' type={'submit'} children={'수정'} size={'medium'} color={'black'} />
+          <Button className='closeButton' children={'닫기'} size={'medium'} color={'black'} onClick={() => navigate('/')} />  
         </div>
       </form>
     </EditMainQuestQuestStyle>
+    </>
   );
 };
 
@@ -208,18 +218,6 @@ const QuestButtonContainer = styled.div`
   }
   button {
     width: 31%;
-  }
-  .easyButton {
-    color: ${({ theme }) => theme.color.purple};
-    border: 1px solid ${({ theme }) => theme.color.purple};
-  }
-  .normalButton {
-    color: ${({ theme }) => theme.color.blue};
-    border: 1px solid ${({ theme }) => theme.color.blue};
-  }
-  .hardButton {
-    color: ${({ theme }) => theme.color.coral};
-    border: 1px solid ${({ theme }) => theme.color.coral};
   }
 `;
 
