@@ -41,8 +41,8 @@ export class QuestsService {
       const savedQuest = await queryRunner.manager.save(quest);
 
       if (mode === Mode.Main) {
-        for (const it of sideQuests) {
-          const { content } = it;
+        for (const sideQuest of sideQuests) {
+          const { content } = sideQuest;
 
           const side = this.sideQuestRepository.create({
             questId: savedQuest.id,
@@ -126,14 +126,14 @@ export class QuestsService {
       await queryRunner.manager.save(updatedQuest);
 
       if (updateQuestDto.sideQuests) {
-        const deleteSideQuestList = targetSideQuest
-          .filter((it) => !updateQuestDto.sideQuests.some((side) => side.id === it.id))
-          .map((it) => it.id);
+        const deleteSideQuestIdList = targetSideQuest
+          .filter((sideQuest) => !updateQuestDto.sideQuests.some((sideQuestItem) => sideQuestItem.id === sideQuest.id))
+          .map((sideQuest) => sideQuest.id);
         const updateSideQuestList = updateQuestDto.sideQuests.filter((it) => it.id);
 
-        for (const quest of updateSideQuestList) {
+        for (const sideQuest of updateSideQuestList) {
           const targetSideQuest = await this.sideQuestRepository.findOne({
-            where: { id: quest.id },
+            where: { id: sideQuest.id },
           });
           if (!targetSideQuest) {
             throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
@@ -146,7 +146,7 @@ export class QuestsService {
           await queryRunner.manager.save(updatedQuest);
         }
 
-        for (const sideQuestId of deleteSideQuestList) {
+        for (const sideQuestId of deleteSideQuestIdList) {
           const targetSideQuest = await this.sideQuestRepository.findOne({
             where: { id: sideQuestId },
           });
