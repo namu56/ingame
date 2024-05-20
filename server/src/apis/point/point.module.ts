@@ -10,5 +10,6 @@ import { UserInfo } from '../users/entities/user-info.entity';
   imports: [AuthModule, TypeOrmModule.forFeature([Quest, UserInfo])],
   providers: [PointService],
   controllers: [PointController],
+  exports: [PointService],
 })
 export class PointModule {}
