@@ -35,6 +35,10 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  async logout(id: number): Promise<void> {
+    await this.redis.del(`refreshToken:${id}`);
+  }
+
   async refresh(refreshToken: string) {
     const secretKey = this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY');
     try {

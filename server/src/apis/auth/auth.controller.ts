@@ -24,6 +24,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { AccessTokenPayload } from './auth.interface';
+import { CurrentUser } from 'src/common/decorators/auth.decorator';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -56,7 +58,8 @@ export class AuthController {
   @ApiOkResponse({ description: '로그아웃 성공 시 쿠키의 토큰 삭제' })
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'fail - Invaild token' })
-  async logout(@Res() res: Response) {
+  async logout(@CurrentUser() user: AccessTokenPayload, @Res() res: Response) {
+    await this.authService.logout(user.id);
     res.clearCookie('refreshToken');
     res.sendStatus(HttpStatus.NO_CONTENT);
   }
