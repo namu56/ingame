@@ -6,6 +6,7 @@ interface BottonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size: Buttonsize;
   disabled?: boolean;
   color: string;
+  isActive?: string;
 }
 
 const Button: React.FC<BottonProps> = ({

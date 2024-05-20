@@ -24,7 +24,7 @@ import { UpdateSideQuestRequestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from '../../common/decorators/auth.decorator';
-import { JwtPayload } from '../auth/auth.interface';
+import { AccessTokenPayload } from '../auth/auth.interface';
 import { Mode } from './enums/quest.enum';
 import {
   ApiBearerAuth,
@@ -55,7 +55,7 @@ export class QuestsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.CREATED)
-  async create(@CurrentUser() user: JwtPayload, @Body() createQuestDto: CreateQuestDto) {
+  async create(@CurrentUser() user: AccessTokenPayload, @Body() createQuestDto: CreateQuestDto) {
     return await this.questsService.create(user.id, createQuestDto);
   }
 
@@ -71,7 +71,7 @@ export class QuestsController {
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateStatus(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: AccessTokenPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateQuestDto
   ) {
@@ -87,7 +87,7 @@ export class QuestsController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAll(@CurrentUser() user: JwtPayload) {
+  async findAll(@CurrentUser() user: AccessTokenPayload) {
     return await this.questsService.findAll(user.id, Mode.Main);
   }
 
@@ -103,7 +103,7 @@ export class QuestsController {
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async update(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: AccessTokenPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateQuestDto
   ) {
@@ -120,7 +120,7 @@ export class QuestsController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+  async remove(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
     await this.questsService.remove(user.id, +id);
   }
 
@@ -136,7 +136,7 @@ export class QuestsController {
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateSideStatus(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: AccessTokenPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateSideQuestDto
   ) {
@@ -152,10 +152,10 @@ export class QuestsController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAllSub(@CurrentUser() user: JwtPayload, @Query('date') query: string) {
+  async findAllSub(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
     const queryDate = query
-      ? new Date(query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3 00:00:00'))
-      : new Date();
+      ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
+      : new Date().toISOString().replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3');
     return await this.questsService.findAll(user.id, Mode.Sub, queryDate);
   }
 
@@ -171,7 +171,7 @@ export class QuestsController {
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateSub(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: AccessTokenPayload,
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateQuestDto
   ) {
@@ -188,7 +188,7 @@ export class QuestsController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeSub(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+  async removeSub(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
     await this.questsService.remove(user.id, +id);
   }
 }

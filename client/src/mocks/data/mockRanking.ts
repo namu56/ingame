@@ -82,5 +82,61 @@ export const mockRankingProfiles = [
       "point": 110000,
       "rank": 12,
       "level": 17
-    }
+    },
+    {
+      "id": 13, 
+      "nickname": "이치고",
+      "point": 100000,
+      "rank": 13,
+      "level": 16
+    },
+    {
+      "id": 14, 
+      "nickname": "루피",
+      "point": 90000,
+      "rank": 14,
+      "level": 15
+    },
+    {
+      "id": 15, 
+      "nickname": "조로",
+      "point": 80000,
+      "rank": 15,
+      "level": 14
+    },
+    {
+      "id": 16, 
+      "nickname": "나미",
+      "point": 70000,
+      "rank": 16,
+      "level": 13
+    },
+    {
+      "id": 17, 
+      "nickname": "우솝",
+      "point": 60000,
+      "rank": 17,
+      "level": 12
+    },
+    {
+      "id": 18, 
+      "nickname": "산지",
+      "point": 50000,
+      "rank": 18,
+      "level": 11
+    },
+    {
+      "id": 19, 
+      "nickname": "쵸파",
+      "point": 40000,
+      "rank": 19,
+      "level": 10
+    },
+    {
+      "id": 20, 
+      "nickname": "로빈",
+      "point": 30000,
+      "rank": 20,
+      "level": 9
+    },
 ];

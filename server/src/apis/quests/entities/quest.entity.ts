@@ -20,11 +20,11 @@ export class Quest extends BaseEntity {
   @Column({ type: 'enum', name: 'mode', enum: Mode })
   mode!: Mode;
 
-  @Column('timestamp', { nullable: false })
-  startDate: Date;
+  @Column('date', { nullable: false })
+  startDate: string;
 
-  @Column('timestamp', { nullable: true })
-  endDate: Date;
+  @Column('date', { nullable: true })
+  endDate: string;
 
   @Column({ type: 'enum', name: 'hidden', enum: isHidden })
   hidden!: isHidden;

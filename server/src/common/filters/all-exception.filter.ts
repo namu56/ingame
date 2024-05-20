@@ -6,18 +6,13 @@ import { WinstonLoggerService } from '../logger/winston-logger.service';
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   constructor(private readonly logger: WinstonLoggerService) {}
-
   catch(exception: unknown, host: ArgumentsHost): void {
-    let message: string = 'UNKNOWN ERROR';
-
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
     const req = ctx.getRequest<Request>();
     const statusCode = this.getHttpStatus(exception);
     const datetime = new Date();
-
-    message = exception instanceof HttpException ? exception.message : message;
-    message = exception instanceof QueryFailedError ? 'Query Fail Error' : message;
+    const message = this.getErrorMessage(exception);
 
     const errorResponse = {
       statusCode,
@@ -43,6 +38,18 @@ export class AllExceptionFilter implements ExceptionFilter {
       return exception.getStatus();
     } else {
       return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+  }
+
+  private getErrorMessage(exception: unknown): string {
+    if (exception instanceof HttpException) {
+      return exception.message;
+    } else if (exception instanceof QueryFailedError) {
+      return 'Query Failed Error';
+    } else if (exception instanceof Error) {
+      return exception.message;
+    } else {
+      return 'UNKNOWN ERROR';
     }
   }
 }
