@@ -10,6 +10,9 @@ import { WinstonLoggerMiddleware } from './common/middleware/winston-logger.midd
 import { WinstonLoggerModule } from './common/logger/winston-logger.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SchedulerService } from './common/scheduler/scheduler.service';
+import { SchedulerModule } from './common/scheduler/scheduler.module';
 import { LevelCalculatorModule } from './common/level-calculator/level-calculator.module';
 import { PointModule } from './apis/point/point.module';
 
@@ -25,6 +28,7 @@ import { PointModule } from './apis/point/point.module';
       useFactory: (configService: ConfigService) => typeORMConfig(configService),
     }),
     WinstonLoggerModule,
+    SchedulerModule,
     UsersModule,
     AuthModule,
     QuestsModule,
