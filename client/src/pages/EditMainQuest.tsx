@@ -7,7 +7,7 @@ import { media } from '@/styles/theme';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiMinusCircle, FiPlusCircle } from 'react-icons/fi';
-import { QuestHiddenType, SideContent } from '@/models/quest.model';
+import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
 import CloseButton from '@/components/CloseButton';
 import { useForm } from 'react-hook-form';
 import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
@@ -26,14 +26,19 @@ const EditMainQuestQuest = () => {
   const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const [isPrivate, setIsPrivate] = useState(false);
   const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
-  const { showConfirm, showAlert } = useMessage();
+  const { showConfirm } = useMessage();
   const navigate = useNavigate();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
 
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const newData = { ...data, hidden: hidden };
+    const updatedSideQuests = sideQuests.map((sideQuest: Quest) => ({
+      ...sideQuest, 
+      status: sideQuest.status
+    }));
+    const newData = { ...data, hidden: hidden, sideQuests: updatedSideQuests};
+    console.log(newData);
     EditQuestMutation.mutate(newData);
   });
 
@@ -110,7 +115,6 @@ const EditMainQuestQuest = () => {
             {content.sideQuests &&
               content.sideQuests.map((sideQuest: SideContent, index: number) => (
                 <SideBoxContainer key={index}>
-                  <input type='hidden' value={sideQuest.id} {...register(`sideQuests.${index}.id`)} />
                   <input
                     className="checkBoxInput"
                     type="checkbox"

@@ -13,9 +13,9 @@ const LoginProvider = ({ children }: LoginProviderProps) => {
   const location = useLocation();
 
   useEffect(() => {
-    if (!isLogin && location.pathname !== '/signup') {
-      navigate('/login');
-    }
+    // if (!isLogin && location.pathname !== '/signup') {
+    //   navigate('/login');
+    // }
   }, [isLogin, location.pathname, navigate]);
 
   return <>{children}</>;
