@@ -13,31 +13,75 @@ export class SchedulerService {
   constructor(@InjectRepository(Quest) private readonly questRepository: Repository<Quest>) {}
 
   async updateQuestStatus(pointService: PointService) {
+    const moveDate = (date: Date, days: number) => {
+      const newDate = new Date(date);
+      newDate.setHours(newDate.getHours() + 9); // KST 기준으로 변경, UTC일 경우에는 제거
+      newDate.setDate(newDate.getDate() + days);
+      return newDate;
+    };
     const currentDate = new Date();
+    const dueDate = moveDate(currentDate, -1);
+
     const targetQuests = await this.questRepository.find({
+      where: {
+        mode: Mode.Main,
+        status: Status.onProgress,
+        endDate: dueDate.toISOString().split('T')[0],
+      },
+      relations: ['sideQuests'],
+    });
+    const targetSubQuests = await this.questRepository.find({
       where: { mode: Mode.Sub, status: Status.onProgress },
     });
 
     if (targetQuests.length === 0) {
-      this.logger.error('There is no quests to update!');
+      this.logger.error('[main] There is no quests to update!');
       return;
+    } else {
+      for (const quest of targetQuests) {
+        const completedSideQuestsCount = quest.sideQuests.filter(
+          (sideQuest) => sideQuest.status === Status.Completed
+        ).length;
+
+        if (completedSideQuestsCount >= Math.round(quest.sideQuests.length / 2)) {
+          quest.status = Status.Completed;
+          quest.updatedAt = currentDate;
+        } else {
+          quest.status = Status.Fail;
+          quest.updatedAt = currentDate;
+        }
+
+        await this.questRepository.save(quest);
+
+        const updatePointDto = {
+          questId: quest.id,
+          status: quest.status,
+        } satisfies UpdatePointDto;
+
+        await pointService.updatePoint(quest.userId, updatePointDto);
+      }
     }
 
-    const updatedQuests = targetQuests.map((it) => {
-      it.status = Status.Fail;
-      it.updatedAt = currentDate;
-      return it;
-    });
+    if (targetSubQuests.length === 0) {
+      this.logger.error('[sub] There is no quests to update!');
+      return;
+    } else {
+      const updatedSubQuests = targetSubQuests.map((it) => {
+        it.status = Status.Fail;
+        it.updatedAt = currentDate;
+        return it;
+      });
 
-    await this.questRepository.save(updatedQuests);
+      await this.questRepository.save(updatedSubQuests);
 
-    for (const quest of updatedQuests) {
-      const updatePointDto = {
-        questId: quest.id,
-        status: Status.Fail,
-      } satisfies UpdatePointDto;
+      for (const quest of updatedSubQuests) {
+        const updatePointDto = {
+          questId: quest.id,
+          status: Status.Fail,
+        } satisfies UpdatePointDto;
 
-      await pointService.updatePoint(quest.userId, updatePointDto);
+        await pointService.updatePoint(quest.userId, updatePointDto);
+      }
     }
 
     this.logger.log(`[${new Date().toISOString()}] Updating quest status success!`);
