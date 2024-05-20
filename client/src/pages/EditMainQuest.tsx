@@ -11,6 +11,7 @@ import { QuestHiddenType, SideContent } from '@/models/quest.model';
 import CloseButton from '@/components/CloseButton';
 import { useForm } from 'react-hook-form';
 import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
+import { useMessage } from '@/hooks/useMessage';
 
 const EditMainQuestQuest = () => {
   // MainBox에서 Content 값
@@ -25,6 +26,7 @@ const EditMainQuestQuest = () => {
   const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const [isPrivate, setIsPrivate] = useState(false);
   const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
+  const { showConfirm, showAlert } = useMessage();
   const navigate = useNavigate();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
@@ -34,6 +36,13 @@ const EditMainQuestQuest = () => {
     const newData = { ...data, hidden: hidden };
     EditQuestMutation.mutate(newData);
   });
+
+  const handleDeleteBtn = () => {
+    let message = '정말 삭제하시겠습니까?';
+    showConfirm(message, () => {
+      DeleteMainQuestsMutation.mutate(content.id);
+    });
+  };
 
   return (
     <>
@@ -161,9 +170,7 @@ const EditMainQuestQuest = () => {
               children={'삭제'}
               size={'medium'}
               color={'black'}
-              onClick={() => {
-                DeleteMainQuestsMutation.mutate(content.id);
-              }}
+              onClick={handleDeleteBtn}
             />
           </div>
         </form>

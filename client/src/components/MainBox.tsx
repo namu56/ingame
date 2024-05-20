@@ -81,9 +81,11 @@ const MainBox = ({ content }: MainBoxProps) => {
             <p className="fDisplay">{fraction}</p>
           </header>
           <h1 className="title">{content.title}</h1>
-          <button className="eButton" onClick={handleNavigate}>
-            <BsThreeDots />
-          </button>
+          <div>
+            <button className="eButton" onClick={handleNavigate}>
+              <BsThreeDots />
+            </button>
+          </div>
         </MainBoxStyle>
         <SideBoxContainer>
           {content && content.sideQuests ? (
