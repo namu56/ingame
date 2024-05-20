@@ -5,13 +5,15 @@ import {
   HttpStatus,
   HttpCode,
   Res,
+  Req,
   UseGuards,
   UsePipes,
   ValidationPipe,
+  HttpException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthGuard } from './auth.guard';
 import {
   ApiBearerAuth,
@@ -35,14 +37,16 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
-    const acceccToken = await this.authService.login(loginUserDto);
+    const isProduction = process.env.NODE_ENV === 'production';
+    const { accessToken, refreshToken } = await this.authService.login(loginUserDto);
 
-    res.cookie('accessToken', acceccToken, {
+    res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
     });
-
-    res.json(acceccToken);
+    res.json(accessToken);
   }
 
   @UseGuards(AuthGuard)
@@ -53,7 +57,26 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'fail - Invaild token' })
   async logout(@Res() res: Response) {
-    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
     res.sendStatus(HttpStatus.NO_CONTENT);
+  }
+
+  @Post('token')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Req() req: Request, @Res() res: Response) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const refreshToken: string = req.cookies.refreshToken;
+    if (!refreshToken) {
+      throw new HttpException('Refresh token not found', HttpStatus.UNAUTHORIZED);
+    }
+    const { newAccessToken, newRefreshToken } = await this.authService.refresh(refreshToken);
+
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+    });
+    res.json(newAccessToken);
   }
 }
