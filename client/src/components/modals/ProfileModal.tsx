@@ -61,7 +61,7 @@ const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) =>
           <QuestInputBox 
             placeholder={nickname} 
             value={nickname}           
-            {...register('nickname', {required: true})} 
+            {...register('nickname', {required: true, maxLength: 20})} 
             onChange={(e) => setNickname(e.target.value)}
              />
         </BoxStyle>

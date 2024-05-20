@@ -39,7 +39,7 @@ const EditMainQuestQuest = () => {
   });
 
   const handleDeleteBtn = () => {
-    let message = '정말 삭제하시겠습니까?';
+    const message = '정말 삭제하시겠습니까?';
     showConfirm(message, () => {
       DeleteMainQuestsMutation.mutate(content.id);
     });
