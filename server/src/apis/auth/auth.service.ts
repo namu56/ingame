@@ -66,4 +66,18 @@ export class AuthService {
       expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
     });
   }
+
+  private async encryptRefreshToken(refreshToken: string): Promise<string> {
+    const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
+    const salt = await bcrypt.genSalt(saltRounds);
+
+    return await bcrypt.hash(refreshToken, salt);
+  }
+
+  private async verifyRefreshToken(
+    refreshToken: string,
+    hasedRefreshToken: string
+  ): Promise<boolean> {
+    return bcrypt.compare(refreshToken, hasedRefreshToken);
+  }
 }
