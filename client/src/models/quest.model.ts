@@ -20,21 +20,6 @@ export interface SideContent {
   updatedAt?: string;
 }
 
-export interface modiSideContent {
-  content: string;
-  status: QuestStatus;
-}
-
-export interface modiQuest {
-  id: number;
-  title: string;
-  difficulty: QuestDifficulty;
-  hidden: QuestHiddenType;
-  sideQuests: modiSideContent[];
-  startDate: string;
-  endDate: string;
-}
-
 export interface SubQuest {
   id: number;
   title: string;
