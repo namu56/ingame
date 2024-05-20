@@ -72,6 +72,8 @@ const UserDetailInfoStyle = styled.div`
     .nickname {
       width: 100%;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
