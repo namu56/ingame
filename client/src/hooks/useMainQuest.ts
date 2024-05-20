@@ -14,6 +14,7 @@ import {
   QuestDifficulty,
   QuestHiddenType,
   QuestMode,
+  QuestStatus,
   SideContent,
 } from '@/models/quest.model';
 import { formattedDate } from '@/utils/formatter';
@@ -38,7 +39,6 @@ export const useMainQuest = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const navigate = useNavigate();
-
   const queryClient = useQueryClient();
 
   const {
@@ -95,12 +95,14 @@ export const useMainQuest = () => {
   });
 
   const patchSideMutation = useMutation({
-    mutationFn: modiSideQuest,
-    onSuccess(res) {},
+    mutationFn: ({ param, status }: { param: number; status: QuestStatus }) => modiSideQuest(param, status),
+    onSuccess(res) {
+      
+    },
     onError(err) {
       navigate('/error');
     },
-  });
+});
 
   const date = params.get(QUERYSTRING.DATE) || formattedDate(new Date());
 
