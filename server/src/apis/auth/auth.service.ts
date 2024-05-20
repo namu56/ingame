@@ -7,13 +7,16 @@ import { AccessTokenPayload, RefreshTokenPayload } from './auth.interface';
 import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { UserProfileDto } from '../users/dto/user-profile.dto';
+import { Redis } from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    @InjectRedis() private readonly redis: Redis
   ) {}
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
@@ -26,6 +29,8 @@ export class AuthService {
 
     const accessToken = await this.generateAccessToken(user);
     const refreshToken = await this.generateRefreshToken(user.id);
+    const hasedRefreshToken = await this.encryptRefreshToken(refreshToken);
+    await this.redis.set(`refreshToken:${user.id}`, hasedRefreshToken, 'EX', 60 * 60 * 24 * 7);
 
     return { accessToken, refreshToken };
   }
@@ -37,9 +42,26 @@ export class AuthService {
         secret: secretKey,
       });
       const user = await this.usersService.getUserById(decodedToken.id);
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+
+      const storedHashedToken = await this.redis.get(`refreshToken:${user.id}`);
+      const isValid = await this.verifyRefreshToken(refreshToken, storedHashedToken);
+      if (!isValid) {
+        throw new UnauthorizedException();
+      }
 
       const newAccessToken = await this.generateAccessToken(user);
       const newRefreshToken = await this.generateRefreshToken(user.id);
+
+      const newHashedRefreshToken = await this.encryptRefreshToken(newRefreshToken);
+      await this.redis.set(
+        `refreshToken:${user.id}`,
+        newHashedRefreshToken,
+        'EX',
+        60 * 60 * 24 * 7
+      );
 
       return { newAccessToken, newRefreshToken };
     } catch {
