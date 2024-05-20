@@ -6,11 +6,11 @@ import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FiMinusCircle, FiPlusCircle } from 'react-icons/fi';
-import { QuestHiddenType, SideContent } from '@/models/quest.model';
+import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
 import CloseButton from '@/components/CloseButton';
 import { useForm } from 'react-hook-form';
 import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
+import { useMessage } from '@/hooks/useMessage';
 
 const EditMainQuestQuest = () => {
   // MainBox에서 Content 값
@@ -20,20 +20,30 @@ const EditMainQuestQuest = () => {
   const [endDate, setEndDate] = useState(content.endDate);
   const [title, setTitle] = useState(content.title);
   const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
-  const [plusQuest, setPlusQuest] = useState(content.sideQuests.length);
-  const [minusQuest, setMinusQuest] = useState(0);
   const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const [isPrivate, setIsPrivate] = useState(false);
   const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
+  const { showConfirm } = useMessage();
   const navigate = useNavigate();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
 
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const newData = { ...data, hidden: hidden };
+    const updatedSideQuests = sideQuests.map((sideQuest: Quest) => ({
+      ...sideQuest, 
+      status: sideQuest.status
+    }));
+    const newData = { ...data, hidden: hidden, sideQuests: updatedSideQuests};
     EditQuestMutation.mutate(newData);
   });
+
+  const handleDeleteBtn = () => {
+    const message = '정말 삭제하시겠습니까?';
+    showConfirm(message, () => {
+      DeleteMainQuestsMutation.mutate(content.id);
+    });
+  };
 
   return (
     <>
@@ -59,53 +69,37 @@ const EditMainQuestQuest = () => {
           />
           <QuestButtonContainer>
             <Button
-              className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`}
-              onClick={() => setIsDifficulty(0)}
+              className={`easyButton ${isDifficulty === 'EASY' ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty('EASY')}
               children={'EASY'}
               size={'medium'}
-              color={'black'}
+              color={'white'}
             ></Button>
             <Button
-              className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`}
-              onClick={() => setIsDifficulty(1)}
+              className={`normalButton ${isDifficulty === 'NORMAL' ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty('NORMAL')}
               children={'NORMAL'}
               size={'medium'}
-              color={'black'}
+              color={'white'}
             ></Button>
             <Button
-              className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`}
-              onClick={() => setIsDifficulty(2)}
+              className={`hardButton ${isDifficulty === 'HARD' ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty('HARD')}
               children={'HARD'}
               size={'medium'}
-              color={'black'}
+              color={'white'}
             ></Button>
           </QuestButtonContainer>
           <div className="plusContainer">
-            <h1>단계</h1>
-            <FiPlusCircle
-              onClick={() => {
-                if (plusQuest - minusQuest < 5) {
-                  setPlusQuest(plusQuest + 1);
-                }
-              }}
-            />
-            <FiMinusCircle
-              onClick={() => {
-                if (minusQuest < plusQuest && plusQuest - minusQuest !== 1) {
-                  setMinusQuest(minusQuest + 1);
-                }
-              }}
-            />
           </div>
           <InnerQuests>
             {content.sideQuests &&
               content.sideQuests.map((sideQuest: SideContent, index: number) => (
                 <SideBoxContainer key={index}>
-                  <input type='hidden' value={sideQuest.id} {...register(`sideQuests.${index}.id`)} />
                   <input
                     className="checkBoxInput"
                     type="checkbox"
-                    checked={sideQuest.status === 'COMPLETED'}
+                    checked={sideQuest.status === 'COMPLETED' ? true : false}
                     {...register(`sideQuests.${index}.status`)}
                     onChange={(e) => {
                       const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
@@ -161,9 +155,7 @@ const EditMainQuestQuest = () => {
               children={'삭제'}
               size={'medium'}
               color={'black'}
-              onClick={() => {
-                DeleteMainQuestsMutation.mutate(content.id);
-              }}
+              onClick={handleDeleteBtn}
             />
           </div>
         </form>
@@ -253,11 +245,37 @@ const QuestButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
 
-  .isActive {
-    background-color: pink;
-  }
   button {
     width: 31%;
+  }
+  .easyButton {
+    border: 1px solid ${({ theme }) => theme.color.purple};
+    color: ${({ theme }) => theme.color.purple};
+
+    &.isActive {
+      background-color: ${({ theme }) => theme.color.purple};
+      color: ${({ theme }) => theme.color.white};
+    }
+  }
+
+  .normalButton {
+    border: 1px solid ${({ theme }) => theme.color.blue};
+    color: ${({ theme }) => theme.color.blue};
+
+    &.isActive {
+      background-color: ${({ theme }) => theme.color.blue};
+      color: ${({ theme }) => theme.color.white};
+    }
+  }
+
+  .hardButton {
+    border: 1px solid ${({ theme }) => theme.color.coral};
+    color: ${({ theme }) => theme.color.coral};
+
+    &.isActive {
+      background-color: ${({ theme }) => theme.color.coral};
+      color: ${({ theme }) => theme.color.white};
+    }
   }
 `;
 
