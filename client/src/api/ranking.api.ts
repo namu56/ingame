@@ -4,6 +4,7 @@ import { httpClient } from '@/utils/axios';
 
 // interface GetRankingParams { 
 //   pageParam: number;
+//   rankingPerPage: number;
 // }
 
 export const getRanking = async (): Promise<RankingItem[]> => {
