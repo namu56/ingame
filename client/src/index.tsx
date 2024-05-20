@@ -13,7 +13,7 @@ async function mountApp() {
   if (process.env.NODE_ENV === 'development') {
     const { worker } = require('./mocks/browser');
 
-    await worker.start();
+    // await worker.start();
   } else {
     console.log = function no_console() {};
     console.warn = function no_console() {};
