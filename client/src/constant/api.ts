@@ -2,6 +2,7 @@ export const API_END_POINT = {
   // AUTH
   LOGIN: '/auth/login',
   LOGOUT: '/auth/logout',
+  REFRESH_TOKEN: '/auth/token',
   // USERS
   SIGNUP: '/users/signup',
   // RANKING
