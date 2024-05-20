@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { PointService } from './point.service';
 import { AuthGuard } from '../auth/auth.guard';
-import { JwtPayload } from '../auth/auth.interface';
+import { AccessTokenPayload } from '../auth/auth.interface';
 import { UpdatePointDto } from './dto/update-point.dto';
 import { CurrentUser } from 'src/common/decorators/auth.decorator';
 import {
@@ -35,7 +35,10 @@ export class PointController {
   @ApiNotFoundResponse({ description: 'fail - Quest not found' })
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePoint(@CurrentUser() user: JwtPayload, @Body() updatePointDto: UpdatePointDto) {
+  async updatePoint(
+    @CurrentUser() user: AccessTokenPayload,
+    @Body() updatePointDto: UpdatePointDto
+  ) {
     await this.pointService.updatePoint(user.id, updatePointDto);
   }
 }

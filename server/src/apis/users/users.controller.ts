@@ -18,7 +18,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from 'src/common/decorators/auth.decorator';
-import { JwtPayload } from '../auth/auth.interface';
+import { AccessTokenPayload } from '../auth/auth.interface';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
 import {
   ApiBearerAuth,
@@ -60,7 +60,7 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@CurrentUser() user: JwtPayload) {
+  async deleteUser(@CurrentUser() user: AccessTokenPayload) {
     await this.usersService.deleteCurrentUserById(user.id);
   }
 
@@ -72,7 +72,7 @@ export class UsersController {
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
   @HttpCode(HttpStatus.OK)
-  async getCurrentUser(@CurrentUser() user: JwtPayload): Promise<UserProfileDto> {
+  async getCurrentUser(@CurrentUser() user: AccessTokenPayload): Promise<UserProfileDto> {
     return await this.usersService.getUserById(user.id);
   }
 
@@ -86,7 +86,10 @@ export class UsersController {
   @ApiConflictResponse({ description: '닉네임이 이미 사용 중입니다' })
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateUserInfo(@CurrentUser() user: JwtPayload, @Body() updateUserDto: UpdateUserDto) {
+  async updateUserInfo(
+    @CurrentUser() user: AccessTokenPayload,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
     await this.usersService.updateCurrenUserInfoById(user.id, updateUserDto);
   }
 
@@ -100,7 +103,7 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateProfilePhoto(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: AccessTokenPayload,
     @Body() profilePhotoDto: ProfilePhotoDto
   ) {
     await this.usersService.updateProfilePhotoById(user.id, profilePhotoDto);
