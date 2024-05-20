@@ -3,7 +3,7 @@ import { CiLock } from 'react-icons/ci';
 import { CiUnlock } from 'react-icons/ci';
 import { FiPlusCircle } from 'react-icons/fi';
 import { FiMinusCircle } from 'react-icons/fi';
-import { Button } from 'antd';
+import Button from '@/components/Button';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useState } from 'react';
@@ -52,24 +52,27 @@ const CreateMainQuest = () => {
         <form onSubmit={onSubmit}>
           <QuestInputBox placeholder="퀘스트 제목" {...register('title')} />
           <QuestButtonContainer>
-            <Button
+          <Button
               className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(0)}
-            >
-              EASY
-            </Button>
+              children={'EASY'}
+              size={'medium'}
+              color={'white'}
+            ></Button>
             <Button
               className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(1)}
-            >
-              NORMAL
-            </Button>
+              children={'NORMAL'}
+              size={'medium'}
+              color={'white'}
+            ></Button>
             <Button
               className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(2)}
-            >
-              HARD
-            </Button>
+              children={'HARD'}
+              size={'medium'}
+              color={'white'}
+            ></Button>
           </QuestButtonContainer>
           <div className="plusContainer">
             <h1>퀘스트 추가</h1>
@@ -120,7 +123,7 @@ const CreateMainQuest = () => {
             />
           </div>
           <div className="modifiyAndClose">
-            <Button htmlType="submit" children={'추가하기'} />
+            <Button type={'submit'} children={'추가하기'} size={'medium'} color={''} />
           </div>
         </form>
       </CreateMainQuestStyle>
@@ -206,21 +209,34 @@ const QuestButtonContainer = styled.div`
   button {
     width: 31%;
   }
-
-  .isActive {
-    background-color: pink;
-  }
   .easyButton {
-    color: ${({ theme }) => theme.color.purple};
     border: 1px solid ${({ theme }) => theme.color.purple};
+    color: ${({ theme }) => theme.color.purple};
+
+    &.isActive {
+      background-color: ${({ theme }) => theme.color.purple};
+      color: ${({ theme }) => theme.color.white};
+    }
   }
+
   .normalButton {
-    color: ${({ theme }) => theme.color.blue};
     border: 1px solid ${({ theme }) => theme.color.blue};
+    color: ${({ theme }) => theme.color.blue};
+
+    &.isActive {
+      background-color: ${({ theme }) => theme.color.blue};
+      color: ${({ theme }) => theme.color.white};
+    }
   }
+
   .hardButton {
-    color: ${({ theme }) => theme.color.coral};
     border: 1px solid ${({ theme }) => theme.color.coral};
+    color: ${({ theme }) => theme.color.coral};
+
+    &.isActive {
+      background-color: ${({ theme }) => theme.color.coral};
+      color: ${({ theme }) => theme.color.white};
+    }
   }
 `;
 
