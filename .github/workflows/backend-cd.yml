@@ -39,7 +39,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -77,7 +77,7 @@ jobs:
 
       - name: Docker build
         run: |
-          docker build --platform linux/amd64 -t ${{ env.IMAGE }} .
+          docker build --no-cache --platform linux/amd64 -t ${{ env.IMAGE }} .
 
       - name: ECR push
         run: |
@@ -150,4 +150,5 @@ jobs:
       - name: Deploy Application
         run: |
           kubectl apply -f ${{ env.K8S_CONFIG_PATH }}.yaml
+          kubectl rollout restart deployment/${{ env.IMAGE }} -n ${{ env.K8S_NAMESPACE }}
           kubectl rollout status deployment/ingame-be -n ${{ env.K8S_NAMESPACE }}
