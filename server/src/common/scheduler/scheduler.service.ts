@@ -5,12 +5,16 @@ import { Repository } from 'typeorm';
 import { Mode, Status } from '../../apis/quests/enums/quest.enum';
 import { PointService } from '../../apis/point/point.service';
 import { UpdatePointDto } from '../../apis/point/dto/update-point.dto';
+import { SideQuest } from '../../apis/quests/entities/side-quest.entity';
 
 @Injectable()
 export class SchedulerService {
   private readonly logger = new Logger(SchedulerService.name);
 
-  constructor(@InjectRepository(Quest) private readonly questRepository: Repository<Quest>) {}
+  constructor(
+    @InjectRepository(Quest) private readonly questRepository: Repository<Quest>,
+    @InjectRepository(SideQuest) private readonly sideQuestRepository: Repository<SideQuest>
+  ) {}
 
   async updateQuestStatus(pointService: PointService) {
     const moveDate = (date: Date, days: number) => {
@@ -43,7 +47,10 @@ export class SchedulerService {
           (sideQuest) => sideQuest.status === Status.Completed
         ).length;
 
-        if (completedSideQuestsCount >= Math.round(quest.sideQuests.length / 2)) {
+        if (
+          completedSideQuestsCount >= Math.round(quest.sideQuests.length / 2) &&
+          quest.sideQuests.length > 0
+        ) {
           quest.status = Status.Completed;
           quest.updatedAt = currentDate;
         } else {
@@ -51,6 +58,14 @@ export class SchedulerService {
           quest.updatedAt = currentDate;
         }
 
+        for (const sideQuest of quest.sideQuests) {
+          if (sideQuest.status === Status.onProgress) {
+            sideQuest.status = Status.Fail;
+            sideQuest.updatedAt = currentDate;
+          }
+        }
+
+        await this.sideQuestRepository.save(quest.sideQuests);
         await this.questRepository.save(quest);
 
         const updatePointDto = {
