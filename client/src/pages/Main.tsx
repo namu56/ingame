@@ -27,7 +27,7 @@ const Main = () => {
           <CreateMainQuestButton />
         </div>
         <div>
-          {mainQuest ? (
+          {mainQuest?.length ? (
             mainQuest.map((content) => <MainBox key={content.id} content={content} />)
           ) : isMainLoading ? (
             <Loading />
@@ -43,7 +43,7 @@ const Main = () => {
           <CreateSubQuestButton />
         </div>
         <div>
-          {quest ? (
+          {quest?.length ? (
             quest.map((content) => <SubBox key={content.id} content={content} />)
           ) : isSubLoading ? (
             <Loading />

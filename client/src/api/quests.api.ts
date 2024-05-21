@@ -29,7 +29,7 @@ export const modiMainQuest = async (data: ModifyQuestData) => {
 export const deleteMainQuest = async (id: number) => {
   const response = await httpClient.delete(API_END_POINT.MAIN_QUEST + `/${id}`);
   return response.data;
-}
+};
 
 export const getMainQuest = async () => {
   const response = await httpClient.get<Quest[]>(API_END_POINT.MAIN_QUEST);
@@ -60,8 +60,9 @@ export const addSubQuest = async (data: CreateSubQuestProps) => {
 };
 
 export const modiQuestStatus = async (data: ModifyQuestStatusProps) => {
-  const response = await httpClient.patch(API_END_POINT.CREATE_QUEST + `/${data.id}`, {
+  const response = await httpClient.patch(API_END_POINT.POINT, {
     status: data.status,
+    questId: data.id,
   });
   return response.data;
 };
