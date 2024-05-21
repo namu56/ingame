@@ -92,6 +92,20 @@ export class QuestsController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('main/:id')
+  @ApiOperation({ summary: '메인 퀘스트 개별 조회' })
+  @ApiBearerAuth('accessToken')
+  @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
+  @ApiOkResponse({ type: [CreateQuestDto] })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'fail - Quests not found' })
+  @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
+  @HttpCode(HttpStatus.OK)
+  async findOne(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
+    return await this.questsService.findOne(user.id, +id);
+  }
+
+  @UseGuards(AuthGuard)
   @Patch('main/:id')
   @ApiOperation({ summary: '메인 퀘스트 개별 수정' })
   @ApiBearerAuth('accessToken')

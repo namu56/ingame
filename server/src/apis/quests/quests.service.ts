@@ -103,6 +103,36 @@ export class QuestsService {
     return quests;
   }
 
+  async findOne(userId: number, questId: number) {
+    const options: FindManyOptions<Quest> = {
+      where: { id: questId, userId: userId, mode: Mode.Main },
+      order: {
+        id: 'DESC',
+      },
+      relations: ['sideQuests'],
+      select: [
+        'id',
+        'title',
+        'difficulty',
+        'mode',
+        'startDate',
+        'endDate',
+        'hidden',
+        'status',
+        'createdAt',
+        'updatedAt',
+      ],
+    };
+
+    const quests = await this.questRepository.find(options);
+
+    if (!quests) {
+      throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
+    }
+
+    return quests;
+  }
+
   async update(userId: number, questId: number, updateQuestDto: UpdateQuestDto) {
     const currentDate = new Date();
     const queryRunner = this.dataSource.createQueryRunner();
