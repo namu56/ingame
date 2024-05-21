@@ -44,7 +44,12 @@ export class PointService {
 
       const totalPoint =
         quest.mode === Mode.Main ? completedSideQuestsCount * difficultyPoint : difficultyPoint;
-      status === Status.Completed ? (userInfo.point += totalPoint) : (userInfo.point -= totalPoint);
+      userInfo.point +=
+        status === Status.Completed
+          ? totalPoint
+          : status === Status.onProgress
+            ? -totalPoint
+            : -difficultyPoint;
 
       if (userInfo.point < 0) userInfo.point = 0;
 
