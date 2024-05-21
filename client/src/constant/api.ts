@@ -21,4 +21,6 @@ export const API_END_POINT = {
   MAIN_QUEST: '/quests/main',
   // SIDE_QUEST
   SIDE_QUEST: '/quests/side',
+  //POINT
+  POINT: '/point',
 };
