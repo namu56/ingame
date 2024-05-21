@@ -4,7 +4,7 @@ import { UpdateQuestDto } from './dto/update-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from './entities/quest.entity';
-import { DataSource, FindManyOptions, Repository } from 'typeorm';
+import { DataSource, FindManyOptions, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { SideQuest } from './entities/side-quest.entity';
 import { Difficulty, Mode, Status } from './enums/quest.enum';
 
@@ -69,7 +69,12 @@ export class QuestsService {
 
   async findAll(userId: number, mode: Mode, queryDate: string) {
     const mainOptions: FindManyOptions<Quest> = {
-      where: { userId: userId, mode: Mode.Main, startDate: queryDate },
+      where: {
+        userId: userId,
+        mode: Mode.Main,
+        startDate: LessThanOrEqual(queryDate),
+        endDate: MoreThanOrEqual(queryDate),
+      },
       order: {
         id: 'DESC',
       },
