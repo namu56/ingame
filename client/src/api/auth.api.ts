@@ -11,3 +11,8 @@ export const logout = async () => {
   const response = await httpClient.post(API_END_POINT.LOGOUT);
   return response.data;
 };
+
+export const refreshToken = async () => {
+  const response = await httpClient.post(API_END_POINT.REFRESH_TOKEN);
+  return response.data;
+};

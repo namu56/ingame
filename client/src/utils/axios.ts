@@ -1,8 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { getToken } from './tokenUtils';
+import { getToken, setToken } from './tokenUtils';
 import { SERVER_API_URL } from '../settings';
+import { refreshToken } from '@/api/auth.api';
 
-export const createClient = (config?: AxiosRequestConfig) => {
+const createClient = (config?: AxiosRequestConfig) => {
   const axiosInstance = axios.create({
     baseURL: SERVER_API_URL,
     headers: {
@@ -12,6 +13,7 @@ export const createClient = (config?: AxiosRequestConfig) => {
     timeout: 5000,
     ...config,
   });
+
   axiosInstance.interceptors.request.use((request) => {
     request.headers.Authorization = `Bearer ${getToken() ? getToken() : ''}`;
     return request;
@@ -21,10 +23,12 @@ export const createClient = (config?: AxiosRequestConfig) => {
     (response) => {
       return response;
     },
-    (error) => {
+    async (error) => {
+      const originRequest = error.config;
       if (error.response.status === 401) {
-        window.location.href = '/login';
-        return;
+        const refreshedToken = await refreshToken();
+        setToken(refreshedToken);
+        return axiosInstance.request(originRequest);
       }
       if (process.env.NODE_ENV === 'production') {
         console.clear();
