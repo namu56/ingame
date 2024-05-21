@@ -16,7 +16,7 @@ env:
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   DB_DATABASE: ${{ secrets.DB_DATABASE }}
   SALT_ROUNDS: ${{ secrets.SALT_ROUNDS }}
-  ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
+  ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_SECRET_KEY }}
   ACCESS_TOKEN_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
   REFRESH_TOKEN_SECRET_KEY: ${{ secrets.REFRESH_TOKEN_SECRET_KEY }}
   REFRESH_TOKEN_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
@@ -43,6 +43,8 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
       - name: Cache node modules
         id: cache-node-modules
@@ -77,7 +79,7 @@ jobs:
 
       - name: Docker build
         run: |
-          docker build --no-cache --platform linux/amd64 -t ${{ env.IMAGE }} .
+          docker build --platform linux/amd64 -t ${{ env.IMAGE }} .
 
       - name: ECR push
         run: |
@@ -150,5 +152,4 @@ jobs:
       - name: Deploy Application
         run: |
           kubectl apply -f ${{ env.K8S_CONFIG_PATH }}.yaml
-          kubectl rollout restart deployment/${{ env.IMAGE }} -n ${{ env.K8S_NAMESPACE }}
           kubectl rollout status deployment/ingame-be -n ${{ env.K8S_NAMESPACE }}
