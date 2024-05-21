@@ -52,27 +52,30 @@ const CreateMainQuest = () => {
         <form onSubmit={onSubmit}>
           <QuestInputBox placeholder="퀘스트 제목" {...register('title')} />
           <QuestButtonContainer>
-          <Button
+            <Button
+              type='button'
               className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(0)}
               children={'EASY'}
               size={'medium'}
               color={'white'}
-            ></Button>
+            />
             <Button
+              type='button'
               className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(1)}
               children={'NORMAL'}
               size={'medium'}
               color={'white'}
-            ></Button>
+            />
             <Button
+              type='button'
               className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(2)}
               children={'HARD'}
               size={'medium'}
               color={'white'}
-            ></Button>
+            />
           </QuestButtonContainer>
           <div className="plusContainer">
             <h1>퀘스트 추가</h1>

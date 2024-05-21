@@ -69,26 +69,29 @@ const EditMainQuestQuest = () => {
           />
           <QuestButtonContainer>
             <Button
+              type='button'
               className={`easyButton ${isDifficulty === 'EASY' ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty('EASY')}
               children={'EASY'}
               size={'medium'}
               color={'white'}
-            ></Button>
+            />
             <Button
+              type='button'
               className={`normalButton ${isDifficulty === 'NORMAL' ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty('NORMAL')}
               children={'NORMAL'}
               size={'medium'}
               color={'white'}
-            ></Button>
+            />
             <Button
+              type='button'
               className={`hardButton ${isDifficulty === 'HARD' ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty('HARD')}
               children={'HARD'}
               size={'medium'}
               color={'white'}
-            ></Button>
+            />
           </QuestButtonContainer>
           <div className="plusContainer">
           </div>
@@ -151,6 +154,7 @@ const EditMainQuestQuest = () => {
               color={'black'}
             />
             <Button
+              type='button'
               className="closeButton"
               children={'삭제'}
               size={'medium'}

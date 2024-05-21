@@ -25,9 +25,8 @@ const MainBox = ({ content }: MainBoxProps) => {
   const navigate = useNavigate();
   const [isAccordion, setisAccordion] = useState(false);
   const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
-  const checkedCount = checked.reduce((count, isChecked) => (isChecked ? count + 1 : count), 0);
-  const fraction = `${checkedCount} / ${content.sideQuests.length}`;
-  
+  const [sideQuests, setSideQuests] = useState(content.sideQuests);
+  const fraction = `${sideQuests.filter((item) => item.status === 'COMPLETED').length} / ${content.sideQuests.length}`;
   const handleChangeStatue = () => {
     if (date === formattedDate(new Date())) {
       let message = '';
@@ -94,16 +93,29 @@ const MainBox = ({ content }: MainBoxProps) => {
                 <SideBox
                   key={index}
                   isAccordion={isAccordion}
-                  checked={checked[index]}
+                  checked={sideQuests[index].status === 'COMPLETED'}
                   onClick={() => {
-                    if (quest.id !== undefined) {
-                      patchSideMutation.mutate(quest.id);
-                      handleCheckboxClick(index);
-                    }
-                  }}
-                  content={quest.content}
-                />
-              ) : null
+                  if (quest.id !== undefined) {
+                    const questStatus = sideQuests[index].status || 'ON_PROGRESS';
+                    const newStatus = questStatus === 'COMPLETED' ? 'ON_PROGRESS' : 'COMPLETED';
+                    
+                    patchSideMutation.mutate({ param: quest.id, status: newStatus }, {
+                      onSuccess: () => {
+                        setSideQuests((prev) => {
+                          const newState = [...prev];
+                          newState[index] = {
+                            ...newState[index],
+                            status: newStatus
+                          };
+                      return newState;
+                    });
+                  handleCheckboxClick(index);
+                  }
+                });
+              }
+            }}
+            content={quest.content}
+            />) : null
             )
           ) : (
             <div>내용이 없습니다.</div>
@@ -174,7 +186,7 @@ const SideBoxContainer = styled.div`
   align-items: flex-end;
   width: 90%;
   gap: 5px;
-  margin-right: 11.7%;
+  margin-left: 9.5%;
 `;
 
 export default MainBox;

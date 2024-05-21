@@ -6,6 +6,9 @@ import { httpClient } from '@/utils/axios';
 //   pageParam: number;
 //   rankingPerPage: number;
 // }
+// { pageParam, rankingPerPage }
+// ?pageParam=${pageParam}&rankingPerPage=${rankingPerPage} query string값이고
+// query parameter로 넘겨주는 값이다 { pageParam, rankingPerPage }
 
 export const getRanking = async (): Promise<RankingItem[]> => {
   try {
