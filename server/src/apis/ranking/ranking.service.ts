@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { UserRankingDto } from './dto/ranking-response.dto';
 import { UserInfo } from '../users/entities/user-info.entity';
+import { LevelCalculatorService } from 'src/common/level-calculator/level-calculator.service';
 
 @Injectable()
 export class RankingService {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private levelCalculatorService: LevelCalculatorService
+  ) {}
   async getRanking(): Promise<UserRankingDto[]> {
     const users = await this.usersService.getAllUser();
     let currentRank = 1;
@@ -29,11 +33,14 @@ export class RankingService {
   }
 
   private toRankingResponse(userInfo: UserInfo, rank: number): UserRankingDto {
+    const level = this.levelCalculatorService.findLevel(userInfo.point).level;
+
     return {
       id: userInfo.userId,
       nickname: userInfo.nickname,
       point: userInfo.point,
       rank: rank,
+      level,
     };
   }
 }

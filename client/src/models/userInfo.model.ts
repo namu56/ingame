@@ -5,4 +5,5 @@ export interface UserInfo {
   intro: string | null;
   profilePhoto: string;
   point: number;
+  level: number;
 }

@@ -5,7 +5,7 @@ import { GrFormPrevious, GrFormNext } from 'react-icons/gr';
 import { media } from '@/styles/theme';
 import { QUERYSTRING } from '@/constant/queryString';
 import { useSearchParams } from 'react-router-dom';
-import { formattedCalendar } from '@/utils/formatter';
+import { formattedDate } from '@/utils/formatter';
 
 const Week = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,17 +47,17 @@ const Week = () => {
   const handleGetSubquest = (calendar: Date) => {
     setSelectedDay(new Date(calendar.getFullYear(), calendar.getMonth(), calendar.getDate()));
 
-    if (formattedCalendar(calendar) === formattedCalendar(today)) {
+    if (formattedDate(calendar) === formattedDate(today)) {
       newSearchParams.delete(QUERYSTRING.DATE);
     } else {
-      newSearchParams.set(QUERYSTRING.DATE, formattedCalendar(calendar));
+      newSearchParams.set(QUERYSTRING.DATE, formattedDate(calendar));
     }
 
     setSearchParams(newSearchParams);
   };
 
   useEffect(() => {
-    if (formattedCalendar(selectedDay) !== newSearchParams.get(QUERYSTRING.DATE)) {
+    if (formattedDate(selectedDay) !== newSearchParams.get(QUERYSTRING.DATE)) {
       newSearchParams.delete(QUERYSTRING.DATE);
     }
     setSearchParams(newSearchParams);

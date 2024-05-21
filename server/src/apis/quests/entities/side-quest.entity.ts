@@ -3,7 +3,7 @@ import { Quest } from './quest.entity';
 import { Status } from '../enums/quest.enum';
 
 @Entity('side_quest')
-export class sideQuest extends BaseEntity {
+export class SideQuest extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

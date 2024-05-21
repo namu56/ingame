@@ -1,31 +1,23 @@
 export interface Quest {
   id: number;
-  userId: number;
   title: string;
-  difficulty: number;
-  mode: number;
+  difficulty: QuestDifficulty;
+  mode: QuestMode;
+  sideQuests: SideContent[];
   startDate: string;
   endDate: string;
   hidden: QuestHiddenType;
-  status: number;
+  status: QuestStatus;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface SideContent {
-  content: string;
-  status: number;
-  action: string;
-}
-
-export interface modiMainQuest {
-  id: number;
-  title: string;
-  difficulty: number;
-  side: SideContent[];
-  startDate: string;
-  endDate: string;
-  hidden: QuestHiddenType;
+  id?: number;
+  content?: string;
+  status?: QuestStatus;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface SubQuest {
@@ -38,3 +30,4 @@ export interface SubQuest {
 export type QuestStatus = 'COMPLETED' | 'FAIL' | 'ON_PROGRESS';
 export type QuestHiddenType = 'TRUE' | 'FALSE';
 export type QuestMode = 'MAIN' | 'SUB';
+export type QuestDifficulty = 'DEFAULT' | 'EASY' | 'NORMAL' | 'HARD';

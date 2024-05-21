@@ -12,6 +12,7 @@ const UserProfile = () => {
     queryKey: [...USER.GET_USERINFO],
     queryFn: () => getUserInfo(),
   });
+
   return (
     <UserProfileStyle>
       {userInfo && (
@@ -20,7 +21,7 @@ const UserProfile = () => {
           <UserDetailInfoStyle>
             <div className="basic__info">
               <p className="nickname">
-                Lv {Math.floor(userInfo.point / 1024)}. {userInfo.nickname}
+                Lv {userInfo.level}. {userInfo.nickname}
               </p>
               <EditProfileButton nickname={userInfo.nickname} intro={userInfo.intro} />
             </div>
@@ -71,6 +72,8 @@ const UserDetailInfoStyle = styled.div`
     .nickname {
       width: 100%;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 

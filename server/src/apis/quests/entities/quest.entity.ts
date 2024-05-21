@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { sideQuest } from './side-quest.entity';
+import { SideQuest } from './side-quest.entity';
 import { Difficulty, isHidden, Mode, Status } from '../enums/quest.enum';
 
 @Entity('quest')
@@ -20,11 +20,11 @@ export class Quest extends BaseEntity {
   @Column({ type: 'enum', name: 'mode', enum: Mode })
   mode!: Mode;
 
-  @Column('timestamp', { nullable: false })
-  startDate: Date;
+  @Column('date', { nullable: false })
+  startDate: string;
 
-  @Column('timestamp', { nullable: true })
-  endDate: Date;
+  @Column('date', { nullable: true })
+  endDate: string;
 
   @Column({ type: 'enum', name: 'hidden', enum: isHidden })
   hidden!: isHidden;
@@ -44,6 +44,6 @@ export class Quest extends BaseEntity {
   })
   user: User;
 
-  @OneToMany(() => sideQuest, (sideQuest) => sideQuest.quest)
-  sideQuests: sideQuest[];
+  @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest)
+  sideQuests: SideQuest[];
 }

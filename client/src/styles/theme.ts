@@ -13,11 +13,18 @@ const color = {
   greenLightActive: '#90c5bf;',
   greenOpactiy30: 'rgba(10, 207, 131, 0.3)',
   grayLight: '#FDFDFD',
-  grayLightActive: '#F9F9F9',
-  grayNormal: '#EBEBEB',
-  grayNormalActive: '#BCBCBC',
+  grayNormal: '#d4d4d4',
   grayDark: '#b0b0b0',
-  grayDarkActive: '#8d8d8d',
+};
+
+const colorActive = {
+  blue: '#28A3FC',
+  purple: '#8127F2',
+  coral: '#FF4F3B',
+  green: '#00C078',
+  grayLight: '#F9F9F9',
+  grayNormal: '#BCBCBC',
+  grayDark: '#8d8d8d',
 };
 
 const statusColor = {
@@ -82,6 +89,7 @@ export const media = {
 
 export const theme: DefaultTheme = {
   color,
+  colorActive,
   statusColor,
   font,
   media,

@@ -1,25 +1,25 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateQuestDto } from './dto/create-quest.dto';
 import { UpdateQuestDto } from './dto/update-quest.dto';
-import { CreateSideQuestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from './entities/quest.entity';
 import { DataSource, FindManyOptions, Repository } from 'typeorm';
-import { sideQuest } from './entities/side-quest.entity';
+import { SideQuest } from './entities/side-quest.entity';
 import { Difficulty, Mode, Status } from './enums/quest.enum';
 
 @Injectable()
 export class QuestsService {
   constructor(
     @InjectRepository(Quest) private readonly questRepository: Repository<Quest>,
-    @InjectRepository(sideQuest) private readonly sideQuestRepository: Repository<sideQuest>,
+    @InjectRepository(SideQuest) private readonly sideQuestRepository: Repository<SideQuest>,
     private readonly dataSource: DataSource
   ) {}
 
-  async create(id: number, createQuestDto: CreateQuestDto) {
+  async create(userId: number, createQuestDto: CreateQuestDto) {
     const currentDate = new Date();
-    const { title, difficulty, mode, side, startDate, endDate, hidden, status } = createQuestDto;
+    const { title, difficulty, mode, sideQuests, startDate, endDate, hidden, status } =
+      createQuestDto;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -27,9 +27,9 @@ export class QuestsService {
 
     try {
       const quest = this.questRepository.create({
-        userId: id,
+        userId: userId,
         title: title,
-        difficulty: mode === Mode.Main ? difficulty : Difficulty.Easy,
+        difficulty: mode === Mode.Main ? difficulty : Difficulty.Default,
         mode: mode,
         startDate: startDate,
         endDate: endDate,
@@ -41,8 +41,9 @@ export class QuestsService {
       const savedQuest = await queryRunner.manager.save(quest);
 
       if (mode === Mode.Main) {
-        for (const it of side) {
-          const { content } = it;
+        for (const sideQuest of sideQuests) {
+          const { content } = sideQuest;
+
           const side = this.sideQuestRepository.create({
             questId: savedQuest.id,
             content: content,
@@ -50,6 +51,7 @@ export class QuestsService {
             createdAt: currentDate,
             updatedAt: currentDate,
           });
+
           await queryRunner.manager.save(side);
         }
       }
@@ -65,9 +67,9 @@ export class QuestsService {
     return { message: 'success' };
   }
 
-  async findAll(id: number, mode: Mode, queryDate?: Date) {
+  async findAll(userId: number, mode: Mode, queryDate?: string) {
     const mainOptions: FindManyOptions<Quest> = {
-      where: { userId: id, mode: Mode.Main },
+      where: { userId: userId, mode: Mode.Main },
       order: {
         id: 'DESC',
       },
@@ -86,7 +88,7 @@ export class QuestsService {
       ],
     };
     const subOptions: FindManyOptions<Quest> = {
-      where: { userId: id, mode: Mode.Sub, startDate: queryDate },
+      where: { userId: userId, mode: Mode.Sub, startDate: queryDate },
       order: {
         id: 'DESC',
       },
@@ -94,63 +96,75 @@ export class QuestsService {
     };
     const quests = await this.questRepository.find(mode === Mode.Main ? mainOptions : subOptions);
 
-    if (quests.length === 0) {
+    if (!quests) {
       throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
     }
 
     return quests;
   }
 
-  async update(userId: number, id: number, updateQuestDto: UpdateQuestDto) {
+  async update(userId: number, questId: number, updateQuestDto: UpdateQuestDto) {
     const currentDate = new Date();
-
-    const targetQuest = await this.questRepository.findOne({ where: { userId: userId, id: id } });
-
-    if (!targetQuest) {
-      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
-    }
-
-    const updatedQuest = this.questRepository.merge(targetQuest, {
-      ...updateQuestDto,
-      updatedAt: currentDate,
-    });
-    await this.questRepository.save(updatedQuest);
-  }
-
-  async remove(userId: number, id: number) {
-    const targetQuest = await this.questRepository.findOne({ where: { userId: userId, id: id } });
-    if (!targetQuest) {
-      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
-    }
-
-    await this.questRepository.delete({ id: id });
-  }
-
-  async createSide(id: number, createQuestDto: CreateSideQuestDto[]) {
-    const currentDate = new Date();
-
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      for (const it of createQuestDto) {
-        const { questId, content, status, createdAt, updatedAt } = it;
+      const targetQuest = await this.questRepository.findOne({
+        where: { userId: userId, id: questId },
+      });
+      const targetSideQuest = await this.sideQuestRepository.find({ where: { questId: questId } });
 
-        const quest = await this.questRepository.find({ where: { id: questId, userId: id } });
-        if (quest.length === 0) {
-          throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+      if (!targetQuest) {
+        throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+      }
+
+      const updatedQuest = this.questRepository.merge(targetQuest, {
+        difficulty: updateQuestDto.difficulty,
+        title: updateQuestDto.title,
+        startDate: updateQuestDto.startDate,
+        endDate: updateQuestDto.endDate,
+        hidden: updateQuestDto.hidden,
+        updatedAt: currentDate,
+      });
+      await queryRunner.manager.save(updatedQuest);
+
+      if (updateQuestDto.sideQuests) {
+        const deleteSideQuestIdList = targetSideQuest
+          .filter(
+            (sideQuest) =>
+              !updateQuestDto.sideQuests.some((sideQuestItem) => sideQuestItem.id === sideQuest.id)
+          )
+          .map((sideQuest) => sideQuest.id);
+        const updateSideQuestList = updateQuestDto.sideQuests.filter((it) => it.id);
+
+        for (const sideQuest of updateSideQuestList) {
+          const targetSideQuest = await this.sideQuestRepository.findOne({
+            where: { id: sideQuest.id, questId: questId },
+          });
+          if (!targetSideQuest) {
+            throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+          }
+
+          const updatedQuest = this.sideQuestRepository.merge(targetSideQuest, {
+            id: sideQuest.id,
+            content: sideQuest.content,
+            status: sideQuest.status,
+            updatedAt: currentDate,
+          });
+          await queryRunner.manager.save(updatedQuest);
         }
 
-        const side = this.sideQuestRepository.create({
-          questId: questId,
-          content: content,
-          status: status ? status : Status.onProgress,
-          createdAt: createdAt ? new Date(createdAt) : currentDate,
-          updatedAt: updatedAt ? new Date(updatedAt) : currentDate,
-        });
+        for (const sideQuestId of deleteSideQuestIdList) {
+          const targetSideQuest = await this.sideQuestRepository.findOne({
+            where: { id: sideQuestId },
+          });
+          if (!targetSideQuest) {
+            throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+          }
 
-        await queryRunner.manager.save(side);
+          await queryRunner.manager.delete(SideQuest, { id: sideQuestId });
+        }
       }
 
       await queryRunner.commitTransaction();
@@ -160,42 +174,40 @@ export class QuestsService {
     } finally {
       await queryRunner.release();
     }
-
-    return { message: 'success' };
   }
 
-  async updateSide(userId: number, id: number, updateQuestDto: UpdateSideQuestDto) {
+  async remove(userId: number, questId: number) {
+    const targetQuest = await this.questRepository.findOne({
+      where: { userId: userId, id: questId },
+    });
+    if (!targetQuest) {
+      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+    }
+
+    await this.questRepository.delete({ id: questId });
+  }
+
+  async updateSideStatus(userId: number, questId: number, updateQuestDto: UpdateSideQuestDto) {
     const currentDate = new Date();
 
-    const quest = await this.questRepository.findOne({
-      where: { userId: userId, id: updateQuestDto.questId },
+    const targetSideQuest = await this.sideQuestRepository.findOne({
+      where: { id: questId },
+    });
+    if (!targetSideQuest) {
+      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+    }
+
+    const quest = await this.questRepository.find({
+      where: { id: updateQuestDto.questId, userId: userId },
     });
     if (!quest) {
       throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
     }
 
-    const targetQuest = await this.sideQuestRepository.findOne({
-      where: { id: id, questId: quest.id },
-    });
-    if (!targetQuest) {
-      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
-    }
-
-    const updatedQuest = this.sideQuestRepository.merge(targetQuest, {
-      ...updateQuestDto,
+    const updatedSideQuest = this.sideQuestRepository.merge(targetSideQuest, {
+      status: updateQuestDto.status,
       updatedAt: currentDate,
     });
-    await this.questRepository.save(updatedQuest);
-  }
-
-  async removeSide(userId: number, id: number) {
-    const targetQuest = await this.sideQuestRepository.findOne({
-      where: { id: id },
-    });
-    if (!targetQuest) {
-      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
-    }
-
-    await this.questRepository.delete({ id: id });
+    await this.sideQuestRepository.save(updatedSideQuest);
   }
 }

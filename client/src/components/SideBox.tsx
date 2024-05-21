@@ -9,7 +9,7 @@ interface SideBoxProps {
 
 const SideBox: React.FC<SideBoxProps> = ({ isAccordion, checked, onClick, content }) => {
   return (
-    <SideBoxStyle className={`sideBox ${isAccordion ? 'show' : ''}`}>
+    <SideBoxStyle className={`sideBox ${isAccordion ? 'show' : 'hide'}`}>
       <label className='cBox'>
         <input type='checkbox' checked={checked} onChange={onClick} />
       </label>
@@ -20,12 +20,11 @@ const SideBox: React.FC<SideBoxProps> = ({ isAccordion, checked, onClick, conten
 
 const SideBoxStyle = styled.div`
   position: relative;
-  left: 23px;
 
   display: flex;
   align-items: center;
   padding: 0px 10px;
-  width: 90%;
+  width: 100%;
   height: 55px;
   background: ${({ theme }) => theme.color.white};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);

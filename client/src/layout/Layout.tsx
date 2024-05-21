@@ -6,39 +6,27 @@ interface LayoutProps {
 }
 
 const Layout = ({ children }: LayoutProps) => {
-  return (
-    <LayoutStyle>
-      <InnerStyle>{children}</InnerStyle>
-    </LayoutStyle>
-  );
+  return <LayoutStyle>{children}</LayoutStyle>;
 };
 
-const LayoutStyle = styled.div`
-  background: ${({ theme }) => theme.color.grayNormal};
-  padding: 2rem 0;
-  height: 100%;
-
-  ${media.mobile} {
-    padding: 0;
-  }
-`;
-
-export const InnerStyle = styled.div`
+export const LayoutStyle = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.5rem;
   justify-content: flex-start;
   align-items: center;
-  max-width: 480px;
-  border: 1px solid ${({ theme }) => theme.color.grayNormalActive};
+  width: 480px;
+  height: 100vh;
+  border: 1px solid ${({ theme }) => theme.color.grayNormal};
   border-radius: ${({ theme }) => theme.borderRadius.large};
-  height: 800px;
 
   ${media.mobile} {
-    height: 100%;
-    min-height: 100vh;
+    height: 100vh;
+    width: 100vw;
+    border-radius: 0;
+    border: none;
   }
   overflow-y: scroll;
   background: ${({ theme }) => theme.color.white};

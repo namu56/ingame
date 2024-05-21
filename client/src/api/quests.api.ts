@@ -1,7 +1,8 @@
 import { CreateSubQuestProps } from '@/components/modals/CreateSubQuestModal';
 import { SubQuestModifyProps } from '@/components/modals/SubQuestModal';
 import { API_END_POINT } from '@/constant/api';
-import { Quest, QuestStatus, SubQuest } from '@/models/quest.model';
+import { Quest, SubQuest, QuestStatus } from '@/models/quest.model';
+
 import { httpClient } from '@/utils/axios';
 
 interface GetSubQuestParam {
@@ -12,13 +13,31 @@ export interface ModifyQuestStatusProps {
   status: QuestStatus;
 }
 
-export const createMainQuest = async (data: Quest) => {
+type CreateQuestData = Omit<Quest, 'id' | 'status' | 'createdAt' | 'updatedAt'>;
+type ModifyQuestData = Omit<Quest, 'mode' | 'status' | 'createdAt' | 'updatedAt'>;
+
+export const createMainQuest = async (data: CreateQuestData) => {
   const response = await httpClient.post(API_END_POINT.CREATE_QUEST, { ...data });
   return response.data;
 };
 
-export const modiMainQuest = async (data: Quest) => {
-  const response = await httpClient.patch(API_END_POINT.PATCH_QUEST + `/${data.id}`, { ...data });
+export const modiMainQuest = async (data: ModifyQuestData) => {
+  const response = await httpClient.patch(API_END_POINT.MAIN_QUEST + `/${data.id}`, { ...data });
+  return response.data;
+};
+
+export const deleteMainQuest = async (id: number) => {
+  const response = await httpClient.delete(API_END_POINT.MAIN_QUEST + `/${id}`);
+  return response.data;
+}
+
+export const getMainQuest = async () => {
+  const response = await httpClient.get<Quest[]>(API_END_POINT.MAIN_QUEST);
+  return response.data;
+};
+
+export const modiSideQuest = async (param: number, status: QuestStatus) => {
+  const response = await httpClient.patch(API_END_POINT.SIDE_QUEST + `/${param}`, { status });
   return response.data;
 };
 
