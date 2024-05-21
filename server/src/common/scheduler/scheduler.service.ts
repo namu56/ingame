@@ -47,10 +47,7 @@ export class SchedulerService {
           (sideQuest) => sideQuest.status === Status.Completed
         ).length;
 
-        if (
-          completedSideQuestsCount >= Math.round(quest.sideQuests.length / 2) &&
-          quest.sideQuests.length > 0
-        ) {
+        if (completedSideQuestsCount > 0) {
           quest.status = Status.Completed;
           quest.updatedAt = currentDate;
         } else {
