@@ -13,19 +13,22 @@ export const useRank = () => {
     queryFn: () => getRanking(),
   });
 
+  return { rankingData };
+
   // const {
   //   data,
   //   isLoading,
   //   isError,
+  //   fetchNextPage,
+  //   hasNextPage,
   // } = useInfiniteQuery({
   //   queryKey: [...RANK.GET_RANKING],
-  //   queryFn: ({ pageParam = 0 }) => getRanking({ pageParam }),
-  //     getNextPageParam: (result, pages) => { // result 가 결과값, pages 는 이전까지의 결과값들
-  //       if (!result.isLastPage) return result.pageNum;
-  //       return null;
-  //     },
-  //   });
+  //   queryFn: ({ pageParam = 0 }) => getRanking({ pageParam, rankingPerPage: 10 }),
+  //   getNextPageParam: (lastPage) => {
+  //     if (!lastPage.isLastPage) return lastPage.pageNum;
+  //     return null;
+  //   },
   // });
 
-  return { rankingData };
+  // return { rankingData: data, isLoading, isError, fetchNextPage, hasNextPage };
 };

@@ -52,3 +52,38 @@ const RankingStyle = styled.div`
 `;
 
 export default Ranking;
+
+// const RankingCardList = () => {
+//   const { rankingData, fetchNextPage, hasNextPage } = useRank();
+//   const loader = useRef(null);
+
+//   const handleObserver = (entities) => {
+//     const target = entities[0];
+//     if (target.isIntersecting) {
+//       fetchNextPage();
+//     }
+//   };
+
+//   useEffect(() => {
+//     var options = {
+//       root: null,
+//       rootMargin: "20px",
+//       threshold: 1.0
+//     };
+//     const observer = new IntersectionObserver(handleObserver, options);
+//     if (loader.current) {
+//       observer.observe(loader.current)
+//     }
+//   }, []);
+
+//   return (
+//     <>
+//       <RankingCardListStyle>
+//         {rankingData?.pages.flatMap((page, i) => (
+//           page.ranking.map((item) => <RankingCard key={item.id} {...item} />)
+//         ))}
+//         <div ref={loader} />
+//       </RankingCardListStyle>
+//     </>
+//   );
+// };
