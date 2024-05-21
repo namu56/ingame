@@ -82,6 +82,13 @@ export class QuestsController {
   @Get('main')
   @ApiOperation({ summary: '메인 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    type: String,
+    description: '조회 일자',
+    example: '20240521',
+  })
   @ApiOkResponse({ type: [CreateQuestDto] })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
@@ -164,6 +171,13 @@ export class QuestsController {
   @Get('sub')
   @ApiOperation({ summary: '서브(일일) 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    type: String,
+    description: '조회 일자',
+    example: '20240521',
+  })
   @ApiOkResponse({ type: [SubQuestResponseDto] })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
