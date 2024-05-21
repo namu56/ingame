@@ -129,10 +129,13 @@ jobs:
           fi
 
       - name: Render Deployment YAML
-        uses: nowactions/envsubst@v1
-        with:
-          input: ${{ env.K8S_CONFIG_PATH }}.tmpl
-          output: ${{ env.K8S_CONFIG_PATH }}.yaml
+        run: |
+          envsubst < k8s/ingame-fe.tmpl > k8s/ingame-fe.yaml
+        env:
+          IMAGE: ${{ env.IMAGE }}
+          REPO: ${{ secrets.REPO }}
+          CORS_ORIGIN: ${{ env.CORS_ORIGIN }}
+          TAG: ${{ github.sha }}
 
       - name: Deploy Application
         run: |
