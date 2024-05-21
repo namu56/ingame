@@ -65,7 +65,7 @@ jobs:
 
       - name: Docker build
         run: |
-          docker build --platform linux/amd64 -t ${{ env.IMAGE }} .
+          docker build --no-cache --platform linux/amd64 -t ${{ env.IMAGE }} .
 
       - name: ECR push
         run: |
