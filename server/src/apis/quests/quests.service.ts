@@ -67,9 +67,9 @@ export class QuestsService {
     return { message: 'success' };
   }
 
-  async findAll(userId: number, mode: Mode, queryDate?: string) {
+  async findAll(userId: number, mode: Mode, queryDate: string) {
     const mainOptions: FindManyOptions<Quest> = {
-      where: { userId: userId, mode: Mode.Main },
+      where: { userId: userId, mode: Mode.Main, startDate: queryDate },
       order: {
         id: 'DESC',
       },

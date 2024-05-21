@@ -87,8 +87,11 @@ export class QuestsController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAll(@CurrentUser() user: AccessTokenPayload) {
-    return await this.questsService.findAll(user.id, Mode.Main);
+  async findAll(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
+    const queryDate = query
+      ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
+      : new Date().toISOString().split('T')[0];
+    return await this.questsService.findAll(user.id, Mode.Main, queryDate);
   }
 
   @UseGuards(AuthGuard)
@@ -169,7 +172,7 @@ export class QuestsController {
   async findAllSub(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
     const queryDate = query
       ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
-      : new Date().toISOString().replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3');
+      : new Date().toISOString().split('T')[0];
     return await this.questsService.findAll(user.id, Mode.Sub, queryDate);
   }
 
