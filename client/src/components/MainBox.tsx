@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { BsThreeDots } from 'react-icons/bs';
 import { MdArrowDropDown } from 'react-icons/md';
 import { MdArrowDropUp } from 'react-icons/md';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { sideQuestList } from '@/shared/dummy';
 import SideBox from './SideBox';
 import { Quest, QuestStatus, SideContent } from '@/models/quest.model';
@@ -115,8 +115,7 @@ const MainBox = ({ content }: MainBoxProps) => {
               }
             }}
             content={quest.content}
-/>
-              ) : null
+            />) : null
             )
           ) : (
             <div>내용이 없습니다.</div>
@@ -187,7 +186,7 @@ const SideBoxContainer = styled.div`
   align-items: flex-end;
   width: 90%;
   gap: 5px;
-  margin-right: 11.7%;
+  margin-left: 9.5%;
 `;
 
 export default MainBox;

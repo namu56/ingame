@@ -20,7 +20,6 @@ const SideBox: React.FC<SideBoxProps> = ({ isAccordion, checked, onClick, conten
 
 const SideBoxStyle = styled.div`
   position: relative;
-  left: 44px;
 
   display: flex;
   align-items: center;
