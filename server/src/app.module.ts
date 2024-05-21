@@ -15,6 +15,7 @@ import { LevelCalculatorModule } from './common/level-calculator/level-calculato
 import { PointModule } from './apis/point/point.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { redisConfig } from './common/config/redis.config';
+import { HealthModule } from './common/health/health.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { redisConfig } from './common/config/redis.config';
     RankingModule,
     LevelCalculatorModule,
     PointModule,
+    HealthModule,
   ],
   providers: [
     {
