@@ -106,7 +106,7 @@ export class QuestsController {
   @ApiOperation({ summary: '메인 퀘스트 개별 조회' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
-  @ApiOkResponse({ type: [CreateQuestDto] })
+  @ApiOkResponse({ type: CreateQuestDto })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })

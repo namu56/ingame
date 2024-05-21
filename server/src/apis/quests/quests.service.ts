@@ -129,7 +129,7 @@ export class QuestsService {
       ],
     };
 
-    const quests = await this.questRepository.find(options);
+    const quests = await this.questRepository.findOne(options);
 
     if (!quests) {
       throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
