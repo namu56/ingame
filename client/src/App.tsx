@@ -7,9 +7,8 @@ import { router } from './routes/routing';
 import ReactQueryProvider from './provider/queryProvider';
 
 function App() {
-
   return (
-    <ReactQueryProvider showDevTools>
+    <ReactQueryProvider>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <RouterProvider router={router} />
