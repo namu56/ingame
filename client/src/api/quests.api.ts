@@ -36,6 +36,11 @@ export const getMainQuest = async () => {
   return response.data;
 };
 
+export const getFindOneMainQuest = async (id: number) => {
+  const response = await httpClient.get<Quest>(API_END_POINT.MAIN_QUEST + `/${id}`);
+  return response.data;
+}
+
 export const modiSideQuest = async (param: number, status: QuestStatus) => {
   const response = await httpClient.patch(API_END_POINT.SIDE_QUEST + `/${param}`, { status });
   return response.data;
