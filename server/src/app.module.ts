@@ -13,9 +13,7 @@ import { AllExceptionFilter } from './common/filters/all-exception.filter';
 import { SchedulerModule } from './common/scheduler/scheduler.module';
 import { LevelCalculatorModule } from './common/level-calculator/level-calculator.module';
 import { PointModule } from './apis/point/point.module';
-import { RedisModule } from '@nestjs-modules/ioredis';
-import { redisConfig } from './common/config/redis.config';
-import { HealthModule } from './common/health/health.module';
+import { RedisModule } from './common/redis/redis.module';
 
 @Module({
   imports: [
@@ -28,10 +26,6 @@ import { HealthModule } from './common/health/health.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => typeORMConfig(configService),
     }),
-    RedisModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => redisConfig(configService),
-    }),
     WinstonLoggerModule,
     SchedulerModule,
     UsersModule,
@@ -40,7 +34,7 @@ import { HealthModule } from './common/health/health.module';
     RankingModule,
     LevelCalculatorModule,
     PointModule,
-    HealthModule,
+    RedisModule,
   ],
   providers: [
     {

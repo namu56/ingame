@@ -1,15 +1,8 @@
-import { RedisModuleOptions } from '@nestjs-modules/ioredis';
-import { ConfigService } from '@nestjs/config';
-import { RedisOptions } from 'ioredis';
+// import { ConfigService } from '@nestjs/config';
 
-export const redisConfig = (configService: ConfigService): RedisModuleOptions => {
-  const redisOptions: RedisOptions = {
-    host: configService.get<string>('REDIS_HOST'),
-    port: parseInt(configService.get<string>('REDIS_PORT')),
-  };
-
-  return {
-    type: 'single',
-    options: redisOptions,
-  };
-};
+// export const redisConfig = (configService: ConfigService) => {
+//   return {
+//     type: 'single',
+//     url: `redis://localhost:6379`,
+//   };
+// };

@@ -4,33 +4,50 @@ import { CiUnlock } from 'react-icons/ci';
 import Button from '@/components/Button';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
+import { QuestHiddenType, SideContent } from '@/models/quest.model';
 import CloseButton from '@/components/CloseButton';
 import { useForm } from 'react-hook-form';
 import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
 import { useMessage } from '@/hooks/useMessage';
+import { getFindOneMainQuest } from '@/api/quests.api';
+import { useQuery } from '@tanstack/react-query';
+import { BASE_KEY } from '@/constant/queryKey';
 
 const EditMainQuestQuest = () => {
   // MainBox에서 Content 값
   const { state } = useLocation();
-  const content = state.content;
-  const [startDate, setStartDate] = useState(content.startDate);
-  const [endDate, setEndDate] = useState(content.endDate);
-  const [title, setTitle] = useState(content.title);
-  const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
-  const [sideQuests, setSideQuests] = useState(content.sideQuests);
-  const [isPrivate, setIsPrivate] = useState(false);
+  const {
+    data,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: [BASE_KEY.QUEST],
+    queryFn: () => getFindOneMainQuest(state.content.id),
+  });
+  
+  const [startDate, setStartDate] = useState(data?.startDate);
+  const [endDate, setEndDate] = useState(data?.endDate);
+  const [title, setTitle] = useState(data?.title);
+  const [isDifficulty, setIsDifficulty] = useState(data?.difficulty);
+  const [sideQuests, setSideQuests] = useState(data?.sideQuests);
+  const [isPrivate, setIsPrivate] = useState(data?.hidden === 'TRUE' ? true : false);
   const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
   const { showConfirm } = useMessage();
   const navigate = useNavigate();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
 
+  useEffect(() => {
+    setStartDate(data?.startDate);
+    setEndDate(data?.endDate);
+    setTitle(data?.title);
+  }, [data?.startDate, data?.endDate, data?.title]);
+
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const updatedSideQuests = sideQuests.map((sideQuest: Quest) => ({
+    const updatedSideQuests = (sideQuests || []).map((sideQuest: SideContent) => ({
       ...sideQuest, 
       status: sideQuest.status
     }));
@@ -41,7 +58,9 @@ const EditMainQuestQuest = () => {
   const handleDeleteBtn = () => {
     const message = '정말 삭제하시겠습니까?';
     showConfirm(message, () => {
-      DeleteMainQuestsMutation.mutate(content.id);
+      if (data && data.id !== undefined) {
+        DeleteMainQuestsMutation.mutate(data.id);
+      }
     });
   };
 
@@ -52,16 +71,16 @@ const EditMainQuestQuest = () => {
         <header>
           <p>메인 퀘스트 수정</p>
           <div className="lockIcons">
-            {content.hidden ? (
-              <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} />
+            {isPrivate ? (
+              <CiLock size={24} onClick={() => setIsPrivate(false)} />
             ) : (
-              <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />
+              <CiUnlock size={24} onClick={() => setIsPrivate(true)} />
             )}
           </div>
         </header>
         <form onSubmit={onSubmit}>
           <input type="hidden" value={isDifficulty} {...register('difficulty')} />
-          <input type="hidden" value={content.id} {...register('id')} />
+          <input type="hidden" value={data?.id} {...register('id')} />
           <QuestInputBox
             value={title}
             {...register('title')}
@@ -96,8 +115,8 @@ const EditMainQuestQuest = () => {
           <div className="plusContainer">
           </div>
           <InnerQuests>
-            {content.sideQuests &&
-              content.sideQuests.map((sideQuest: SideContent, index: number) => (
+            {data?.sideQuests &&
+              data?.sideQuests.map((sideQuest: SideContent, index: number) => (
                 <SideBoxContainer key={index}>
                   <input
                     className="checkBoxInput"
@@ -106,7 +125,7 @@ const EditMainQuestQuest = () => {
                     {...register(`sideQuests.${index}.status`)}
                     onChange={(e) => {
                       const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
-                      const newSideQuests = [...sideQuests];
+                      const newSideQuests = [...(sideQuests || [])];
                       newSideQuests[index].status = newStatus;
                       setSideQuests(newSideQuests);
                     }}
@@ -116,7 +135,7 @@ const EditMainQuestQuest = () => {
                     {...register(`sideQuests.${index}.content`)}
                     onChange={(e) => {
                       const newContent = e.target.value;
-                      const newSideQuests = [...sideQuests];
+                      const newSideQuests = [...(sideQuests || [])];
                       newSideQuests[index].content = newContent;
                       setSideQuests(newSideQuests);
                     }}
