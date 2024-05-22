@@ -32,7 +32,7 @@ const EditMainQuestQuest = () => {
   const [title, setTitle] = useState(data?.title);
   const [isDifficulty, setIsDifficulty] = useState(data?.difficulty);
   const [sideQuests, setSideQuests] = useState(data?.sideQuests);
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(data?.hidden === 'TRUE' ? true : false);
   const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
   const { showConfirm } = useMessage();
   const navigate = useNavigate();
@@ -71,10 +71,10 @@ const EditMainQuestQuest = () => {
         <header>
           <p>메인 퀘스트 수정</p>
           <div className="lockIcons">
-            {data?.hidden ? (
-              <CiLock size={24} onClick={() => setIsPrivate(!isPrivate)} />
+            {isPrivate ? (
+              <CiLock size={24} onClick={() => setIsPrivate(false)} />
             ) : (
-              <CiUnlock size={24} onClick={() => setIsPrivate(!isPrivate)} />
+              <CiUnlock size={24} onClick={() => setIsPrivate(true)} />
             )}
           </div>
         </header>
