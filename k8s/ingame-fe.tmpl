@@ -23,6 +23,8 @@ spec:
           env:
             - name: REACT_APP_SERVER_API_URL
               value: ${CORS_ORIGIN}/api
+            - name: NODE_ENV
+              value: ${NODE_ENV}
       imagePullSecrets:
         - name: aws-ecr-cred
 

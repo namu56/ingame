@@ -135,6 +135,7 @@ jobs:
           IMAGE: ${{ env.IMAGE }}
           REPO: ${{ secrets.REPO }}
           CORS_ORIGIN: ${{ env.CORS_ORIGIN }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
           TAG: ${{ github.sha }}
 
       - name: Deploy Application
