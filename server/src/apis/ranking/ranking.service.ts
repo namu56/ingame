@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { UserRankingDto } from './dto/ranking-response.dto';
+import { UserRankingDto } from './dto/user-ranking.dto';
 import { UserInfo } from '../users/entities/user-info.entity';
 import { LevelCalculatorService } from 'src/common/level-calculator/level-calculator.service';
+import { PaginationRequestDto } from './dto/pagination-request.dto';
+import { UserRankingByPageDto } from './dto/user-ranking-by-page.dto';
+import { PaginationResponseDto } from './dto/pagination-response.dto';
 
 @Injectable()
 export class RankingService {
@@ -10,13 +13,16 @@ export class RankingService {
     private readonly usersService: UsersService,
     private levelCalculatorService: LevelCalculatorService
   ) {}
-  async getRanking(): Promise<UserRankingDto[]> {
-    const users = await this.usersService.getAllUser();
+  async getRankingByPage(
+    paginationRequestDto: PaginationRequestDto
+  ): Promise<UserRankingByPageDto> {
+    const { page, limit } = paginationRequestDto;
+    const [users, total] = await this.usersService.getAllUserByPage(page, limit);
     let currentRank = 1;
     let lastUserPoint = 0;
     let countCurrentRank = 0;
 
-    const ranking = users.map((user) => {
+    const ranking: UserRankingDto[] = users.map((user) => {
       if (user.point !== lastUserPoint) {
         currentRank += countCurrentRank;
         countCurrentRank = 1;
@@ -29,7 +35,18 @@ export class RankingService {
       lastUserPoint = user.point;
       return rankedUser;
     });
-    return ranking;
+
+    const pagination: PaginationResponseDto = {
+      totalPage: Math.ceil(total / limit),
+      nextPage: page + 1,
+    };
+
+    const rankingByPage: UserRankingByPageDto = {
+      ranking,
+      pagination,
+    };
+
+    return rankingByPage;
   }
 
   private toRankingResponse(userInfo: UserInfo, rank: number): UserRankingDto {

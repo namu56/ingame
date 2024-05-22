@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -8,7 +8,6 @@ import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { UserProfileDto } from '../users/dto/user-profile.dto';
 import { Redis } from 'ioredis';
-import { InjectRedis } from '@nestjs-modules/ioredis';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +15,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
-    @InjectRedis() private readonly redis: Redis
+    @Inject('REDIS_CLIENT') private readonly redis: Redis
   ) {}
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;

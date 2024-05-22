@@ -126,13 +126,14 @@ export class UsersService {
     return user;
   }
 
-  async getAllUser(): Promise<UserInfo[]> {
-    const users = await this.userInfoRepository.find({
-      order: {
-        point: 'DESC',
-      },
+  async getAllUserByPage(page: number, limit: number): Promise<[UserInfo[], number]> {
+    const offset = (page - 1) * limit;
+    const [users, total] = await this.userInfoRepository.findAndCount({
+      order: { point: 'DESC' },
+      skip: offset,
+      take: limit,
     });
-    return users;
+    return [users, total];
   }
 
   private toUserResponse(user: User): UserProfileDto {
