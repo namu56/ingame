@@ -20,10 +20,13 @@ interface MainQuest extends Quest {
 
 export interface MainBoxProps {
   content: MainQuest;
+  date: string;
+  updatedData: MainQuest | undefined;
 }
 
-const MainBox = ({ content }: MainBoxProps) => {
-  const { modifyMainQuestStatus, patchSideMutation, date } = useMainQuest();
+const MainBox = ({ content, date, updatedData }: MainBoxProps) => {
+  const mainContent = updatedData || content;
+  const { modifyMainQuestStatus, patchSideMutation } = useMainQuest();
   const { showConfirm, showAlert } = useMessage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -36,7 +39,10 @@ const MainBox = ({ content }: MainBoxProps) => {
     queryKey: [BASE_KEY.QUEST, content.id],
     queryFn: () => getFindOneMainQuest(content.id),
   });
-  console.log(data);
+
+  if (!mainContent) {
+    return null; // mainContent가 없으면 렌더링하지 않음
+  }
 
   const handleChangeStatue = () => {
     if (date === formattedDate(new Date())) {
@@ -52,7 +58,7 @@ const MainBox = ({ content }: MainBoxProps) => {
       }
 
       showConfirm(message, () => {
-        modifyMainQuestStatus({ id: content.id, status: content.status });
+        modifyMainQuestStatus({ id: mainContent.id, status: mainContent.status });
       });
     } else {
       showAlert('당일 퀘스트만 변경 가능합니다');
@@ -69,77 +75,78 @@ const MainBox = ({ content }: MainBoxProps) => {
 
   const handleNavigate = (event: React.MouseEvent) => {
     event.stopPropagation();
-    if (content.status === 'COMPLETED') return;
-    navigate(`/editquest/${content.id}`, { state: { data } });
+    if (mainContent.status === 'COMPLETED') return;
+    navigate(`/editquest/${mainContent.id}`, { state: { data: data , date } });
   };
 
 
   const handleToggleAccordion = (event: React.MouseEvent) => {
     event.stopPropagation();
-    if (content.status === 'COMPLETED') return;
+    if (mainContent.status === 'COMPLETED') return;
     setisAccordion(prevState => !prevState);
   }
 
   return (
     <>
-      <MainBoxContainer>
-        <MainBoxStyle status={content.status} onClick={handleChangeStatue}>
-          <header className="aFContainer">
-            <button className="aButton" onClick={handleToggleAccordion}>
-              {isAccordion ? <MdArrowDropUp size={30} /> : <MdArrowDropDown size={30} />}
-            </button>
-            <p className="fDisplay">{fraction}</p>
-          </header>
-          <h1 className="title">{content.title}</h1>
-          <div className='eButtonConatiner'>
-            <button className="eButton" onClick={handleNavigate}>
-              <BsThreeDots />
-            </button>
-          </div>
-        </MainBoxStyle>
-        <SideBoxContainer>
-        {content.sideQuests.map((quest, index) =>
-          quest.content ? (
-            <SideBox
-              key={index}
-              isAccordion={isAccordion}
-              checked={sideQuests[index].status === 'COMPLETED'}
-              onClick={() => {
-                if (quest.id !== undefined) {
-                  const questStatus = sideQuests[index].status || 'ON_PROGRESS';
-                  const newStatus = questStatus === 'COMPLETED' ? 'ON_PROGRESS' : 'COMPLETED';
+      {mainContent ? (
+        <MainBoxContainer>
+          <MainBoxStyle status={mainContent.status} onClick={handleChangeStatue}>
+            <header className="aFContainer">
+              <button className="aButton" onClick={handleToggleAccordion}>
+                {isAccordion ? <MdArrowDropUp size={30} /> : <MdArrowDropDown size={30} />}
+              </button>
+              <p className="fDisplay">{fraction}</p>
+            </header>
+            <h1 className="title">{mainContent.title}</h1>
+            <div className='eButtonConatiner'>
+              <button className="eButton" onClick={handleNavigate}>
+                <BsThreeDots />
+              </button>
+            </div>
+          </MainBoxStyle>
+          <SideBoxContainer>
+          {mainContent.sideQuests.map((quest, index) =>
+            quest.content ? (
+              <SideBox
+                key={index}
+                isAccordion={isAccordion}
+                checked={sideQuests[index]?.status === 'COMPLETED'}
+                onClick={() => {
+                  if (quest.id !== undefined && sideQuests[index]?.status) {
+                    const questStatus = sideQuests[index].status || 'ON_PROGRESS';
+                    const newStatus = questStatus === 'COMPLETED' ? 'ON_PROGRESS' : 'COMPLETED';
 
-                  patchSideMutation.mutate({ param: quest.id, status: newStatus }, {
-                    onSuccess: () => {
-                      setSideQuests((prev) => {
-                        const newState = [...prev];
-                        newState[index] = {
-                          ...newState[index],
-                          status: newStatus
-                        };
-                        return newState;
-                      });
-                      handleCheckboxClick(index);
+                    patchSideMutation.mutate({ param: quest.id, status: newStatus }, {
+                      onSuccess: () => {
+                        setSideQuests((prev) => {
+                          const newState = [...prev];
+                          newState[index] = {
+                            ...newState[index],
+                            status: newStatus
+                          };
+                          return newState;
+                        });
+                        handleCheckboxClick(index);
 
-                      // 쿼리 캐시 업데이트
-                      queryClient.setQueryData([BASE_KEY.QUEST, content.id], (oldData: Quest) => {
-                        return {
-                          ...oldData,
-                          sideQuests: oldData.sideQuests.map((item, i) => 
-                            i === index ? { ...item, status: newStatus } : item
-                          )
-                        };
-                      });
-                    },
-                  });
-                }
-              }}
-              content={quest.content}
-            />
-          ) : null
-        )}
+                        queryClient.setQueryData([BASE_KEY.QUEST, mainContent.id], (oldData: Quest) => {
+                          return {
+                            ...oldData,
+                            sideQuests: oldData.sideQuests.map((item, i) => 
+                              i === index ? { ...item, status: newStatus } : item
+                            )
+                          };
+                        });
+                      },
+                    });
+                  }
+                }}
+                content={quest.content}
+              />
+            ) : null
+          )}
         </SideBoxContainer>
       </MainBoxContainer>
+      ) : null}
     </>
   );
 };
