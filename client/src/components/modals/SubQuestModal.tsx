@@ -28,7 +28,7 @@ const SubQuestModal = ({ onClose, OriginTitle, id, OriginHidden }: SubQuestModal
 
   const { register, handleSubmit, setValue } = useForm<SubQuestModifyProps>();
 
-  const { modifySubQuest } = useSubQuest();
+  const { modifySubQuest, deleteSubQuest } = useSubQuest();
 
   const onSubmit = (data: SubQuestModifyProps) => {
     modifySubQuest(data).then(() => {
@@ -69,7 +69,13 @@ const SubQuestModal = ({ onClose, OriginTitle, id, OriginHidden }: SubQuestModal
         </BoxStyle>
         <ButtonContainerStyle>
           <Button type="submit" size="medium" color="green" children={'수정하기'} />
-          <Button onClick={onClose} size="medium" color="grayNormal" children={'닫기'} />
+          <Button
+            type="button"
+            onClick={() => deleteSubQuest(id)}
+            size="medium"
+            color="grayNormal"
+            children={'삭제하기'}
+          />
         </ButtonContainerStyle>
       </form>
     </SubQuestModalStyle>
@@ -115,6 +121,7 @@ const BoxStyle = styled.div<BoxStyleProps>`
 
     .title {
       font-family: 'Pretendard600';
+      color: ${({ theme }) => theme.color.black};
     }
   }
 
