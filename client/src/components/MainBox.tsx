@@ -10,12 +10,15 @@ import { useNavigate } from 'react-router-dom';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
+// import { getFindOneMainQuest } from '@/api/quests.api';
+// import { BASE_KEY } from '@/constant/queryKey';
+// import { useQuery } from '@tanstack/react-query';
 
 interface MainQuest extends Quest {
   sideQuests: SideContent[];
 }
 
-interface MainBoxProps {
+export interface MainBoxProps {
   content: MainQuest;
 }
 
@@ -27,6 +30,7 @@ const MainBox = ({ content }: MainBoxProps) => {
   const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
   const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const fraction = `${sideQuests.filter((item) => item.status === 'COMPLETED').length} / ${content.sideQuests.length}`;
+
   const handleChangeStatue = () => {
     if (date === formattedDate(new Date())) {
       let message = '';
