@@ -8,7 +8,7 @@ import {
 } from '@/api/quests.api';
 import { CreateSubQuestProps } from '@/components/modals/CreateSubQuestModal';
 import { SubQuestModifyProps } from '@/components/modals/SubQuestModal';
-import { QUEST } from '@/constant/queryKey';
+import { BASE_KEY, QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
 import { formattedDate } from '@/utils/formatter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

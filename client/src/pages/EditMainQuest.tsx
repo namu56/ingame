@@ -4,62 +4,69 @@ import { CiUnlock } from 'react-icons/ci';
 import Button from '@/components/Button';
 import QuestInputBox from '@/components/QuestInputBox';
 import { media } from '@/styles/theme';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { QuestHiddenType, SideContent } from '@/models/quest.model';
+import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
 import CloseButton from '@/components/CloseButton';
 import { useForm } from 'react-hook-form';
 import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
 import { useMessage } from '@/hooks/useMessage';
-import { getFindOneMainQuest } from '@/api/quests.api';
-import { useQuery } from '@tanstack/react-query';
+import { InvalidateQueryFilters, useQueryClient } from '@tanstack/react-query';
 import { BASE_KEY } from '@/constant/queryKey';
 
 const EditMainQuestQuest = () => {
-  // MainBox에서 Content 값
   const { state } = useLocation();
-  const {
-    data,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [BASE_KEY.QUEST],
-    queryFn: () => getFindOneMainQuest(state.content.id),
-  });
+  const { data: content, date } = state;
   
-  const [startDate, setStartDate] = useState(data?.startDate);
-  const [endDate, setEndDate] = useState(data?.endDate);
-  const [title, setTitle] = useState(data?.title);
-  const [isDifficulty, setIsDifficulty] = useState(data?.difficulty);
-  const [sideQuests, setSideQuests] = useState(data?.sideQuests);
-  const [isPrivate, setIsPrivate] = useState(data?.hidden === 'TRUE' ? true : false);
+  const [startDate, setStartDate] = useState(content.startDate);
+  const [endDate, setEndDate] = useState(content.endDate);
+  const [title, setTitle] = useState(content.title);
+  const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
+  const [sideQuests, setSideQuests] = useState(content.sideQuests);
+  const [isPrivate, setIsPrivate] = useState(content.hidden === 'TRUE' ? true : false);
   const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
   const { showConfirm } = useMessage();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
 
-  useEffect(() => {
-    setStartDate(data?.startDate);
-    setEndDate(data?.endDate);
-    setTitle(data?.title);
-  }, [data?.startDate, data?.endDate, data?.title]);
-
   const onSubmit = handleSubmit((data) => {
     const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const updatedSideQuests = (sideQuests || []).map((sideQuest: SideContent) => ({
-      ...sideQuest, 
-      status: sideQuest.status
-    }));
-    const newData = { ...data, hidden: hidden, sideQuests: updatedSideQuests};
-    EditQuestMutation.mutate(newData);
+    const updatedSideQuests = (sideQuests || []).map((sideQuest: SideContent) => {
+      if (sideQuest) {
+        return {
+          ...sideQuest, 
+          status: sideQuest.status
+        };
+      }
+    });
+    const { id, ...rest } = data;
+    const newData = { id, ...rest, hidden: hidden, sideQuests: updatedSideQuests };
+    EditQuestMutation.mutate(newData, {
+      onSuccess: () => {
+        queryClient.setQueryData([BASE_KEY.QUEST, content.id], (oldData: Quest) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            ...newData,
+          }
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: [BASE_KEY.QUEST, date],
+          exact: true,
+        });
+        navigate('/', { state: { updatedData: newData } });
+      }
+    });
   });
 
   const handleDeleteBtn = () => {
     const message = '정말 삭제하시겠습니까?';
     showConfirm(message, () => {
-      if (data && data.id !== undefined) {
-        DeleteMainQuestsMutation.mutate(data.id);
+      if (content && content.id !== undefined) {
+        DeleteMainQuestsMutation.mutate(content.id);
       }
     });
   };
@@ -80,7 +87,7 @@ const EditMainQuestQuest = () => {
         </header>
         <form onSubmit={onSubmit}>
           <input type="hidden" value={isDifficulty} {...register('difficulty')} />
-          <input type="hidden" value={data?.id} {...register('id')} />
+          <input type="hidden" value={content.id} {...register('id')} />
           <QuestInputBox
             value={title}
             {...register('title')}
@@ -115,8 +122,8 @@ const EditMainQuestQuest = () => {
           <div className="plusContainer">
           </div>
           <InnerQuests>
-            {data?.sideQuests &&
-              data?.sideQuests.map((sideQuest: SideContent, index: number) => (
+            {content.sideQuests &&
+              content.sideQuests.map((sideQuest: SideContent, index: number) => (
                 <SideBoxContainer key={index}>
                   <input
                     className="checkBoxInput"
