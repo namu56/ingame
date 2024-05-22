@@ -82,13 +82,37 @@ export class QuestsController {
   @Get('main')
   @ApiOperation({ summary: '메인 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    type: String,
+    description: '조회 일자',
+    example: '20240521',
+  })
   @ApiOkResponse({ type: [CreateQuestDto] })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAll(@CurrentUser() user: AccessTokenPayload) {
-    return await this.questsService.findAll(user.id, Mode.Main);
+  async findAll(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
+    const queryDate = query
+      ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
+      : new Date().toISOString().split('T')[0];
+    return await this.questsService.findAll(user.id, Mode.Main, queryDate);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('main/:id')
+  @ApiOperation({ summary: '메인 퀘스트 개별 조회' })
+  @ApiBearerAuth('accessToken')
+  @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
+  @ApiOkResponse({ type: CreateQuestDto })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'fail - Quests not found' })
+  @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
+  @HttpCode(HttpStatus.OK)
+  async findOne(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
+    return await this.questsService.findOne(user.id, +id);
   }
 
   @UseGuards(AuthGuard)
@@ -147,6 +171,13 @@ export class QuestsController {
   @Get('sub')
   @ApiOperation({ summary: '서브(일일) 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
+  @ApiQuery({
+    name: 'date',
+    required: false,
+    type: String,
+    description: '조회 일자',
+    example: '20240521',
+  })
   @ApiOkResponse({ type: [SubQuestResponseDto] })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
@@ -155,7 +186,7 @@ export class QuestsController {
   async findAllSub(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
     const queryDate = query
       ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
-      : new Date().toISOString().replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3');
+      : new Date().toISOString().split('T')[0];
     return await this.questsService.findAll(user.id, Mode.Sub, queryDate);
   }
 
