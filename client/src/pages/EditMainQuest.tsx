@@ -15,14 +15,14 @@ import { useMessage } from '@/hooks/useMessage';
 const EditMainQuestQuest = () => {
   // MainBox에서 Content 값
   const { state } = useLocation();
-  const data = state.data;
+  const content = state.data;
   
-  const [startDate, setStartDate] = useState(data.startDate);
-  const [endDate, setEndDate] = useState(data.endDate);
-  const [title, setTitle] = useState(data.title);
-  const [isDifficulty, setIsDifficulty] = useState(data.difficulty);
-  const [sideQuests, setSideQuests] = useState(data.sideQuests);
-  const [isPrivate, setIsPrivate] = useState(data.hidden === 'TRUE' ? true : false);
+  const [startDate, setStartDate] = useState(content.startDate);
+  const [endDate, setEndDate] = useState(content.endDate);
+  const [title, setTitle] = useState(content.title);
+  const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
+  const [sideQuests, setSideQuests] = useState(content.sideQuests);
+  const [isPrivate, setIsPrivate] = useState(content.hidden === 'TRUE' ? true : false);
   const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
   const { showConfirm } = useMessage();
   const navigate = useNavigate();
@@ -43,8 +43,8 @@ const EditMainQuestQuest = () => {
   const handleDeleteBtn = () => {
     const message = '정말 삭제하시겠습니까?';
     showConfirm(message, () => {
-      if (data && data.id !== undefined) {
-        DeleteMainQuestsMutation.mutate(data.id);
+      if (content && content.id !== undefined) {
+        DeleteMainQuestsMutation.mutate(content.id);
       }
     });
   };
@@ -65,7 +65,7 @@ const EditMainQuestQuest = () => {
         </header>
         <form onSubmit={onSubmit}>
           <input type="hidden" value={isDifficulty} {...register('difficulty')} />
-          <input type="hidden" value={data.id} {...register('id')} />
+          <input type="hidden" value={content.id} {...register('id')} />
           <QuestInputBox
             value={title}
             {...register('title')}
@@ -100,8 +100,8 @@ const EditMainQuestQuest = () => {
           <div className="plusContainer">
           </div>
           <InnerQuests>
-            {data.sideQuests &&
-              data.sideQuests.map((sideQuest: SideContent, index: number) => (
+            {content.sideQuests &&
+              content.sideQuests.map((sideQuest: SideContent, index: number) => (
                 <SideBoxContainer key={index}>
                   <input
                     className="checkBoxInput"

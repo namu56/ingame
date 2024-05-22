@@ -11,7 +11,7 @@ import { useMainQuest } from '@/hooks/useMainQuest';
 import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
 import { BASE_KEY } from '@/constant/queryKey';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getFindOneMainQuest } from '@/api/quests.api';
 
 interface MainQuest extends Quest {
@@ -26,19 +26,17 @@ const MainBox = ({ content }: MainBoxProps) => {
   const { modifyMainQuestStatus, patchSideMutation, date } = useMainQuest();
   const { showConfirm, showAlert } = useMessage();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isAccordion, setisAccordion] = useState(false);
   const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
   const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const fraction = `${sideQuests.filter((item) => item.status === 'COMPLETED').length} / ${content.sideQuests.length}`;
 
-  const {
-    data,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [BASE_KEY.QUEST],
+  const { data, isLoading, error } = useQuery({
+    queryKey: [BASE_KEY.QUEST, content.id],
     queryFn: () => getFindOneMainQuest(content.id),
   });
+  console.log(data);
 
   const handleChangeStatue = () => {
     if (date === formattedDate(new Date())) {
@@ -100,39 +98,46 @@ const MainBox = ({ content }: MainBoxProps) => {
           </div>
         </MainBoxStyle>
         <SideBoxContainer>
-          {content && content.sideQuests ? (
-            content.sideQuests.map((quest, index) =>
-              quest.content ? (
-                <SideBox
-                  key={index}
-                  isAccordion={isAccordion}
-                  checked={sideQuests[index].status === 'COMPLETED'}
-                  onClick={() => {
-                  if (quest.id !== undefined) {
-                    const questStatus = sideQuests[index].status || 'ON_PROGRESS';
-                    const newStatus = questStatus === 'COMPLETED' ? 'ON_PROGRESS' : 'COMPLETED';
-                    
-                    patchSideMutation.mutate({ param: quest.id, status: newStatus }, {
-                      onSuccess: () => {
-                        setSideQuests((prev) => {
-                          const newState = [...prev];
-                          newState[index] = {
-                            ...newState[index],
-                            status: newStatus
-                          };
-                      return newState;
-                    });
-                  handleCheckboxClick(index);
-                  }
-                });
-              }
-            }}
-            content={quest.content}
-            />) : null
-            )
-          ) : (
-            <div>내용이 없습니다.</div>
-          )}
+        {content.sideQuests.map((quest, index) =>
+          quest.content ? (
+            <SideBox
+              key={index}
+              isAccordion={isAccordion}
+              checked={sideQuests[index].status === 'COMPLETED'}
+              onClick={() => {
+                if (quest.id !== undefined) {
+                  const questStatus = sideQuests[index].status || 'ON_PROGRESS';
+                  const newStatus = questStatus === 'COMPLETED' ? 'ON_PROGRESS' : 'COMPLETED';
+
+                  patchSideMutation.mutate({ param: quest.id, status: newStatus }, {
+                    onSuccess: () => {
+                      setSideQuests((prev) => {
+                        const newState = [...prev];
+                        newState[index] = {
+                          ...newState[index],
+                          status: newStatus
+                        };
+                        return newState;
+                      });
+                      handleCheckboxClick(index);
+
+                      // 쿼리 캐시 업데이트
+                      queryClient.setQueryData([BASE_KEY.QUEST, content.id], (oldData: Quest) => {
+                        return {
+                          ...oldData,
+                          sideQuests: oldData.sideQuests.map((item, i) => 
+                            i === index ? { ...item, status: newStatus } : item
+                          )
+                        };
+                      });
+                    },
+                  });
+                }
+              }}
+              content={quest.content}
+            />
+          ) : null
+        )}
         </SideBoxContainer>
       </MainBoxContainer>
     </>
