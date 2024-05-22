@@ -25,10 +25,13 @@ const createClient = (config?: AxiosRequestConfig) => {
     },
     async (error) => {
       const originRequest = error.config;
+      const hasToken = getToken();
       if (error.response.status === 401) {
-        const refreshedToken = await refreshToken();
-        setToken(refreshedToken);
-        return axiosInstance.request(originRequest);
+        if (hasToken) {
+          const refreshedToken = await refreshToken();
+          setToken(refreshedToken);
+          return axiosInstance.request(originRequest);
+        }
       }
       if (process.env.NODE_ENV === 'production') {
         console.clear();
