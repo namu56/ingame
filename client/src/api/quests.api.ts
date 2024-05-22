@@ -14,15 +14,15 @@ export interface ModifyQuestStatusProps {
 }
 
 type CreateQuestData = Omit<Quest, 'id' | 'status' | 'createdAt' | 'updatedAt'>;
-type ModifyQuestData = Omit<Quest, 'mode' | 'status' | 'createdAt' | 'updatedAt'>;
+export type ModifyQuestData = Omit<Quest, 'mode' | 'status' | 'createdAt' | 'updatedAt'>;
 
 export const createMainQuest = async (data: CreateQuestData) => {
   const response = await httpClient.post(API_END_POINT.CREATE_QUEST, { ...data });
   return response.data;
 };
 
-export const modiMainQuest = async (data: ModifyQuestData) => {
-  const response = await httpClient.patch(API_END_POINT.MAIN_QUEST + `/${data.id}`, { ...data });
+export const modiMainQuest = async (id: number, data: ModifyQuestData) => {
+  const response = await httpClient.patch(API_END_POINT.MAIN_QUEST + `/${id}`, { ...data });
   return response.data;
 };
 

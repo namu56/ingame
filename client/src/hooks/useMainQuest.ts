@@ -1,4 +1,5 @@
 import {
+  ModifyQuestData,
   ModifyQuestStatusProps,
   createMainQuest,
   deleteMainQuest,
@@ -63,7 +64,7 @@ export const useMainQuest = () => {
   });
 
   const EditQuestMutation = useMutation({
-    mutationFn: modiMainQuest,
+    mutationFn: (variable: ModifyQuestData) => modiMainQuest(variable.id, variable),
     onSuccess(res) {
       navigate('/');
     },
