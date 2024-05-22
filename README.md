@@ -77,34 +77,48 @@
 
 ## 🪜 전체 아키텍쳐
 
-(이미지 추가)
+![시스템_구조2](https://github.com/ingame-app/ingame/assets/19233039/cee299db-e221-4a6e-8329-7e950d963dd1)
 
 ## 📁 디렉토리 구조
 
 ```
-ingame
-├── .github                         # Feature, PR, Bug template
-└── client                          # client
-├  ├── public                        # public
-├  └── src
-├     ├── apis                      # api 호출 Function
-├     ├── assets                    # resoucres
-├     ├── components                # 페이지를 구성하는 components
-├     ├── constans                  # api, message, queryStirng, route 및 공통적으로 사용되는 constants
-├     ├── hooks                     # Custom Hooks
-├     ├── layout                    # 프로젝트 뼈대를 구성하는 Layout
-├     ├─- mocks                     # MSW를 활용한 Mock data, handler
-├     ├─- models                    # 프로젝트 전반에 걸쳐 사용되는 Type 정의
-├     ├── pages                     # Pages
-├     ├── routes                    # Routes config
-├     ├── provider                  # Login, Query Provider
-├     ├── Shared                    # 공통으로 사용되는 값 및 Dummy data
-├     ├── store                     # 전역 Store
-├     ├── styles                    # Global Style
-├     ├── utils                     # date, axios 관련 util 함수
-└── server                          # server
-├   └── src
-├   └── test
-├
-└── k8s
+📦 
+├─ .github                         # Feature, PR, Bug template
+├─ client                          # client
+│  ├─ public                       # public
+│  ├─ src
+│  │  ├─ api                       # api 호출 Function
+│  │  ├─ assets                    # resoucres
+│  │  ├─ components                # 페이지를 구성하는 components
+│  │  ├─ constant                  # api, message, queryStirng, route 및 공통적으로 사용되는 constants
+│  │  ├─ hooks                     # Custom Hooks
+│  │  ├─ layout                    # 프로젝트 뼈대를 구성하는 Layout
+│  │  ├─ mocks                     # MSW를 활용한 Mock data, handler
+│  │  ├─ models                    # 프로젝트 전반에 걸쳐 사용되는 Type 정의
+│  │  ├─ pages                     # Pages
+│  │  ├─ provider                  # Login, Query Provider
+│  │  ├─ routes                    # Routes config
+│  │  ├─ shared                    # 공통으로 사용되는 값 및 Dummy data
+│  │  ├─ store                     # 전역 Store
+│  │  ├─ styles                    # Global Style
+│  │  └─ utils                     # date, axios 관련 util 함수
+├─ k8s                             # Kubernetis 배포 설정
+└─ server                          # server
+   ├─ src
+   │  ├─ apis                      # API 구현체
+   │  │  ├─ auth                   # 인증 API
+   │  │  ├─ point                  # 포인트 처리 API
+   │  │  ├─ quests                 # 퀘스트 API
+   │  │  ├─ ranking                # 랭킹 조회 API
+   │  │  └─ users                  # 사용자 정보 API
+   │  ├─ common                    # 공통 사용 모듈
+   │  │  ├─ config                 # TypeORM, JWT, Swagger, Redis 등 필요 라이브러리 설정 코드
+   │  │  ├─ decorators             # `CurrentUser` 데코레이터
+   │  │  ├─ filters                # Winston 로깅 예외 로그 필터
+   │  │  ├─ health                 # Redis health check 모듈
+   │  │  ├─ level-calculator       # 레벨 계산 모듈
+   │  │  ├─ logger                 # Winston Logger 모듈
+   │  │  ├─ middleware             # Winston Logger 미들웨어
+   │  │  └─ scheduler              # 스케줄러 모듈
+   └─ test                         # NestJS 기본 테스트 폴더
 ```
