@@ -1,10 +1,10 @@
 name: frontend CD
 
 on:
-  workflow_run:
-    workflows: ['Frontend CI']
-    types:
-      - completed
+  push:
+    branches: [main]
+    paths:
+      - 'client/**'
 
 env:
   IMAGE: ingame-fe
