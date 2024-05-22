@@ -14,15 +14,15 @@ export interface ModifyQuestStatusProps {
 }
 
 type CreateQuestData = Omit<Quest, 'id' | 'status' | 'createdAt' | 'updatedAt'>;
-type ModifyQuestData = Omit<Quest, 'mode' | 'status' | 'createdAt' | 'updatedAt'>;
+export type ModifyQuestData = Omit<Quest, 'id' | 'mode' | 'status' | 'createdAt' | 'updatedAt'>;
 
 export const createMainQuest = async (data: CreateQuestData) => {
   const response = await httpClient.post(API_END_POINT.CREATE_QUEST, { ...data });
   return response.data;
 };
 
-export const modiMainQuest = async (data: ModifyQuestData) => {
-  const response = await httpClient.patch(API_END_POINT.MAIN_QUEST + `/${data.id}`, { ...data });
+export const modiMainQuest = async (id: number, data: ModifyQuestData) => {
+  const response = await httpClient.patch(API_END_POINT.MAIN_QUEST + `/${id}`, { ...data });
   return response.data;
 };
 
@@ -31,15 +31,15 @@ export const deleteMainQuest = async (id: number) => {
   return response.data;
 };
 
-export const getMainQuest = async () => {
-  const response = await httpClient.get<Quest[]>(API_END_POINT.MAIN_QUEST);
+export const getMainQuest = async (param: GetSubQuestParam) => {
+  const response = await httpClient.get<Quest[]>(API_END_POINT.MAIN_QUEST, { params: param });
   return response.data;
 };
 
 export const getFindOneMainQuest = async (id: number) => {
   const response = await httpClient.get<Quest>(API_END_POINT.MAIN_QUEST + `/${id}`);
   return response.data;
-}
+};
 
 export const modiSideQuest = async (param: number, status: QuestStatus) => {
   const response = await httpClient.patch(API_END_POINT.SIDE_QUEST + `/${param}`, { status });
@@ -61,6 +61,11 @@ export const modiSubQuest = async (data: SubQuestModifyProps) => {
 
 export const addSubQuest = async (data: CreateSubQuestProps) => {
   const response = await httpClient.post(API_END_POINT.CREATE_QUEST, { ...data });
+  return response.data;
+};
+
+export const delSubQuest = async (id: number) => {
+  const response = await httpClient.delete(API_END_POINT.SUB_QUEST + `/${id}`);
   return response.data;
 };
 

@@ -8,7 +8,7 @@ interface CloseButtonProps {
 const CloseButton = ({ onClick }: CloseButtonProps) => {
   return (
     <CloseButtonStyle>
-      <IoIosCloseCircleOutline className="closeIcon" onClick={onClick} />
+      <IoIosCloseCircleOutline color="black" className="closeIcon" onClick={onClick} />
     </CloseButtonStyle>
   );
 };
