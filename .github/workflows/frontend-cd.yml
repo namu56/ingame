@@ -17,7 +17,7 @@ env:
 jobs:
   build:
     name: Build and Push to ECR
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     defaults:
       run:
         working-directory: ./client
@@ -29,6 +29,8 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
       - name: Cache node modules
         id: cache-node-modules
@@ -65,7 +67,7 @@ jobs:
 
       - name: Docker build
         run: |
-          docker build --no-cache --platform linux/amd64 -t ${{ env.IMAGE }} .
+          docker build --platform linux/amd64 -t ${{ env.IMAGE }} .
 
       - name: ECR push
         run: |
@@ -76,7 +78,7 @@ jobs:
   deploy:
     name: Deploy to Minikube
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -127,13 +129,15 @@ jobs:
           fi
 
       - name: Render Deployment YAML
-        uses: nowactions/envsubst@v1
-        with:
-          input: ${{ env.K8S_CONFIG_PATH }}.tmpl
-          output: ${{ env.K8S_CONFIG_PATH }}.yaml
+        run: |
+          envsubst < k8s/ingame-fe.tmpl > k8s/ingame-fe.yaml
+        env:
+          IMAGE: ${{ env.IMAGE }}
+          REPO: ${{ secrets.REPO }}
+          CORS_ORIGIN: ${{ env.CORS_ORIGIN }}
+          TAG: ${{ github.sha }}
 
       - name: Deploy Application
         run: |
           kubectl apply -f ${{ env.K8S_CONFIG_PATH }}.yaml
-          kubectl rollout restart deployment/${{ env.IMAGE }} -n ${{ env.K8S_NAMESPACE }}
-          kubectl rollout status deployment/${{ env.IMAGE }} -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/ingame-fe -n ${{ env.K8S_NAMESPACE }}
