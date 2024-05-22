@@ -38,7 +38,7 @@ export class RankingService {
 
     const pagination: PaginationResponseDto = {
       totalPage: Math.ceil(total / limit),
-      currentPage: page + 1,
+      nextPage: page + 1,
     };
 
     const rankingByPage: UserRankingByPageDto = {
