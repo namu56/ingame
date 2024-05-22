@@ -17,7 +17,7 @@ describe('RankingController', () => {
       ],
       pagination: {
         totalPage: 1,
-        currentPage: 1,
+        nextPage: 1,
       },
     }),
   };
@@ -50,7 +50,7 @@ describe('RankingController', () => {
       ],
       pagination: {
         totalPage: 1,
-        currentPage: 1,
+        nextPage: 1,
       },
     };
 
