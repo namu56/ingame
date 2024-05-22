@@ -64,7 +64,10 @@ export const useMainQuest = () => {
   });
 
   const EditQuestMutation = useMutation({
-    mutationFn: (variable: ModifyQuestData) => modiMainQuest(variable.id, variable),
+    mutationFn: (variable: Quest) => {
+      const { id, ...rest } = variable;
+      return modiMainQuest(id, rest);
+    },
     onSuccess(res) {
       navigate('/');
     },

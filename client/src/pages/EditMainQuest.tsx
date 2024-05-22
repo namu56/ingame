@@ -35,7 +35,8 @@ const EditMainQuestQuest = () => {
       ...sideQuest, 
       status: sideQuest.status
     }));
-    const newData = { ...data, hidden: hidden, sideQuests: updatedSideQuests};
+    const { id, ...rest } = data;
+    const newData = { id, ...rest, hidden: hidden, sideQuests: updatedSideQuests };
     EditQuestMutation.mutate(newData);
   });
 
@@ -64,6 +65,7 @@ const EditMainQuestQuest = () => {
         </header>
         <form onSubmit={onSubmit}>
           <input type="hidden" value={isDifficulty} {...register('difficulty')} />
+          <input type="hidden" value={data.id} {...register('id')} />
           <QuestInputBox
             value={title}
             {...register('title')}

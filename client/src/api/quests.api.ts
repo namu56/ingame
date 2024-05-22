@@ -14,7 +14,7 @@ export interface ModifyQuestStatusProps {
 }
 
 type CreateQuestData = Omit<Quest, 'id' | 'status' | 'createdAt' | 'updatedAt'>;
-export type ModifyQuestData = Omit<Quest, 'mode' | 'status' | 'createdAt' | 'updatedAt'>;
+export type ModifyQuestData = Omit<Quest, 'id' | 'mode' | 'status' | 'createdAt' | 'updatedAt'>;
 
 export const createMainQuest = async (data: CreateQuestData) => {
   const response = await httpClient.post(API_END_POINT.CREATE_QUEST, { ...data });
