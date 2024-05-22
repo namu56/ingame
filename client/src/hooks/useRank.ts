@@ -1,34 +1,25 @@
-import { getRanking } from '@/api/ranking.api';
-// import { getRanking } from '@/mocks/handlers/ranking'; 
+import { RankingResponse, getRanking } from '@/api/ranking.api';
 import { RANK } from '@/constant/queryKey';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 
 export const useRank = () => {
   const {
-    data: rankingData,
+    data,
     isLoading,
-    error,
-  } = useQuery({
-    queryKey: [...RANK.GET_RANKING],
-    queryFn: () => getRanking(),
+    isError,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery<RankingResponse, unknown>({
+    queryKey: RANK.GET_RANKING,
+    queryFn: ({ pageParam = 1 }) => getRanking({ totalPage: Number(pageParam) }),
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.pagination.nextPage !== null) return lastPage.pagination.nextPage;
+      return undefined;
+    },
+    initialPageParam: 1,
   });
+  
+  const rankingData = data ? data.pages.flatMap((page) => page) : [];
 
-  return { rankingData };
-
-  // const {
-  //   data,
-  //   isLoading,
-  //   isError,
-  //   fetchNextPage,
-  //   hasNextPage,
-  // } = useInfiniteQuery({
-  //   queryKey: [...RANK.GET_RANKING],
-  //   queryFn: ({ pageParam = 0 }) => getRanking({ pageParam, rankingPerPage: 10 }),
-  //   getNextPageParam: (lastPage) => {
-  //     if (!lastPage.isLastPage) return lastPage.pageNum;
-  //     return null;
-  //   },
-  // });
-
-  // return { rankingData: data, isLoading, isError, fetchNextPage, hasNextPage };
+  return { rankingData, isLoading, isError, fetchNextPage, hasNextPage };
 };

@@ -5,3 +5,13 @@ export interface RankingItem {
   rank: number;
   level: number;
 }
+
+export interface Pagination {
+  totalPage: number;
+  nextPage: number;
+}
+
+export interface RankingResponse {
+  ranking: RankingItem[];
+  pagination: Pagination;
+}

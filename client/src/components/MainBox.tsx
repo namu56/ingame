@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { sideQuestList } from '@/shared/dummy';
 import SideBox from './SideBox';
 import { Quest, QuestStatus, SideContent } from '@/models/quest.model';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
@@ -21,10 +21,11 @@ interface MainQuest extends Quest {
 export interface MainBoxProps {
   content: MainQuest;
   date: string;
-  updatedData: MainQuest | undefined;
 }
 
-const MainBox = ({ content, date, updatedData }: MainBoxProps) => {
+const MainBox = ({ content, date }: MainBoxProps) => {
+  const location = useLocation();
+  const updatedData = location.state?.updatedData;
   const mainContent = updatedData || content;
   const { modifyMainQuestStatus, patchSideMutation } = useMainQuest();
   const { showConfirm, showAlert } = useMessage();
@@ -105,7 +106,7 @@ const MainBox = ({ content, date, updatedData }: MainBoxProps) => {
             </div>
           </MainBoxStyle>
           <SideBoxContainer>
-          {mainContent.sideQuests.map((quest, index) =>
+          {mainContent.sideQuests.map((quest: SideContent, index: number) =>
             quest.content ? (
               <SideBox
                 key={index}
