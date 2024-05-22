@@ -10,9 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
-// import { getFindOneMainQuest } from '@/api/quests.api';
-// import { BASE_KEY } from '@/constant/queryKey';
-// import { useQuery } from '@tanstack/react-query';
 
 interface MainQuest extends Quest {
   sideQuests: SideContent[];

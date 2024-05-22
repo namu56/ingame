@@ -31,8 +31,8 @@ export const deleteMainQuest = async (id: number) => {
   return response.data;
 };
 
-export const getMainQuest = async () => {
-  const response = await httpClient.get<Quest[]>(API_END_POINT.MAIN_QUEST);
+export const getMainQuest = async (param: GetSubQuestParam) => {
+  const response = await httpClient.get<Quest[]>(API_END_POINT.MAIN_QUEST, { params: param });
   return response.data;
 };
 

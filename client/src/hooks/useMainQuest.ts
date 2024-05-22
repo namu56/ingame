@@ -41,13 +41,15 @@ export const useMainQuest = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const date = params.get(QUERYSTRING.DATE) || formattedDate(new Date());
+
   const {
     data: mainQuest,
     isLoading: isMainLoading,
     error,
   } = useQuery({
-    queryKey: [BASE_KEY.QUEST],
-    queryFn: () => getMainQuest(),
+    queryKey: [BASE_KEY.QUEST, date],
+    queryFn: () => getMainQuest({ date }),
   });
 
   const CreateQuestMutation = useMutation({
@@ -103,8 +105,6 @@ export const useMainQuest = () => {
       navigate('/error');
     },
 });
-
-  const date = params.get(QUERYSTRING.DATE) || formattedDate(new Date());
 
   return {
     mainQuest,

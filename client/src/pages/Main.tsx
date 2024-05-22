@@ -28,7 +28,7 @@ const Main = () => {
         </div>
         <div>
           {mainQuest?.length ? (
-            mainQuest.map((content) => <MainBox key={content.id} content={content} />)
+            mainQuest?.map((content) => <MainBox key={content.id} content={content} />)
           ) : isMainLoading ? (
             <Loading />
           ) : (

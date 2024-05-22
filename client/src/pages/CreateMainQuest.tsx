@@ -110,7 +110,7 @@ const CreateMainQuest = () => {
             <input
               className="startDate"
               type="date"
-              value={today}
+              value={startDate || today}
               {...register('startDate', {
                 required: true,
                 onChange: (e) => setStartDate(e.target.value),
