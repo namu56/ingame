@@ -19,18 +19,19 @@ const SubBox = ({ content }: SubBoxProps) => {
   const handleChangeStatue = () => {
     if (date === formattedDate(new Date())) {
       let message = '';
+      let status = content.status;
       if (content.status === 'ON_PROGRESS') {
         message = '퀘스트를 완료하시겠습니까?';
-        content.status = 'COMPLETED';
+        status = 'COMPLETED';
       } else if (content.status === 'COMPLETED') {
         message = '퀘스트를 진행중으로 변경하시겠습니까?';
-        content.status = 'ON_PROGRESS';
+        status = 'ON_PROGRESS';
       } else {
         return;
       }
 
       showConfirm(message, () => {
-        modifySubQuestStatus({ id: content.id, status: content.status });
+        modifySubQuestStatus({ id: content.id, status: status });
       });
     } else {
       showAlert('당일 퀘스트만 변경 가능합니다');
