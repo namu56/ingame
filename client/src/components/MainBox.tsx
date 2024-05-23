@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { sideQuestList } from '@/shared/dummy';
 import SideBox from './SideBox';
 import { Quest, QuestStatus, SideContent } from '@/models/quest.model';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
@@ -21,10 +21,11 @@ interface MainQuest extends Quest {
 export interface MainBoxProps {
   content: MainQuest;
   date: string;
-  updatedData: MainQuest | undefined;
 }
 
-const MainBox = ({ content, date, updatedData }: MainBoxProps) => {
+const MainBox = ({ content, date }: MainBoxProps) => {
+  const location = useLocation();
+  const updatedData = location.state?.updatedData;
   const mainContent = updatedData || content;
   const { modifyMainQuestStatus, patchSideMutation } = useMainQuest();
   const { showConfirm, showAlert } = useMessage();
@@ -32,8 +33,8 @@ const MainBox = ({ content, date, updatedData }: MainBoxProps) => {
   const queryClient = useQueryClient();
   const [isAccordion, setisAccordion] = useState(false);
   const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
-  const [sideQuests, setSideQuests] = useState(content.sideQuests);
-  const fraction = `${sideQuests.filter((item) => item.status === 'COMPLETED').length} / ${content.sideQuests.length}`;
+  const [sideQuests, setSideQuests] = useState(mainContent.sideQuests);
+  const fraction = `${sideQuests.filter((item: Quest) => item.status === 'COMPLETED').length} / ${mainContent.sideQuests.length}`;
 
   const { data, isLoading, error } = useQuery({
     queryKey: [BASE_KEY.QUEST, content.id],
@@ -105,7 +106,7 @@ const MainBox = ({ content, date, updatedData }: MainBoxProps) => {
             </div>
           </MainBoxStyle>
           <SideBoxContainer>
-          {mainContent.sideQuests.map((quest, index) =>
+          {mainContent.sideQuests.map((quest: SideContent, index: number) =>
             quest.content ? (
               <SideBox
                 key={index}
@@ -118,7 +119,7 @@ const MainBox = ({ content, date, updatedData }: MainBoxProps) => {
 
                     patchSideMutation.mutate({ param: quest.id, status: newStatus }, {
                       onSuccess: () => {
-                        setSideQuests((prev) => {
+                        setSideQuests((prev: SideContent[]) => {
                           const newState = [...prev];
                           newState[index] = {
                             ...newState[index],

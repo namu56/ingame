@@ -10,13 +10,10 @@ import { BiNotepad } from 'react-icons/bi';
 import CreateMainQuestButton from '@/components/CreateMainQuestButton';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import MainBox from '@/components/MainBox';
-import { useLocation } from 'react-router-dom';
 
 const Main = () => {
   const { quest, isSubLoading } = useSubQuest();
   const { mainQuest, isMainLoading, date } = useMainQuest();
-  const location = useLocation();
-  const updatedData = location.state?.updatedData;
 
   return (
     <MainStyle>
@@ -31,7 +28,7 @@ const Main = () => {
         </div>
         <div>
           {mainQuest?.length ? (
-            mainQuest?.map((content) => <MainBox key={content.id} content={content} date={date} updatedData={updatedData} />)
+            mainQuest?.map((content) => <MainBox key={content.id} content={content} date={date} />)
           ) : isMainLoading ? (
             <Loading />
           ) : (
