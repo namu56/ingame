@@ -11,6 +11,7 @@ interface RankingCardProps {
 const RankingCardList = () => {
   const { rankingData, fetchNextPage, hasNextPage } = useRank();
   const loader = useRef<HTMLDivElement>(null);
+  console.log(hasNextPage, fetchNextPage);
 
   const handleObserver = (entities: IntersectionObserverEntry[]) => {
     const target = entities[0];
@@ -22,7 +23,7 @@ const RankingCardList = () => {
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: "20px",
+      rootMargin: "0px",
       threshold: 1.0
     };
     const observer = new IntersectionObserver(handleObserver, options);
@@ -34,7 +35,7 @@ const RankingCardList = () => {
         observer.unobserve(loader.current);
       }
     }
-  }, [fetchNextPage]);
+  }, [fetchNextPage, hasNextPage]);
 
   return (
     <>

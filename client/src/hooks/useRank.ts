@@ -1,6 +1,6 @@
 import { RankingResponse, getRanking } from '@/api/ranking.api';
 import { RANK } from '@/constant/queryKey';
-import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 export const useRank = () => {
   const {
