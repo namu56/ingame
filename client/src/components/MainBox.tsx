@@ -48,20 +48,23 @@ const MainBox = ({ content, date }: MainBoxProps) => {
   const handleChangeStatue = () => {
     if (date === formattedDate(new Date())) {
       let message = '';
-      let status = content.status;
-      if (content.status === 'ON_PROGRESS') {
+      let newStatus = '';
+      if (mainContent.status === 'ON_PROGRESS') {
         message = '퀘스트를 완료하시겠습니까?';
-        status = 'COMPLETED';
-      } else if (content.status === 'COMPLETED') {
+        newStatus = 'COMPLETED';
+      } else if (mainContent.status === 'COMPLETED') {
         message = '퀘스트를 진행중으로 변경하시겠습니까?';
-        status = 'ON_PROGRESS';
+        newStatus = 'ON_PROGRESS';
       } else {
         return;
       }
 
-      showConfirm(message, () => {
-        modifyMainQuestStatus({ id: mainContent.id, status: status });
-      });
+      showConfirm(message, 
+        () => {
+          mainContent.status = newStatus;
+          modifyMainQuestStatus({ id: mainContent.id, status: mainContent.status });
+        }
+      );
     } else {
       showAlert('당일 퀘스트만 변경 가능합니다');
     }

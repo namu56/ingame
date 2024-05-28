@@ -27,12 +27,16 @@ const CreateMainQuest = () => {
   const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
 
   const onSubmit = handleSubmit((data) => {
-    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const difficulty =
-      isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : ('HARD' as QuestDifficulty);
-    const mode = 'MAIN' as QuestMode;
-    const newData = { ...data, hidden, difficulty: difficulty, mode: mode };
-    CreateQuestMutation.mutate(newData);
+    if (data.sideQuests && data.sideQuests.length > 0) {
+      const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
+      const difficulty =
+        isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : ('HARD' as QuestDifficulty);
+      const mode = 'MAIN' as QuestMode;
+      const newData = { ...data, hidden, difficulty: difficulty, mode: mode };
+      CreateQuestMutation.mutate(newData);
+    } else {
+      alert('사이드 퀘스트를 추가해주세요.');
+    }
   });
 
   return (
@@ -101,7 +105,7 @@ const CreateMainQuest = () => {
                 <QuestInputBox
                   key={index}
                   placeholder="퀘스트 제목"
-                  {...register(`sideQuests.${index}.content` as const)}
+                  {...register(`sideQuests.${index}.content` as const, { required: true })}
                 />
               ))}
           </InnerQuests>
