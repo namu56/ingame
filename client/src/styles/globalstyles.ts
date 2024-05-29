@@ -16,6 +16,10 @@ export const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: "Pretendard500";
+    background-color: #d1eae7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   button,
