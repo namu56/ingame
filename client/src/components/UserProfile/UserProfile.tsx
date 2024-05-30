@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import { USER } from '@/constant/queryKey';
 import { getUserInfo } from '@/api/users.api';
-import EditProfileButton from '../EditProfileButton';
-import ProgressBar from '../ProgressBar';
+import EditProfileButton from './EditProfileButton';
+import ProgressBar from './ProgressBar';
 import { media } from '@/styles/theme';
 import ProfileImageSection from './ProfileImageSection/ProfileImageSection';
 

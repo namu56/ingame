@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import QuestInputBox from '../QuestInputBox';
-import ProfileIntroInputBox from '../ProfileIntroInputBox';
+import QuestInputBox from '../quests/QuestInputBox';
+import ProfileIntroInputBox from '../UserProfile/ProfileIntroInputBox';
 import { FaUser } from 'react-icons/fa';
 import { FaUserPen } from 'react-icons/fa6';
-import Button from '../Button';
-import CloseButton from '../CloseButton';
+import Button from '../common/Button';
+import CloseButton from '../common/CloseButton';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { patchUserProfile } from '@/api/users.api';
 import { useState } from 'react';

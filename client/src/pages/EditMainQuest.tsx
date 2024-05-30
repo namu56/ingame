@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 import { CiLock } from 'react-icons/ci';
 import { CiUnlock } from 'react-icons/ci';
-import Button from '@/components/Button';
-import QuestInputBox from '@/components/QuestInputBox';
+import Button from '@/components/common/Button';
+import QuestInputBox from '@/components/quests/QuestInputBox';
 import { media } from '@/styles/theme';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
-import CloseButton from '@/components/CloseButton';
+import CloseButton from '@/components/common/CloseButton';
 import { useForm } from 'react-hook-form';
 import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
 import { useMessage } from '@/hooks/useMessage';

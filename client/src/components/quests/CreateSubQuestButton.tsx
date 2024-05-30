@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import useOutsideClick from '@/hooks/useOutsideClick';
 import { useState } from 'react';
 import { GrAddCircle } from 'react-icons/gr';
-import CreateSubQuestModal from './modals/CreateSubQuestModal';
+import CreateSubQuestModal from '../modals/CreateSubQuestModal';
 
 interface CreateSubQuestModalProps {
   isOpen?: boolean;

@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import QuestInputBox from '../QuestInputBox';
-import Button from '../Button';
-import CloseButton from '../CloseButton';
+import QuestInputBox from '../quests/QuestInputBox';
+import Button from '../common/Button';
+import CloseButton from '../common/CloseButton';
 import edit from '../../assets/images/edit.png';
 import { TfiUnlock, TfiLock } from 'react-icons/tfi';
 import { useEffect, useState } from 'react';
