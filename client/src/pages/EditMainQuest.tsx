@@ -11,7 +11,7 @@ import CloseButton from '@/components/CloseButton';
 import { useForm } from 'react-hook-form';
 import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
 import { useMessage } from '@/hooks/useMessage';
-import { InvalidateQueryFilters, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { BASE_KEY } from '@/constant/queryKey';
 
 const EditMainQuestQuest = () => {

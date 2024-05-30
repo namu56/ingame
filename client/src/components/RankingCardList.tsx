@@ -11,7 +11,6 @@ interface RankingCardProps {
 const RankingCardList = () => {
   const { rankingData, fetchNextPage, hasNextPage } = useRank();
   const loader = useRef<HTMLDivElement>(null);
-  console.log(hasNextPage, fetchNextPage);
 
   const handleObserver = (entities: IntersectionObserverEntry[]) => {
     const target = entities[0];
