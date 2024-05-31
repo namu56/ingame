@@ -1,20 +1,15 @@
 import {
   Controller,
   Post,
-  Body,
   HttpStatus,
   HttpCode,
   Res,
   Req,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
   HttpException,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginUserDto } from './dto/login-user.dto';
+import { AuthService } from '../auth.service';
 import { Request, Response } from 'express';
-import { AuthGuard } from './auth.guard';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -24,23 +19,25 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AccessTokenPayload } from './auth.interface';
-import { CurrentUser } from 'src/common/decorators/auth.decorator';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { AccessTokenPayload } from '../auth.interface';
 
 @Controller('auth')
 @ApiTags('Auth API')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ description: '로그인 성공 시 토큰 반환' })
   @ApiNotFoundResponse({ description: 'fail- User not found' })
-  @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
+  async login(@CurrentUser() user: AccessTokenPayload, @Res() res: Response) {
     const isProduction = process.env.NODE_ENV === 'production';
-    const { accessToken, refreshToken } = await this.authService.login(loginUserDto);
+    const { accessToken, refreshToken } = await this.authService.login(user);
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -48,10 +45,10 @@ export class AuthController {
       sameSite: isProduction ? 'none' : 'lax',
       secure: isProduction,
     });
-    res.json(accessToken);
+    res.json({ accessToken });
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
   @ApiOperation({ summary: '로그아웃' })
   @ApiBearerAuth('accessToken')

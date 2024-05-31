@@ -22,8 +22,8 @@ import {
 import { UpdateQuestDto } from './dto/update-quest.dto';
 import { UpdateSideQuestRequestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
-import { AuthGuard } from '../auth/auth.guard';
-import { CurrentUser } from '../../common/decorators/auth.decorator';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AccessTokenPayload } from '../auth/auth.interface';
 import { Mode } from './enums/quest.enum';
 import {

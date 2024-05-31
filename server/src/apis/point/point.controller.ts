@@ -9,10 +9,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { PointService } from './point.service';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { AccessTokenPayload } from '../auth/auth.interface';
 import { UpdatePointDto } from './dto/update-point.dto';
-import { CurrentUser } from 'src/common/decorators/auth.decorator';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import {
   ApiBearerAuth,
   ApiNoContentResponse,

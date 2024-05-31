@@ -16,8 +16,8 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '../auth/auth.guard';
-import { CurrentUser } from 'src/common/decorators/auth.decorator';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { AccessTokenPayload } from '../auth/auth.interface';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
 import {
