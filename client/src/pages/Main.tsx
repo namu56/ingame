@@ -5,11 +5,10 @@ import SubBox from '@/components/SubBox';
 import WeekCalendar from '@/components/WeekCalendar';
 import { useSubQuest } from '@/hooks/useSubQuest';
 import Loading from '@/components/Loading';
-import CreateSubQuestButton from '@/components/CreateSubQuestButton';
 import { BiNotepad } from 'react-icons/bi';
-import CreateMainQuestButton from '@/components/CreateMainQuestButton';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import MainBox from '@/components/MainBox';
+import CreateQuestButton from '@/components/CreateQuestButton';
 
 const Main = () => {
   const { quest, isSubLoading } = useSubQuest();
@@ -24,7 +23,7 @@ const Main = () => {
         <div className="questTitle">
           <BiNotepad />
           <h2>Main Quest</h2>
-          <CreateMainQuestButton />
+          <CreateQuestButton pageUrl="/createquest" />
         </div>
         <div>
           {mainQuest?.length ? (
@@ -40,7 +39,7 @@ const Main = () => {
         <div className="questTitle">
           <BiNotepad />
           <h2>Sub Quest</h2>
-          <CreateSubQuestButton />
+          <CreateQuestButton modalName="subQuest" />
         </div>
         <div>
           {quest?.length ? (
