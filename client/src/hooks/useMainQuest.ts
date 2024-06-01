@@ -55,29 +55,6 @@ export const useMainQuest = () => {
     queryFn: () => getMainQuest({ date }),
   });
 
-  const CreateQuestMutation = useMutation({
-    mutationFn: createMainQuest,
-    onSuccess(res) {
-      navigate('/');
-    },
-    onError(err) {
-      navigate('/error');
-    },
-  });
-
-  const EditQuestMutation = useMutation({
-    mutationFn: (variable: Quest) => {
-      const { id, ...rest } = variable;
-      return modiMainQuest(id, rest);
-    },
-    onSuccess(res) {
-      navigate('/');
-    },
-    onError(err) {
-      navigate('/error');
-    },
-  });
-
   const DeleteMainQuestsMutation = useMutation({
     mutationFn: (id: number) => deleteMainQuest(id),
     onSuccess() {
@@ -115,12 +92,65 @@ export const useMainQuest = () => {
   return {
     mainQuest,
     isMainLoading,
-    CreateQuestMutation,
-    EditQuestMutation,
     modifyMainQuestStatus,
     patchSideMutation,
     DeleteMainQuestsMutation,
     date,
+  };
+};
+
+export const useCreateMainQuestForm = () => {
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [isDifficulty, setIsDifficulty] = useState(0);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [plusQuest, setPlusQuest] = useState(1);
+  const [minusQuest, setMinusQuest] = useState(0);
+  const today = new Date().toISOString().substring(0, 10);
+  const navigate = useNavigate();
+
+  const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
+
+  const onSubmit = handleSubmit((data) => {
+    if (data.sideQuests && data.sideQuests.length > 0) {
+      const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
+      const difficulty =
+        isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : ('HARD' as QuestDifficulty);
+      const mode = 'MAIN' as QuestMode;
+      const newData = { ...data, hidden, difficulty: difficulty, mode: mode };
+      CreateQuestMutation.mutate(newData);
+    } else {
+      alert('사이드 퀘스트를 추가해주세요.');
+    }
+  });
+
+  const CreateQuestMutation = useMutation({
+    mutationFn: createMainQuest,
+    onSuccess(res) {
+      navigate('/');
+    },
+    onError(err) {
+      navigate('/error');
+    },
+  });
+
+  return {
+    register,
+    control,
+    handleSubmit: onSubmit,
+    isPrivate,
+    setIsPrivate,
+    isDifficulty,
+    setIsDifficulty,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    plusQuest,
+    setPlusQuest,
+    minusQuest,
+    setMinusQuest,
+    today,
   };
 };
 
@@ -132,11 +162,23 @@ export const useEditMainQuestForm = (content: Quest, date: string) => {
   const [sideQuests, setSideQuests] = useState<SideContent[]>(content.sideQuests);
   const [isPrivate, setIsPrivate] = useState(content.hidden === 'TRUE');
   
-  const { EditQuestMutation } = useMainQuest();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
+
+  const EditQuestMutation = useMutation({
+    mutationFn: (variable: Quest) => {
+      const { id, ...rest } = variable;
+      return modiMainQuest(id, rest);
+    },
+    onSuccess(res) {
+      navigate('/');
+    },
+    onError(err) {
+      navigate('/error');
+    },
+  });
 
   const onSubmit = handleSubmit((data) => {
     const hidden: QuestHiddenType = isPrivate ? 'TRUE' : 'FALSE';
