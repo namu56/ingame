@@ -4,72 +4,34 @@ import { CiUnlock } from 'react-icons/ci';
 import Button from '@/components/common/Button';
 import QuestInputBox from '@/components/quests/QuestInputBox';
 import { media } from '@/styles/theme';
-import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
+import { SideContent } from '@/models/quest.model';
 import CloseButton from '@/components/common/CloseButton';
-import { useForm } from 'react-hook-form';
-import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
-import { useMessage } from '@/hooks/useMessage';
-import { useQueryClient } from '@tanstack/react-query';
-import { BASE_KEY } from '@/constant/queryKey';
+import { useConfirmDelete, useEditMainQuestForm } from '@/hooks/useMainQuest';
 
 const EditMainQuestQuest = () => {
   const { state } = useLocation();
   const { data: content, date } = state;
-  
-  const [startDate, setStartDate] = useState(content.startDate);
-  const [endDate, setEndDate] = useState(content.endDate);
-  const [title, setTitle] = useState(content.title);
-  const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
-  const [sideQuests, setSideQuests] = useState(content.sideQuests);
-  const [isPrivate, setIsPrivate] = useState(content.hidden === 'TRUE' ? true : false);
-  const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
-  const { showConfirm } = useMessage();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
+  const {
+    register,
+    handleSubmit,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    title,
+    setTitle,
+    isDifficulty,
+    setIsDifficulty,
+    sideQuests,
+    setSideQuests,
+    isPrivate,
+    setIsPrivate,
+  } = useEditMainQuestForm(content, date);
 
-  const onSubmit = handleSubmit((data) => {
-    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const updatedSideQuests = (sideQuests || []).map((sideQuest: SideContent) => {
-      if (sideQuest) {
-        return {
-          ...sideQuest, 
-          status: sideQuest.status
-        };
-      }
-    });
-    const { id, ...rest } = data;
-    const newData = { id, ...rest, hidden: hidden, sideQuests: updatedSideQuests };
-    EditQuestMutation.mutate(newData, {
-      onSuccess: () => {
-        queryClient.setQueryData([BASE_KEY.QUEST, content.id], (oldData: Quest) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            ...newData,
-          }
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: [BASE_KEY.QUEST, date],
-          exact: true,
-        });
-        navigate('/', { state: { updatedData: newData } });
-      }
-    });
-  });
-
-  const handleDeleteBtn = () => {
-    const message = '정말 삭제하시겠습니까?';
-    showConfirm(message, () => {
-      if (content && content.id !== undefined) {
-        DeleteMainQuestsMutation.mutate(content.id);
-      }
-    });
-  };
+  const { handleDeleteBtn } = useConfirmDelete(content);
 
   return (
     <>
@@ -85,7 +47,7 @@ const EditMainQuestQuest = () => {
             )}
           </div>
         </header>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
           <input type="hidden" value={isDifficulty} {...register('difficulty')} />
           <input type="hidden" value={content.id} {...register('id')} />
           <QuestInputBox

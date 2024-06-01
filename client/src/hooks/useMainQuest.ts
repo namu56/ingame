@@ -19,7 +19,10 @@ import {
 } from '@/models/quest.model';
 import { formattedDate } from '@/utils/formatter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useMessage } from '@/hooks/useMessage';
 
 export interface EditMainQuestQuestProps extends Quest {
   sideQuests: SideContent[];
@@ -119,4 +122,74 @@ export const useMainQuest = () => {
     DeleteMainQuestsMutation,
     date,
   };
+};
+
+export const useEditMainQuestForm = (content: Quest, date: string) => {
+  const [startDate, setStartDate] = useState(content.startDate);
+  const [endDate, setEndDate] = useState(content.endDate);
+  const [title, setTitle] = useState(content.title);
+  const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
+  const [sideQuests, setSideQuests] = useState<SideContent[]>(content.sideQuests);
+  const [isPrivate, setIsPrivate] = useState(content.hidden === 'TRUE');
+  
+  const { EditQuestMutation } = useMainQuest();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
+
+  const onSubmit = handleSubmit((data) => {
+    const hidden: QuestHiddenType = isPrivate ? 'TRUE' : 'FALSE';
+    const updatedSideQuests = (sideQuests || []).map((sideQuest) => ({
+      ...sideQuest,
+      status: sideQuest.status,
+    }));
+    const { id, ...rest } = data;
+    const newData = { id, ...rest, hidden, sideQuests: updatedSideQuests };
+
+    EditQuestMutation.mutate(newData, {
+      onSuccess: () => {
+        queryClient.setQueryData([BASE_KEY.QUEST, content.id], (oldData: Quest | undefined) => ({
+          ...oldData,
+          ...newData,
+        }));
+        queryClient.invalidateQueries({ queryKey: [BASE_KEY.QUEST, date], exact: true });
+        navigate('/', { state: { updatedData: newData } });
+      },
+    });
+  });
+
+  return {
+    register,
+    control,
+    handleSubmit: onSubmit,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    title,
+    setTitle,
+    isDifficulty,
+    setIsDifficulty,
+    sideQuests,
+    setSideQuests,
+    isPrivate,
+    setIsPrivate,
+  };
+};
+
+export const useConfirmDelete = (content: Quest) => {
+  const { showConfirm } = useMessage();
+  const { DeleteMainQuestsMutation } = useMainQuest();
+
+  const handleDeleteBtn = () => {
+    const message = '정말 삭제하시겠습니까?';
+    showConfirm(message, () => {
+      if (content && content.id !== undefined) {
+        DeleteMainQuestsMutation.mutate(content.id);
+      }
+    });
+  };
+
+  return { handleDeleteBtn };
 };
