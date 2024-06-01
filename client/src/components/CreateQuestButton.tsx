@@ -6,13 +6,12 @@ import CreateSubQuestModal from './modals/CreateSubQuestModal';
 import useOutsideClick from '@/hooks/useOutsideClick';
 
 interface CreateQuestButtonProps {
-  isOpen?: boolean;
   pageUrl?: string;
   modalName?: string;
 }
 
-const QuestCreateButton = ({ isOpen = false, pageUrl, modalName }: CreateQuestButtonProps) => {
-  const [open, setOpen] = useState(isOpen);
+const QuestCreateButton = ({ pageUrl, modalName }: CreateQuestButtonProps) => {
+  const [open, setOpen] = useState(false);
   const createQuestModalRef = useOutsideClick<HTMLDivElement>(open, () => setOpen(false));
   const navigate = useNavigate();
   const handleOpen = () => {
