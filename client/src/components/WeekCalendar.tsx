@@ -13,7 +13,6 @@ const Week = () => {
   const newSearchParams = new URLSearchParams(searchParams);
 
   const { today, getWeekDates } = useWeek();
-  const { mainQuest, date } = useMainQuest();
 
   const [calendarDay, setCalendarDay] = useState<Date[]>(getWeekDates(today));
   const [now, setNow] = useState<Date>(today);
