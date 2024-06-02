@@ -6,7 +6,6 @@ import { media } from '@/styles/theme';
 import { QUERYSTRING } from '@/constant/queryString';
 import { useSearchParams } from 'react-router-dom';
 import { formattedDate } from '@/utils/formatter';
-import { useMainQuest } from '@/hooks/useMainQuest';
 
 const Week = () => {
   const [searchParams, setSearchParams] = useSearchParams();
