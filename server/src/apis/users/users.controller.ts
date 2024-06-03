@@ -56,7 +56,7 @@ export class UsersController {
     @TransactionManager() queryRunnerManager: EntityManager,
     @Body() createUserDto: CreateUserDto
   ) {
-    await this.usersService.createUser(createUserDto, queryRunnerManager);
+    await this.usersService.signUp(createUserDto, queryRunnerManager);
     return { message: 'success' };
   }
 

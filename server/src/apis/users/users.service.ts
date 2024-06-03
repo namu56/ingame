@@ -8,9 +8,9 @@ import { UserInfo } from './entities/user-info.entity';
 import { ProfilePhoto } from './entities/profile-photo.entity';
 import { UserProfileDto } from './dto/user-profile.dto';
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
 import { LevelCalculatorService } from 'src/common/level-calculator/level-calculator.service';
+import { hashPassword } from 'src/common/utils/hash-password.util';
 
 @Injectable()
 export class UsersService {
@@ -21,35 +21,29 @@ export class UsersService {
     @InjectRepository(ProfilePhoto) private profilePhotoRepository: Repository<ProfilePhoto>,
     private levelCalculatorService: LevelCalculatorService
   ) {}
-  async createUser(createUserDto: CreateUserDto, queryRunnerManager: EntityManager) {
+  async signUp(createUserDto: CreateUserDto, queryRunnerManager: EntityManager) {
     const { email, password, nickname } = createUserDto;
 
     try {
-      const existingEmail = await this.userRepository.existsBy({ email });
-      if (existingEmail) {
-        throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
-      }
+      await this.checkUser(email);
+      await this.checkNickname(nickname);
 
-      const existingNickname = await this.userInfoRepository.existsBy({ nickname });
-      if (existingNickname) {
-        throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
-      }
-
-      const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
-      const salt = await bcrypt.genSalt(saltRounds);
-      const hashedPassword = await bcrypt.hash(password, salt);
-
-      const user = this.userRepository.create({ email, password: hashedPassword });
-      const savedUser = await queryRunnerManager.save(user);
-
-      const userInfo = this.userInfoRepository.create({ userId: savedUser.id, nickname });
-      await queryRunnerManager.save(userInfo);
-
-      const profilePhoto = this.profilePhotoRepository.create({ userId: savedUser.id });
-      await queryRunnerManager.save(profilePhoto);
-    } catch (error) {
-      throw error;
+      const newUser = await this.createUser(email, password, queryRunnerManager);
+      await this.createUserInfo(newUser.id, nickname, queryRunnerManager);
+      await this.createProfilePhoto(newUser.id, queryRunnerManager);
+    } catch (err) {
+      throw err;
     }
+  }
+
+  async getUserByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+    if (!user) {
+      throw new HttpException('Fail - User not found', HttpStatus.NOT_FOUND);
+    }
+    return user;
   }
 
   async deleteCurrentUserById(id: number) {
@@ -80,12 +74,7 @@ export class UsersService {
     }
     // 변경하려는 닉네임과 현재 사용자의 닉네임이 다른 경우에만 중복 확인
     if (userInfo.nickname !== updateUserDto.nickname) {
-      const existingNickname = await this.userInfoRepository.existsBy({
-        nickname: updateUserDto.nickname,
-      });
-      if (existingNickname) {
-        throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
-      }
+      await this.checkNickname(updateUserDto.nickname);
     }
     const newUserInfo = this.userInfoRepository.merge(userInfo, updateUserDto);
     await this.userInfoRepository.save(newUserInfo);
@@ -104,16 +93,6 @@ export class UsersService {
       profilePhotoDto
     );
     await this.profilePhotoRepository.save(newProfilePhoto);
-  }
-
-  async getUserByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { email },
-    });
-    if (!user) {
-      throw new HttpException('Fail - User not found', HttpStatus.NOT_FOUND);
-    }
-    return user;
   }
 
   async getAllUserByPage(page: number, limit: number): Promise<[UserInfo[], number]> {
@@ -138,5 +117,48 @@ export class UsersService {
       point: user.userInfo.point,
       level,
     };
+  }
+
+  async checkUser(email: string): Promise<void> {
+    const existingUser = await this.userRepository.existsBy({ email });
+    if (existingUser) {
+      throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
+    }
+  }
+
+  async checkNickname(nickname: string): Promise<void> {
+    const existingNickname = await this.userInfoRepository.existsBy({ nickname });
+    if (existingNickname) {
+      throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
+    }
+  }
+
+  private async createUser(
+    email: string,
+    password: string,
+    queryRunnerManager: EntityManager
+  ): Promise<User> {
+    const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
+    const hashedPassword = await hashPassword(password, saltRounds);
+    const user = this.userRepository.create({ email, password: hashedPassword });
+
+    return await queryRunnerManager.save(user);
+  }
+
+  private async createUserInfo(
+    userId: number,
+    nickname: string,
+    queryRunnerManager: EntityManager
+  ): Promise<void> {
+    const userInfo = this.userInfoRepository.create({ userId, nickname });
+    await queryRunnerManager.save(userInfo);
+  }
+
+  private async createProfilePhoto(
+    userId: number,
+    queryRunnerManager: EntityManager
+  ): Promise<void> {
+    const profilePhoto = this.profilePhotoRepository.create({ userId });
+    await queryRunnerManager.save(profilePhoto);
   }
 }
