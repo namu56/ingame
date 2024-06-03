@@ -10,6 +10,8 @@ import { RedisModule } from 'src/common/redis/redis.module';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { OAuthController } from './controllers/oauth.controller';
 
 @Module({
   imports: [
@@ -21,8 +23,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
     RedisModule,
   ],
-  controllers: [AuthController],
-  providers: [AuthService, AuthGuard, LocalStrategy, JwtStrategy],
+  controllers: [AuthController, OAuthController],
+  providers: [AuthService, AuthGuard, LocalStrategy, JwtStrategy, GoogleStrategy],
   exports: [AuthService, AuthGuard, JwtModule],
 })
 export class AuthModule {}
