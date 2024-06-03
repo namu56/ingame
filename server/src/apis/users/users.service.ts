@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { UserInfo } from './entities/user-info.entity';
 import { ProfilePhoto } from './entities/profile-photo.entity';
 import { UserProfileDto } from './dto/user-profile.dto';
@@ -19,15 +19,10 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(UserInfo) private userInfoRepository: Repository<UserInfo>,
     @InjectRepository(ProfilePhoto) private profilePhotoRepository: Repository<ProfilePhoto>,
-    private readonly dataSource: DataSource,
     private levelCalculatorService: LevelCalculatorService
   ) {}
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto, queryRunnerManager: EntityManager) {
     const { email, password, nickname } = createUserDto;
-
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
 
     try {
       const existingEmail = await this.userRepository.existsBy({ email });
@@ -45,20 +40,15 @@ export class UsersService {
       const hashedPassword = await bcrypt.hash(password, salt);
 
       const user = this.userRepository.create({ email, password: hashedPassword });
-      const savedUser = await queryRunner.manager.save(user);
+      const savedUser = await queryRunnerManager.save(user);
 
       const userInfo = this.userInfoRepository.create({ userId: savedUser.id, nickname });
-      await queryRunner.manager.save(userInfo);
+      await queryRunnerManager.save(userInfo);
 
       const profilePhoto = this.profilePhotoRepository.create({ userId: savedUser.id });
-      await queryRunner.manager.save(profilePhoto);
-
-      await queryRunner.commitTransaction();
+      await queryRunnerManager.save(profilePhoto);
     } catch (error) {
-      await queryRunner.rollbackTransaction();
       throw error;
-    } finally {
-      await queryRunner.release();
     }
   }
 

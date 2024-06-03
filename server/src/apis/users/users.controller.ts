@@ -12,6 +12,7 @@ import {
   ValidationPipe,
   Param,
   ParseIntPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -34,6 +35,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserProfileDto } from './dto/user-profile.dto';
+import { TransactionInterceptor } from 'src/common/interceptors/transaction.interceptor';
+import { TransactionManager } from 'src/common/decorators/transaction-manager.decorator';
+import { EntityManager } from 'typeorm';
 
 @Controller('users')
 @ApiTags('Users API')
@@ -45,10 +49,14 @@ export class UsersController {
   @ApiCreatedResponse({ description: 'success' })
   @ApiConflictResponse({ description: '이미 존재하는 회원입니다.' })
   @ApiBody({ type: CreateUserDto })
+  @UseInterceptors(TransactionInterceptor)
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.CREATED)
-  async signup(@Body() createUserDto: CreateUserDto) {
-    await this.usersService.createUser(createUserDto);
+  async signup(
+    @TransactionManager() queryRunnerManager: EntityManager,
+    @Body() createUserDto: CreateUserDto
+  ) {
+    await this.usersService.createUser(createUserDto, queryRunnerManager);
     return { message: 'success' };
   }
 
