@@ -1,7 +1,7 @@
-import Button from '@/components/Button';
-import InputBox from '@/components/InputBox';
-import NavigationText from '@/components/NavigationText';
-import Title from '@/components/Title';
+import Button from '@/components/common/Button';
+import InputBox from '@/components/common/InputBox';
+import NavigationText from '@/components/common/NavigationText';
+import Title from '@/components/common/Title';
 import { ROUTERS } from '@/constant/route';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';

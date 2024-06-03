@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { MdErrorOutline } from 'react-icons/md';
-import Button from '@/components/Button';
+import Button from '@/components/common/Button';
 import { useSelector } from 'react-redux';
 import { isLoggedIn } from '@/store/authSlice';
 import { useNavigate } from 'react-router-dom';

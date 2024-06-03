@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { SetStateAction, useState } from 'react';
-import CloseButton from '@/components/CloseButton';
-import Title from '@/components/Title';
+import CloseButton from '@/components/common/CloseButton';
+import Title from '@/components/common/Title';
 import ImageBadge from './ImageBadge/ImageBadge';
 import { rabbit, defaultImage as defaultProfile, tiger, lion, cat } from '@/assets';
-import Button from '@/components/Button';
+import Button from '@/components/common/Button';
 import { useChangeProfilePhotoMutation } from '@/hooks/useProfile';
 
 interface ChangeProfileIamgeModalProps {

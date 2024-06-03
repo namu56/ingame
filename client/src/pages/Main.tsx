@@ -1,13 +1,13 @@
-import Dropdown from '@/components/Dropdown';
+import Dropdown from '@/components/common/Dropdown';
 import styled from 'styled-components';
 import UserProfile from '@/components/UserProfile/UserProfile';
-import SubBox from '@/components/SubBox';
-import WeekCalendar from '@/components/WeekCalendar';
+import SubBox from '@/components/quests/SubBox';
+import WeekCalendar from '@/components/common/WeekCalendar';
 import { useSubQuest } from '@/hooks/useSubQuest';
-import Loading from '@/components/Loading';
+import Loading from '@/components/common/Loading';
+import MainBox from '@/components/quests/MainBox';
 import { BiNotepad } from 'react-icons/bi';
 import { useMainQuest } from '@/hooks/useMainQuest';
-import MainBox from '@/components/MainBox';
 import CreateQuestButton from '@/components/CreateQuestButton';
 
 const Main = () => {

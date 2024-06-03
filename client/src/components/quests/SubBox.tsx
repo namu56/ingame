@@ -4,7 +4,7 @@ import { useSubQuest } from '@/hooks/useSubQuest';
 import { useMessage } from '@/hooks/useMessage';
 import { formattedDate } from '@/utils/formatter';
 import { BsThreeDots } from 'react-icons/bs';
-import SubQuestModal from './modals/SubQuestModal';
+import SubQuestModal from '../modals/SubQuestModal';
 import { useState } from 'react';
 
 interface SubBoxProps {
