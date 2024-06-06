@@ -1,10 +1,12 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
 import { Request, Response } from 'express';
+import { TransactionInterceptor } from 'src/common/interceptors/transaction.interceptor';
 
 @Controller('oauth')
 export class OAuthController {
   @Get('google')
+  @UseInterceptors(TransactionInterceptor)
   @UseGuards(GoogleAuthGuard)
   async googleLogin(): Promise<void> {}
 

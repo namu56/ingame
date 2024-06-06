@@ -15,5 +15,6 @@ export const typeORMConfig = async (
     entities: [__dirname + '/../../**/*.entity.{js,ts}'],
     synchronize: true,
     namingStrategy: new SnakeNamingStrategy(),
+    logging: true,
   };
 };

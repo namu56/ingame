@@ -11,6 +11,10 @@ import { ConfigService } from '@nestjs/config';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
 import { LevelCalculatorService } from 'src/common/level-calculator/level-calculator.service';
 import { hashPassword } from 'src/common/utils/hash-password.util';
+import { CreateSnsUserDto } from './dto/create-sns-user.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { Transactional } from 'src/common/decorators/transactional.decorator';
+import { TransactionManager } from 'src/common/utils/transaction-manager.util';
 
 @Injectable()
 export class UsersService {
@@ -19,18 +23,41 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(UserInfo) private userInfoRepository: Repository<UserInfo>,
     @InjectRepository(ProfilePhoto) private profilePhotoRepository: Repository<ProfilePhoto>,
+    private readonly transactionManager: TransactionManager,
     private levelCalculatorService: LevelCalculatorService
   ) {}
-  async signUp(createUserDto: CreateUserDto, queryRunnerManager: EntityManager) {
+  @Transactional()
+  async signUp(createUserDto: CreateUserDto): Promise<void> {
     const { email, password, nickname } = createUserDto;
+    const transactionalEntityManager = this.transactionManager.getEntityManager();
 
     try {
-      await this.checkUser(email);
-      await this.checkNickname(nickname);
+      await this.isExistUser(email);
+      await this.isExistNickname(nickname);
 
-      const newUser = await this.createUser(email, password, queryRunnerManager);
-      await this.createUserInfo(newUser.id, nickname, queryRunnerManager);
-      await this.createProfilePhoto(newUser.id, queryRunnerManager);
+      const newUser = await this.createLocalUser(email, password, transactionalEntityManager);
+      await this.createUserInfo(newUser.id, nickname, transactionalEntityManager);
+      await this.createProfilePhoto(newUser.id, transactionalEntityManager);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async socialSignUp(createSnsUserDto: CreateSnsUserDto): Promise<User> {
+    const { email, provider, providerId, nickname } = createSnsUserDto;
+    const transactionalEntityManager = this.transactionManager.getEntityManager();
+    try {
+      const uniqueNickname = await this.createUniqueNickname(nickname);
+      const newSnsUser = await this.createSnsUser(
+        email,
+        provider,
+        providerId,
+        transactionalEntityManager
+      );
+      await this.createUserInfo(newSnsUser.id, uniqueNickname, transactionalEntityManager);
+      await this.createProfilePhoto(newSnsUser.id, transactionalEntityManager);
+
+      return newSnsUser;
     } catch (err) {
       throw err;
     }
@@ -40,9 +67,6 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { email },
     });
-    if (!user) {
-      throw new HttpException('Fail - User not found', HttpStatus.NOT_FOUND);
-    }
     return user;
   }
 
@@ -74,7 +98,7 @@ export class UsersService {
     }
     // 변경하려는 닉네임과 현재 사용자의 닉네임이 다른 경우에만 중복 확인
     if (userInfo.nickname !== updateUserDto.nickname) {
-      await this.checkNickname(updateUserDto.nickname);
+      await this.isExistNickname(updateUserDto.nickname);
     }
     const newUserInfo = this.userInfoRepository.merge(userInfo, updateUserDto);
     await this.userInfoRepository.save(newUserInfo);
@@ -119,46 +143,67 @@ export class UsersService {
     };
   }
 
-  async checkUser(email: string): Promise<void> {
+  async isExistUser(email: string): Promise<void> {
     const existingUser = await this.userRepository.existsBy({ email });
     if (existingUser) {
       throw new HttpException('이미 존재하는 회원입니다', HttpStatus.CONFLICT);
     }
   }
 
-  async checkNickname(nickname: string): Promise<void> {
+  async isExistNickname(nickname: string): Promise<void> {
     const existingNickname = await this.userInfoRepository.existsBy({ nickname });
     if (existingNickname) {
       throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
     }
   }
 
-  private async createUser(
+  private async createLocalUser(
     email: string,
     password: string,
-    queryRunnerManager: EntityManager
+    transactionalEntityManager: EntityManager
   ): Promise<User> {
     const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
     const hashedPassword = await hashPassword(password, saltRounds);
     const user = this.userRepository.create({ email, password: hashedPassword });
 
-    return await queryRunnerManager.save(user);
+    return await transactionalEntityManager.save(user);
+  }
+
+  private async createSnsUser(
+    email: string,
+    provider: string,
+    providerId: string,
+    transactionalEntityManager: EntityManager
+  ) {
+    const user = this.userRepository.create({ email, provider, providerId });
+
+    return transactionalEntityManager.save(user);
+  }
+
+  private async createUniqueNickname(nickname: string): Promise<string> {
+    let uniqueId = uuidv4().split('-')[0];
+    let uniqueNickname = `${nickname}#${uniqueId}`;
+    while (await this.userInfoRepository.existsBy({ nickname: uniqueNickname })) {
+      uniqueId = uuidv4().split('-')[0];
+      uniqueNickname = `${nickname}#${uniqueId}`;
+    }
+    return uniqueNickname;
   }
 
   private async createUserInfo(
     userId: number,
     nickname: string,
-    queryRunnerManager: EntityManager
+    transactionalEntityManager: EntityManager
   ): Promise<void> {
     const userInfo = this.userInfoRepository.create({ userId, nickname });
-    await queryRunnerManager.save(userInfo);
+    await transactionalEntityManager.save(userInfo);
   }
 
   private async createProfilePhoto(
     userId: number,
-    queryRunnerManager: EntityManager
+    transactionalEntityManager: EntityManager
   ): Promise<void> {
     const profilePhoto = this.profilePhotoRepository.create({ userId });
-    await queryRunnerManager.save(profilePhoto);
+    await transactionalEntityManager.save(profilePhoto);
   }
 }

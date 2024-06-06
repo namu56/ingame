@@ -14,6 +14,7 @@ import { SchedulerModule } from './common/scheduler/scheduler.module';
 import { LevelCalculatorModule } from './common/level-calculator/level-calculator.module';
 import { PointModule } from './apis/point/point.module';
 import { RedisModule } from './common/redis/redis.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { RedisModule } from './common/redis/redis.module';
     LevelCalculatorModule,
     PointModule,
     RedisModule,
+    CommonModule,
   ],
   providers: [
     {
