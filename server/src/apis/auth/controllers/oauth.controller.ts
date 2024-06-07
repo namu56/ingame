@@ -1,9 +1,9 @@
-import { Controller, Get, HttpCode, HttpStatus, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, UseGuards, UseInterceptors } from '@nestjs/common';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
-import { Response } from 'express';
 import { AuthService } from '../auth.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { AccessTokenPayload } from '../auth.interface';
+import { AccessTokenPayload, AuthTokens } from '../auth.interface';
+import { AuthTokenInterceptor } from 'src/common/interceptors/auth-token.interceptor';
 
 @Controller('oauth')
 export class OAuthController {
@@ -15,17 +15,9 @@ export class OAuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
+  @UseInterceptors(AuthTokenInterceptor)
   @HttpCode(HttpStatus.OK)
-  async googleLoginCallBack(@CurrentUser() user: AccessTokenPayload, @Res() res: Response) {
-    const isProduction = process.env.NODE_ENV === 'production';
-    const { accessToken, refreshToken } = await this.authService.login(user);
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: isProduction ? 'none' : 'lax',
-      secure: isProduction,
-    });
-    res.json({ accessToken });
+  async googleLoginCallBack(@CurrentUser() user: AccessTokenPayload): Promise<AuthTokens> {
+    return await this.authService.login(user);
   }
 }

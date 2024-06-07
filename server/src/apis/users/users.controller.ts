@@ -16,7 +16,6 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '../auth/guards/auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { AccessTokenPayload } from '../auth/auth.interface';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
@@ -34,6 +33,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserProfileDto } from './dto/user-profile.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 @ApiTags('Users API')
@@ -52,7 +52,7 @@ export class UsersController {
     return { message: 'success' };
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete('me')
   @ApiOperation({ summary: '회원탈퇴' })
   @ApiBearerAuth('accessToken')
@@ -64,7 +64,7 @@ export class UsersController {
     await this.usersService.deleteCurrentUserById(user.id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   @ApiOperation({ summary: '나의 정보 조회' })
   @ApiBearerAuth('accessToken')
@@ -76,8 +76,8 @@ export class UsersController {
     return await this.usersService.getUserById(user.id);
   }
 
-  @UseGuards(AuthGuard)
   @Patch('me')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '사용자 정보 수정' })
   @ApiBearerAuth('accessToken')
   @ApiNoContentResponse({ description: '사용자 정보 수정 성공' })
@@ -93,8 +93,8 @@ export class UsersController {
     await this.usersService.updateCurrenUserInfoById(user.id, updateUserDto);
   }
 
-  @UseGuards(AuthGuard)
   @Patch('me/profile-photo')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '프로필 사진 수정' })
   @ApiBearerAuth('accessToken')
   @ApiNoContentResponse({ description: '프로필 사진 수정 성공' })

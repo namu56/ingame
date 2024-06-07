@@ -10,11 +10,11 @@ import { UserProfileDto } from './dto/user-profile.dto';
 import { ConfigService } from '@nestjs/config';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
 import { LevelCalculatorService } from 'src/common/level-calculator/level-calculator.service';
-import { hashPassword } from 'src/common/utils/hash-password.util';
 import { CreateSnsUserDto } from './dto/create-sns-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { Transactional } from 'src/common/decorators/transactional.decorator';
 import { TransactionManager } from 'src/common/utils/transaction-manager.util';
+import { encryptValue } from 'src/common/utils/encrypt-value.util';
 
 @Injectable()
 export class UsersService {
@@ -163,7 +163,7 @@ export class UsersService {
     transactionalEntityManager: EntityManager
   ): Promise<User> {
     const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
-    const hashedPassword = await hashPassword(password, saltRounds);
+    const hashedPassword = await encryptValue(password, saltRounds);
     const user = this.userRepository.create({ email, password: hashedPassword });
 
     return await transactionalEntityManager.save(user);

@@ -13,6 +13,8 @@ import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import { CreateSnsUserDto } from '../users/dto/create-sns-user.dto';
+import { compareValue } from 'src/common/utils/compare-value.util';
+import { encryptValue } from 'src/common/utils/encrypt-value.util';
 
 @Injectable()
 export class AuthService {
@@ -48,7 +50,9 @@ export class AuthService {
   async login(payload: AccessTokenPayload): Promise<AuthTokens> {
     const accessToken = await this.generateAccessToken(payload);
     const refreshToken = await this.generateRefreshToken(payload.id);
-    const hasedRefreshToken = await this.encryptRefreshToken(refreshToken);
+
+    const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
+    const hasedRefreshToken = await encryptValue(refreshToken, saltRounds);
     await this.redis.set(`refreshToken:${payload.id}`, hasedRefreshToken, 'EX', 60 * 60 * 24 * 7);
 
     return { accessToken, refreshToken };
@@ -58,7 +62,7 @@ export class AuthService {
     await this.redis.del(`refreshToken:${id}`);
   }
 
-  async refresh(refreshToken: string) {
+  async refresh(refreshToken: string): Promise<AuthTokens> {
     const secretKey = this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY');
     try {
       const decodedToken: RefreshTokenPayload = this.jwtService.verify(refreshToken, {
@@ -66,7 +70,7 @@ export class AuthService {
       });
       const user = await this.usersService.getUserById(decodedToken.id);
       const storedHashedToken = await this.redis.get(`refreshToken:${user.id}`);
-      const isValid = await this.verifyRefreshToken(refreshToken, storedHashedToken);
+      const isValid = await compareValue(refreshToken, storedHashedToken);
       if (!isValid) {
         throw new UnauthorizedException();
       }
@@ -75,7 +79,8 @@ export class AuthService {
       const newAccessToken = await this.generateAccessToken(payload);
       const newRefreshToken = await this.generateRefreshToken(payload.id);
 
-      const newHashedRefreshToken = await this.encryptRefreshToken(newRefreshToken);
+      const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
+      const newHashedRefreshToken = await encryptValue(refreshToken, saltRounds);
       await this.redis.set(
         `refreshToken:${user.id}`,
         newHashedRefreshToken,
@@ -83,7 +88,7 @@ export class AuthService {
         60 * 60 * 24 * 7
       );
 
-      return { newAccessToken, newRefreshToken };
+      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     } catch {
       throw new UnauthorizedException();
     }
@@ -100,19 +105,5 @@ export class AuthService {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
       expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
     });
-  }
-
-  private async encryptRefreshToken(refreshToken: string): Promise<string> {
-    const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
-    const salt = await bcrypt.genSalt(saltRounds);
-
-    return await bcrypt.hash(refreshToken, salt);
-  }
-
-  private async verifyRefreshToken(
-    refreshToken: string,
-    hasedRefreshToken: string
-  ): Promise<boolean> {
-    return bcrypt.compare(refreshToken, hasedRefreshToken);
   }
 }
