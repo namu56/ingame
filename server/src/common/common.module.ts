@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TransactionMiddleware } from './middleware/transaction.middleware';
 import { TransactionManager } from './utils/transaction-manager.util';
 import { LevelCalculatorService } from './level-calculator/level-calculator.service';
@@ -16,8 +16,8 @@ import { WinstonLoggerMiddleware } from './middleware/winston-logger.middleware'
   ],
   exports: [TransactionManager, LevelCalculatorService, WinstonLoggerService, ...redisProviders],
 })
-export class CommonModule {
+export class CommonModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(TransactionMiddleware, WinstonLoggerMiddleware).forRoutes('*');
+    consumer.apply(WinstonLoggerMiddleware, TransactionMiddleware).forRoutes('*');
   }
 }

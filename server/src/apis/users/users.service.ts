@@ -26,6 +26,7 @@ export class UsersService {
     private readonly transactionManager: TransactionManager,
     private levelCalculatorService: LevelCalculatorService
   ) {}
+
   @Transactional()
   async signUp(createUserDto: CreateUserDto): Promise<void> {
     const { email, password, nickname } = createUserDto;
@@ -43,6 +44,7 @@ export class UsersService {
     }
   }
 
+  @Transactional()
   async socialSignUp(createSnsUserDto: CreateSnsUserDto): Promise<User> {
     const { email, provider, providerId, nickname } = createSnsUserDto;
     const transactionalEntityManager = this.transactionManager.getEntityManager();

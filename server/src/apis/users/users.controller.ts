@@ -52,8 +52,8 @@ export class UsersController {
     return { message: 'success' };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete('me')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '회원탈퇴' })
   @ApiBearerAuth('accessToken')
   @ApiNoContentResponse()
@@ -64,8 +64,8 @@ export class UsersController {
     await this.usersService.deleteCurrentUserById(user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '나의 정보 조회' })
   @ApiBearerAuth('accessToken')
   @ApiOkResponse({ type: UserProfileDto })
