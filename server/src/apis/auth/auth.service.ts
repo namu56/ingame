@@ -8,7 +8,7 @@ import {
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { AccessTokenPayload, RefreshTokenPayload } from './auth.interface';
+import { AccessTokenPayload, AuthTokens, RefreshTokenPayload } from './auth.interface';
 import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
@@ -45,7 +45,7 @@ export class AuthService {
     return user;
   }
 
-  async login(payload: AccessTokenPayload) {
+  async login(payload: AccessTokenPayload): Promise<AuthTokens> {
     const accessToken = await this.generateAccessToken(payload);
     const refreshToken = await this.generateRefreshToken(payload.id);
     const hasedRefreshToken = await this.encryptRefreshToken(refreshToken);

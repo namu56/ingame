@@ -16,7 +16,7 @@ export function Transactional() {
       const entityManager = namespace.get(ENTITY_MANAGER) as EntityManager;
       if (!entityManager) {
         throw new InternalServerErrorException(
-          `Could not find EntityManager in ${TRANSACTION} namsSpace`
+          `Could not find EntityManager in ${TRANSACTION} namespace`
         );
       }
 

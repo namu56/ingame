@@ -1,20 +1,31 @@
-import { Controller, Get, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Res, UseGuards } from '@nestjs/common';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
-import { Request, Response } from 'express';
-import { TransactionInterceptor } from 'src/common/interceptors/transaction.interceptor';
+import { Response } from 'express';
+import { AuthService } from '../auth.service';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { AccessTokenPayload } from '../auth.interface';
 
 @Controller('oauth')
 export class OAuthController {
+  constructor(private readonly authService: AuthService) {}
+
   @Get('google')
-  @UseInterceptors(TransactionInterceptor)
   @UseGuards(GoogleAuthGuard)
   async googleLogin(): Promise<void> {}
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
-  async googleLoginCallBack(@Req() req: Request, @Res() res: Response) {
-    const { user } = req;
-    console.log('user:', user);
-    return res.send(user);
+  @HttpCode(HttpStatus.OK)
+  async googleLoginCallBack(@CurrentUser() user: AccessTokenPayload, @Res() res: Response) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const { accessToken, refreshToken } = await this.authService.login(user);
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+    });
+    res.json({ accessToken });
   }
 }

@@ -29,8 +29,8 @@ import { AccessTokenPayload } from '../auth.interface';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
+  @UseGuards(LocalAuthGuard)
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ description: '로그인 성공 시 토큰 반환' })
   @ApiNotFoundResponse({ description: 'fail- User not found' })
@@ -77,6 +77,6 @@ export class AuthController {
       sameSite: isProduction ? 'none' : 'lax',
       secure: isProduction,
     });
-    res.json(newAccessToken);
+    res.json({ newAccessToken });
   }
 }
