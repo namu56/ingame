@@ -5,6 +5,8 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 export const typeORMConfig = async (
   configService: ConfigService
 ): Promise<TypeOrmModuleOptions> => {
+  const isProduction = process.env.NODE_ENV === 'production';
+
   return {
     type: 'mysql',
     host: configService.get<string>('DB_HOST'),
@@ -15,6 +17,6 @@ export const typeORMConfig = async (
     entities: [__dirname + '/../../**/*.entity.{js,ts}'],
     synchronize: true,
     namingStrategy: new SnakeNamingStrategy(),
-    logging: true,
+    logging: isProduction ? false : true,
   };
 };
