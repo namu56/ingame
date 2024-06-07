@@ -65,10 +65,6 @@ export const useMainQuest = () => {
     },
   });
 
-  const modifyMainQuestStatus = (data: ModifyQuestStatusProps) => {
-    modifyQuestStatusMutation.mutate(data);
-  };
-
   const modifyQuestStatusMutation = useMutation({
     mutationFn: modiQuestStatus,
     onSuccess() {
@@ -78,6 +74,10 @@ export const useMainQuest = () => {
     },
     onError(err) {},
   });
+
+  const modifyMainQuestStatus = (data: ModifyQuestStatusProps) => {
+    return modifyQuestStatusMutation.mutateAsync(data);
+  };
 
   const patchSideMutation = useMutation({
     mutationFn: ({ param, status }: { param: number; status: QuestStatus }) => modiSideQuest(param, status),
