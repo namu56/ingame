@@ -9,16 +9,33 @@ import MainBox from '@/components/quests/MainBox';
 import { BiNotepad } from 'react-icons/bi';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import CreateQuestButton from '@/components/CreateQuestButton';
+import { useEffect, useState } from 'react';
+import { UserInfo } from '@/models/userInfo.model';
+import { useQuery } from '@tanstack/react-query';
+import { USER } from '@/constant/queryKey';
+import { getUserInfo } from '@/api/users.api';
 
 const Main = () => {
   const { quest, isSubLoading } = useSubQuest();
   const { mainQuest, isMainLoading, date } = useMainQuest();
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+
+  const { data: userInfoData, refetch } = useQuery<UserInfo>({
+    queryKey: [...USER.GET_USERINFO],
+    queryFn: () => getUserInfo(),
+  });
+
+  useEffect(() => {
+    if (userInfoData) {
+      setUserInfo(userInfoData);
+    }
+  }, [userInfoData]);
 
   return (
     <MainStyle>
       <Dropdown />
       <WeekCalendar />
-      <UserProfile />
+      <UserProfile userInfo={userInfo} />
       <section className="questSection">
         <div className="questTitle">
           <BiNotepad />
@@ -27,7 +44,7 @@ const Main = () => {
         </div>
         <div>
           {mainQuest?.length ? (
-            mainQuest?.map((content) => <MainBox key={content.id} content={content} date={date} />)
+            mainQuest?.map((content) => <MainBox key={content.id} content={content} date={date} refetchMainBoxData={refetch} />)
           ) : isMainLoading ? (
             <Loading />
           ) : (

@@ -21,9 +21,10 @@ interface MainQuest extends Quest {
 export interface MainBoxProps {
   content: MainQuest;
   date: string;
+  refetchMainBoxData: () => void;
 }
 
-const MainBox = ({ content, date }: MainBoxProps) => {
+const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
   const location = useLocation();
   const updatedData = location.state?.updatedData;
   const mainContent = updatedData || content;
@@ -45,7 +46,7 @@ const MainBox = ({ content, date }: MainBoxProps) => {
     return null; // mainContent가 없으면 렌더링하지 않음
   }
 
-  const handleChangeStatue = () => {
+  const handleChangeStatus = () => {
     if (date === formattedDate(new Date())) {
       let message = '';
       let newStatus = '';
@@ -59,12 +60,13 @@ const MainBox = ({ content, date }: MainBoxProps) => {
         return;
       }
 
-      showConfirm(message, 
-        () => {
-          mainContent.status = newStatus;
-          modifyMainQuestStatus({ id: mainContent.id, status: mainContent.status });
-        }
-      );
+      showConfirm(message, () => {
+        mainContent.status = newStatus;
+        modifyMainQuestStatus({ id: mainContent.id, status: mainContent.status })
+        .then(() => {
+          refetchMainBoxData();
+        });
+      });
     } else {
       showAlert('당일 퀘스트만 변경 가능합니다');
     }
@@ -94,7 +96,7 @@ const MainBox = ({ content, date }: MainBoxProps) => {
     <>
       {mainContent ? (
         <MainBoxContainer>
-          <MainBoxStyle status={mainContent.status} onClick={handleChangeStatue}>
+          <MainBoxStyle status={mainContent.status} onClick={handleChangeStatus}>
             <header className="aFContainer">
               <button className="aButton" onClick={handleToggleAccordion}>
                 {isAccordion ? <MdArrowDropUp size={30} /> : <MdArrowDropDown size={30} />}
