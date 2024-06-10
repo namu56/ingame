@@ -6,3 +6,8 @@ export interface AccessTokenPayload {
 export interface RefreshTokenPayload {
   id: number;
 }
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}

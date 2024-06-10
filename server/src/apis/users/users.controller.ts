@@ -16,8 +16,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '../auth/auth.guard';
-import { CurrentUser } from 'src/common/decorators/auth.decorator';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { AccessTokenPayload } from '../auth/auth.interface';
 import { ProfilePhotoDto } from './dto/profile-photo.dto';
 import {
@@ -34,6 +33,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserProfileDto } from './dto/user-profile.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 @ApiTags('Users API')
@@ -47,13 +47,13 @@ export class UsersController {
   @ApiBody({ type: CreateUserDto })
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.CREATED)
-  async signup(@Body() createUserDto: CreateUserDto) {
-    await this.usersService.createUser(createUserDto);
+  async signUp(@Body() createUserDto: CreateUserDto) {
+    await this.usersService.signUp(createUserDto);
     return { message: 'success' };
   }
 
-  @UseGuards(AuthGuard)
   @Delete('me')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '회원탈퇴' })
   @ApiBearerAuth('accessToken')
   @ApiNoContentResponse()
@@ -64,8 +64,8 @@ export class UsersController {
     await this.usersService.deleteCurrentUserById(user.id);
   }
 
-  @UseGuards(AuthGuard)
   @Get('me')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '나의 정보 조회' })
   @ApiBearerAuth('accessToken')
   @ApiOkResponse({ type: UserProfileDto })
@@ -76,8 +76,8 @@ export class UsersController {
     return await this.usersService.getUserById(user.id);
   }
 
-  @UseGuards(AuthGuard)
   @Patch('me')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '사용자 정보 수정' })
   @ApiBearerAuth('accessToken')
   @ApiNoContentResponse({ description: '사용자 정보 수정 성공' })
@@ -93,8 +93,8 @@ export class UsersController {
     await this.usersService.updateCurrenUserInfoById(user.id, updateUserDto);
   }
 
-  @UseGuards(AuthGuard)
   @Patch('me/profile-photo')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '프로필 사진 수정' })
   @ApiBearerAuth('accessToken')
   @ApiNoContentResponse({ description: '프로필 사진 수정 성공' })

@@ -1,20 +1,16 @@
 import {
   Controller,
   Post,
-  Body,
   HttpStatus,
   HttpCode,
   Res,
   Req,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
   HttpException,
+  UseInterceptors,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginUserDto } from './dto/login-user.dto';
+import { AuthService } from '../auth.service';
 import { Request, Response } from 'express';
-import { AuthGuard } from './auth.guard';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -24,8 +20,11 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AccessTokenPayload } from './auth.interface';
-import { CurrentUser } from 'src/common/decorators/auth.decorator';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { AccessTokenPayload, AuthTokens } from '../auth.interface';
+import { AuthTokenInterceptor } from 'src/common/interceptors/auth-token.interceptor';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -33,26 +32,18 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @UseGuards(LocalAuthGuard)
+  @UseInterceptors(AuthTokenInterceptor)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '로그인' })
   @ApiOkResponse({ description: '로그인 성공 시 토큰 반환' })
   @ApiNotFoundResponse({ description: 'fail- User not found' })
-  @UsePipes(ValidationPipe)
-  @HttpCode(HttpStatus.OK)
-  async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response) {
-    const isProduction = process.env.NODE_ENV === 'production';
-    const { accessToken, refreshToken } = await this.authService.login(loginUserDto);
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: isProduction ? 'none' : 'lax',
-      secure: isProduction,
-    });
-    res.json(accessToken);
+  async login(@CurrentUser() user: AccessTokenPayload): Promise<AuthTokens> {
+    return await this.authService.login(user);
   }
 
-  @UseGuards(AuthGuard)
   @Post('logout')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '로그아웃' })
   @ApiBearerAuth('accessToken')
   @ApiOkResponse({ description: '로그아웃 성공 시 쿠키의 토큰 삭제' })
@@ -65,21 +56,13 @@ export class AuthController {
   }
 
   @Post('token')
+  @UseInterceptors(AuthTokenInterceptor)
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Req() req: Request, @Res() res: Response) {
-    const isProduction = process.env.NODE_ENV === 'production';
+  async refreshToken(@Req() req: Request): Promise<AuthTokens> {
     const refreshToken: string = req.cookies.refreshToken;
     if (!refreshToken) {
       throw new HttpException('Refresh token not found', HttpStatus.UNAUTHORIZED);
     }
-    const { newAccessToken, newRefreshToken } = await this.authService.refresh(refreshToken);
-
-    res.cookie('refreshToken', newRefreshToken, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      sameSite: isProduction ? 'none' : 'lax',
-      secure: isProduction,
-    });
-    res.json(newAccessToken);
+    return await this.authService.refresh(refreshToken);
   }
 }
