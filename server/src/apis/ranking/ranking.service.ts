@@ -18,7 +18,6 @@ export class RankingService {
   ): Promise<UserRankingByPageDto> {
     const { page, limit } = paginationRequestDto;
     const [usersInfo, total] = await this.usersService.getUsersWithRankByPage(page, limit);
-    console.log(usersInfo);
 
     const ranking: UserRankingDto[] = usersInfo.map((userInfo) => {
       return this.toRankingResponse(userInfo);
