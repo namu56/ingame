@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Transactional } from 'src/common/decorators/transactional.decorator';
 import { TransactionManager } from 'src/common/utils/transaction-manager.util';
 import { encryptValue } from 'src/common/utils/encrypt-value.util';
+import { UserInfoWithRankDto } from '../ranking/dto/user-info-with-rank.dto';
 
 @Injectable()
 export class UsersService {
@@ -207,5 +208,27 @@ export class UsersService {
   ): Promise<void> {
     const profilePhoto = this.profilePhotoRepository.create({ userId });
     await transactionalEntityManager.save(profilePhoto);
+  }
+
+  async getUsersWithRankByPage(
+    page: number,
+    limit: number
+  ): Promise<[UserInfoWithRankDto[], number]> {
+    const offset = (page - 1) * limit;
+
+    const usersInfo: UserInfoWithRankDto[] = await this.userInfoRepository
+      .createQueryBuilder('userInfo')
+      .select('userInfo.id', 'id')
+      .addSelect('userInfo.nickname', 'nickname')
+      .addSelect('userInfo.point', 'point')
+      .addSelect('RANK() OVER (ORDER BY userInfo.point DESC)', 'rank')
+      .orderBy('userInfo.point', 'DESC')
+      .limit(limit)
+      .offset(offset)
+      .getRawMany();
+
+    const total = await this.userInfoRepository.createQueryBuilder('userInfo').getCount();
+
+    return [usersInfo, total];
   }
 }
