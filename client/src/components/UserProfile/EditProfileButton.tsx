@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import edit from '../assets/images/edit.png';
+import edit from '@/assets/images/edit.png';
 import useOutsideClick from '@/hooks/useOutsideClick';
 import { useState } from 'react';
-import ProfileModal from './modals/ProfileModal';
+import ProfileModal from '../modals/ProfileModal';
 
 interface EditProfileButtonProps {
   isOpen?: boolean;

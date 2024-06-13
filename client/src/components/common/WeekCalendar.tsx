@@ -1,4 +1,3 @@
-import { useWeek } from '@/hooks/useWeek';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { GrFormPrevious, GrFormNext } from 'react-icons/gr';
@@ -6,14 +5,13 @@ import { media } from '@/styles/theme';
 import { QUERYSTRING } from '@/constant/queryString';
 import { useSearchParams } from 'react-router-dom';
 import { formattedDate } from '@/utils/formatter';
-import { useMainQuest } from '@/hooks/useMainQuest';
+import { getWeekDates } from '@/utils/weekUtils';
 
 const Week = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const newSearchParams = new URLSearchParams(searchParams);
 
-  const { today, getWeekDates } = useWeek();
-  const { mainQuest, date } = useMainQuest();
+  const today = new Date();
 
   const [calendarDay, setCalendarDay] = useState<Date[]>(getWeekDates(today));
   const [now, setNow] = useState<Date>(today);

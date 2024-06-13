@@ -3,37 +3,32 @@ import { CiLock } from 'react-icons/ci';
 import { CiUnlock } from 'react-icons/ci';
 import { FiPlusCircle } from 'react-icons/fi';
 import { FiMinusCircle } from 'react-icons/fi';
-import Button from '@/components/Button';
-import QuestInputBox from '@/components/QuestInputBox';
+import Button from '@/components/common/Button';
+import QuestInputBox from '@/components/quests/QuestInputBox';
 import { media } from '@/styles/theme';
-import { useState } from 'react';
-import CloseButton from '@/components/CloseButton';
-import { CreateMainQuestProps, useMainQuest } from '@/hooks/useMainQuest';
-import { QuestDifficulty, QuestHiddenType, QuestMode } from '@/models/quest.model';
-import { useForm } from 'react-hook-form';
+import CloseButton from '@/components/common/CloseButton';
 import { useNavigate } from 'react-router-dom';
+import { useCreateMainQuestForm } from '@/hooks/useMainQuest';
 
 const CreateMainQuest = () => {
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [isDifficulty, setIsDifficulty] = useState(0);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [plusQuest, setPlusQuest] = useState(1);
-  const [minusQuest, setMinusQuest] = useState(0);
-  const today = new Date().toISOString().substring(0, 10);
+  const {
+    register,
+    isPrivate,
+    setIsPrivate,
+    isDifficulty,
+    setIsDifficulty,
+    plusQuest,
+    setPlusQuest,
+    minusQuest,
+    setMinusQuest,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    today,
+    handleSubmit,
+  } = useCreateMainQuestForm();
   const navigate = useNavigate();
-  const { CreateQuestMutation } = useMainQuest();
-
-  const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
-
-  const onSubmit = handleSubmit((data) => {
-    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const difficulty =
-      isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : ('HARD' as QuestDifficulty);
-    const mode = 'MAIN' as QuestMode;
-    const newData = { ...data, hidden, difficulty: difficulty, mode: mode };
-    CreateQuestMutation.mutate(newData);
-  });
 
   return (
     <>
@@ -49,7 +44,7 @@ const CreateMainQuest = () => {
             )}
           </div>
         </header>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
           <QuestInputBox placeholder="퀘스트 제목" {...register('title')} />
           <QuestButtonContainer>
             <Button
@@ -101,7 +96,7 @@ const CreateMainQuest = () => {
                 <QuestInputBox
                   key={index}
                   placeholder="퀘스트 제목"
-                  {...register(`sideQuests.${index}.content` as const)}
+                  {...register(`sideQuests.${index}.content` as const, { required: true })}
                 />
               ))}
           </InnerQuests>

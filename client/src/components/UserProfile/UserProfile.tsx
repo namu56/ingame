@@ -1,17 +1,15 @@
 import styled from 'styled-components';
-import { useQuery } from '@tanstack/react-query';
-import { USER } from '@/constant/queryKey';
-import { getUserInfo } from '@/api/users.api';
-import EditProfileButton from '../EditProfileButton';
-import ProgressBar from '../ProgressBar';
+import EditProfileButton from './EditProfileButton';
+import ProgressBar from './ProgressBar';
 import { media } from '@/styles/theme';
 import ProfileImageSection from './ProfileImageSection/ProfileImageSection';
+import { UserInfo } from '@/models/userInfo.model';
 
-const UserProfile = () => {
-  const { data: userInfo } = useQuery({
-    queryKey: [...USER.GET_USERINFO],
-    queryFn: () => getUserInfo(),
-  });
+interface UserProfileProps {
+  userInfo: UserInfo | null;
+}
+
+const UserProfile = ({ userInfo }: UserProfileProps) => {
 
   return (
     <UserProfileStyle>

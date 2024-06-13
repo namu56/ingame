@@ -1,24 +1,29 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { AuthController } from './controllers/auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from 'src/common/config/jwt.config';
-import { AuthGuard } from './auth.guard';
-import { RedisModule } from 'src/common/redis/redis.module';
+import { LocalStrategy } from './strategies/local.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { OAuthController } from './controllers/oauth.controller';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
+    PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => await JwtConfig(configService),
     }),
-    RedisModule,
+    CommonModule,
   ],
-  controllers: [AuthController],
-  providers: [AuthService, AuthGuard],
-  exports: [AuthService, AuthGuard, JwtModule],
+  controllers: [AuthController, OAuthController],
+  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

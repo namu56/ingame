@@ -22,8 +22,7 @@ import {
 import { UpdateQuestDto } from './dto/update-quest.dto';
 import { UpdateSideQuestRequestDto } from './dto/create-side-quest.dto';
 import { UpdateSideQuestDto } from './dto/update-side-quest.dto';
-import { AuthGuard } from '../auth/auth.guard';
-import { CurrentUser } from '../../common/decorators/auth.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AccessTokenPayload } from '../auth/auth.interface';
 import { Mode } from './enums/quest.enum';
 import {
@@ -40,13 +39,14 @@ import {
   ApiUnauthorizedResponse,
   PickType,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('quests')
 @ApiTags('Quests API')
 export class QuestsController {
   constructor(private readonly questsService: QuestsService) {}
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('')
   @ApiOperation({ summary: '메인 / 서브 퀘스트 생성' })
   @ApiBearerAuth('accessToken')
@@ -59,7 +59,7 @@ export class QuestsController {
     return await this.questsService.create(user.id, createQuestDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: '메인 / 서브 퀘스트 완료 상태로 변경' })
   @ApiBearerAuth('accessToken')
@@ -78,7 +78,7 @@ export class QuestsController {
     await this.questsService.update(user.id, +id, updateQuestDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('main')
   @ApiOperation({ summary: '메인 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
@@ -101,7 +101,7 @@ export class QuestsController {
     return await this.questsService.findAll(user.id, Mode.Main, queryDate);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('main/:id')
   @ApiOperation({ summary: '메인 퀘스트 개별 조회' })
   @ApiBearerAuth('accessToken')
@@ -115,7 +115,7 @@ export class QuestsController {
     return await this.questsService.findOne(user.id, +id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('main/:id')
   @ApiOperation({ summary: '메인 퀘스트 개별 수정' })
   @ApiBearerAuth('accessToken')
@@ -134,7 +134,7 @@ export class QuestsController {
     await this.questsService.update(user.id, +id, updateQuestDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete('main/:id')
   @ApiOperation({ summary: '메인 퀘스트 개별 삭제' })
   @ApiBearerAuth('accessToken')
@@ -148,7 +148,7 @@ export class QuestsController {
     await this.questsService.remove(user.id, +id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('side/:id')
   @ApiOperation({ summary: '사이드 퀘스트 상태 수정' })
   @ApiBearerAuth('accessToken')
@@ -167,7 +167,7 @@ export class QuestsController {
     await this.questsService.updateSideStatus(user.id, +id, updateQuestDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('sub')
   @ApiOperation({ summary: '서브(일일) 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
@@ -190,7 +190,7 @@ export class QuestsController {
     return await this.questsService.findAll(user.id, Mode.Sub, queryDate);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('sub/:id')
   @ApiOperation({ summary: '서브 퀘스트 개별 수정' })
   @ApiBearerAuth('accessToken')
@@ -209,7 +209,7 @@ export class QuestsController {
     await this.questsService.update(user.id, +id, updateQuestDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete('sub/:id')
   @ApiOperation({ summary: '서브 퀘스트 개별 삭제' })
   @ApiBearerAuth('accessToken')
