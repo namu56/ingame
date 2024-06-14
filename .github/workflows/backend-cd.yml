@@ -1,10 +1,10 @@
 name: Backend CD
 
 on:
-  workflow_run:
-    workflows: ['Backend CI']
-    types:
-      - completed
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
 
 env:
   IMAGE: ingame-be
@@ -158,9 +158,10 @@ jobs:
           REDIS_HOST: ${{ secrets.REDIS_HOST }}
           REDIS_PORT: ${{ secrets.REDIS_PORT }}
           CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ env.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
           TAG: ${{ github.sha }}
 
       - name: Print rendered YAML
