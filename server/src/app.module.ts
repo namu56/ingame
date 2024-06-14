@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeORMConfig } from './common/config/typeorm.config';
-import { UsersModule } from './apis/users/users.module';
-import { RankingModule } from './apis/ranking/ranking.module';
-import { QuestsModule } from './apis/quests/quests.module';
-import { AuthModule } from './apis/auth/auth.module';
+import { typeORMConfig } from './configs/typeorm.config';
+import { UsersModule } from './modules/user/user.module';
+import { RankingModule } from './modules/ranking/ranking.module';
+import { QuestsModule } from './modules/quest/quests.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
-import { AllExceptionFilter } from './common/filters/all-exception.filter';
-import { SchedulerModule } from './common/scheduler/scheduler.module';
-import { PointModule } from './apis/point/point.module';
-import { CommonModule } from './common/common.module';
+import { AllExceptionFilter } from './core/filters/all-exception.filter';
+import { SchedulerModule } from './core/scheduler/scheduler.module';
+import { PointModule } from './modules/point/point.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ import { CommonModule } from './common/common.module';
     QuestsModule,
     RankingModule,
     PointModule,
-    CommonModule,
+    CoreModule,
   ],
   providers: [
     {
