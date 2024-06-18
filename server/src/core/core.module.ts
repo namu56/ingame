@@ -5,8 +5,11 @@ import { LevelCalculatorService } from './level-calculator/level-calculator.serv
 import { WinstonLoggerService } from './logger/winston-logger.service';
 import { redisProviders } from './database/redis/redis.provider';
 import { WinstonLoggerMiddleware } from './middlewares/winston-logger.middleware';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from 'src/configs/datasource.config';
 
 @Module({
+  imports: [TypeOrmModule.forRoot(dataSourceOptions)],
   providers: [
     TransactionMiddleware,
     TransactionManager,
