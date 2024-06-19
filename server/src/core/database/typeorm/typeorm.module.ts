@@ -4,10 +4,11 @@ import { dataSourceOptions } from 'src/configs/datasource.config';
 import { TransactionManager } from './transaction-manager';
 import { TransactionMiddleware } from 'src/core/middlewares/transaction.middleware';
 
+const modules = [TypeOrmModule.forRoot(dataSourceOptions)];
 const providers: Provider[] = [TransactionManager];
 
 @Module({
-  imports: [TypeOrmModule.forRoot(dataSourceOptions)],
+  imports: [...modules],
   providers: [...providers],
   exports: [...providers],
 })
