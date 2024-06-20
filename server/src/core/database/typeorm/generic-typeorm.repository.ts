@@ -11,7 +11,7 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity>
     @Inject(TransactionManager) private readonly transactionManager: TransactionManager
   ) {}
 
-  abstract getTarget(): EntityTarget<T>;
+  abstract getName(): EntityTarget<T>;
 
   async save(entity: T | T[]): Promise<T[]> {
     return this.getRepository().save(Array.isArray(entity) ? entity : [entity]);
