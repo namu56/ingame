@@ -1,21 +1,12 @@
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  Unique,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { UserInfo } from '../user-info/user-info.entity';
 import { Quest } from '../quest/quest.entity';
 import { ProfilePhoto } from '../profile-photo/profile-photo.entity';
+import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 
 @Entity('user')
 @Unique(['email'])
-export class User extends BaseEntity {
+export class User extends BaseTimeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,19 +14,13 @@ export class User extends BaseEntity {
   email: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  password?: string;
+  password: string | null;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
-  provider?: string;
+  provider: string | null;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  providerId?: string;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updatedAt: Date;
+  providerId: string | null;
 
   @OneToOne(() => UserInfo, (userInfo) => userInfo.user, {
     onDelete: 'CASCADE',
