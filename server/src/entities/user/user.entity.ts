@@ -36,4 +36,19 @@ export class User extends BaseTimeEntity {
 
   @OneToMany(() => Quest, (quest) => quest.user, { onDelete: 'CASCADE' })
   quests: Quest[];
+
+  static createLocal(email: string, password: string): User {
+    const user = new User();
+    user.email = email;
+    user.password = password;
+    return user;
+  }
+
+  static createSocial(email: string, provider: string, providerId: string): User {
+    const user = new User();
+    user.email = email;
+    user.provider = provider;
+    user.providerId = providerId;
+    return user;
+  }
 }
