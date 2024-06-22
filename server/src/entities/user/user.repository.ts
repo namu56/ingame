@@ -8,7 +8,7 @@ export class UserRepository extends GenericTypeOrmRepository<User> implements IU
     return User.name;
   }
 
-  findOneByEmail(email: string): Promise<User> {
+  async findOneByEmail(email: string): Promise<User> {
     return this.getRepository().findOneBy({ email });
   }
 }

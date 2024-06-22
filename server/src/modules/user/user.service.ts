@@ -140,7 +140,7 @@ export class UserService {
       email: user.email,
       nickname: user.userInfo.nickname,
       intro: user.userInfo.intro ?? null,
-      profilePhoto: user.profilePhoto.profilePhoto ?? null,
+      profilePhotoUrl: user.profilePhoto.profilePhotoUrl ?? null,
       point: user.userInfo.point,
       level,
     };

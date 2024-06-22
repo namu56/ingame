@@ -34,7 +34,7 @@ export class UserProfileDto {
     description: '프로필 사진',
     required: false,
   })
-  profilePhoto: string | null;
+  profilePhotoUrl: string | null;
 
   @ApiProperty({
     example: 0,
