@@ -27,6 +27,6 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity>
   }
 
   protected getRepository(): Repository<T> {
-    return this.transactionManager.getEntityManager().getRepository(this.getTarget());
+    return this.transactionManager.getEntityManager().getRepository(this.getName());
   }
 }

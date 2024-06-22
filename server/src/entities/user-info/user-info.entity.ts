@@ -1,5 +1,4 @@
 import {
-  BaseEntity,
   Column,
   Entity,
   JoinColumn,
@@ -9,10 +8,11 @@ import {
   Unique,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 
 @Entity('user_info')
 @Unique(['nickname'])
-export class UserInfo extends BaseEntity {
+export class UserInfo extends BaseTimeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -31,4 +31,11 @@ export class UserInfo extends BaseEntity {
   @OneToOne(() => User, (user) => user.userInfo, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  static create(userId: number, nickname: string): UserInfo {
+    const userInfo = new UserInfo();
+    userInfo.userId = userId;
+    userInfo.nickname = nickname;
+    return userInfo;
+  }
 }
