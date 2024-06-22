@@ -18,9 +18,15 @@ export class ProfilePhoto extends BaseEntity {
   userId: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  profilePhoto: string;
+  profilePhotoUrl: string;
 
   @OneToOne(() => User, (user) => user.profilePhoto, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  create(profilePhotoUrl: string): ProfilePhoto {
+    const profilePhoto = new ProfilePhoto();
+    profilePhoto.profilePhotoUrl = profilePhotoUrl;
+    return profilePhoto;
+  }
 }

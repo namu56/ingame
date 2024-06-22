@@ -9,5 +9,5 @@ export class ProfilePhotoDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  profilePhoto: string;
+  profilePhotoUrl: string;
 }
