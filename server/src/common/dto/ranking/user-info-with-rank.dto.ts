@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { UserProfileDto } from 'src/common/dto/user/user-profile.dto';
+import { UserProfileDto } from '../user/user-profile.dto';
 
 export class UserInfoWithRankDto extends PickType(UserProfileDto, [
   'id',

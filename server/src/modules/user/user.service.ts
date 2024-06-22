@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Transactional } from 'src/core/decorators/transactional.decorator';
 import { TransactionManager } from 'src/core/database/typeorm/transaction-manager';
 import { encryptValue } from 'src/common/utils/encrypt-value.util';
-import { UserInfoWithRankDto } from '../../common/dto/ranking/user-info-with-rank.dto';
+import { UserInfoWithRankDto } from 'src/common/dto/ranking/user-info-with-rank.dto';
 
 @Injectable()
 export class UserService {
