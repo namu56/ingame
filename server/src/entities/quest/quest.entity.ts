@@ -6,6 +6,11 @@ import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 
 @Entity('quest')
 export class Quest extends BaseTimeEntity {
+  constructor(questData: Partial<Quest>) {
+    super();
+    Object.assign(this, questData);
+  }
+
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -40,25 +45,4 @@ export class Quest extends BaseTimeEntity {
 
   @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest)
   sideQuests: SideQuest[];
-
-  static create(
-    userId: number,
-    title: string,
-    difficulty: Difficulty,
-    mode: Mode,
-    hidden: isHidden,
-    startDate: string,
-    endDate: string | null
-  ): Quest {
-    const quest = new Quest();
-    quest.userId = userId;
-    quest.title = title;
-    quest.difficulty = difficulty;
-    quest.mode = mode;
-    quest.hidden = hidden;
-    quest.startDate = startDate;
-    quest.endDate = endDate;
-
-    return quest;
-  }
 }
