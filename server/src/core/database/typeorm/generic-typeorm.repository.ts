@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 import { IGenericRepository } from '../generic/generic.repository';
 import { RootEntity } from '../generic/root.entity';
 import { TransactionManager } from 'src/core/database/typeorm/transaction-manager';
-import { EntityTarget, FindOneOptions, Repository } from 'typeorm';
+import { EntityTarget, Repository } from 'typeorm';
 
 export abstract class GenericTypeOrmRepository<T extends RootEntity>
   implements IGenericRepository<T>
@@ -15,11 +15,6 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity>
 
   async save(entity: T | T[]): Promise<T[]> {
     return this.getRepository().save(Array.isArray(entity) ? entity : [entity]);
-  }
-
-  async findById(id: number): Promise<T | null> {
-    const findOption: FindOneOptions = { where: { id } };
-    return this.getRepository().findOne(findOption);
   }
 
   async remove(entity: T | T[]): Promise<void> {
