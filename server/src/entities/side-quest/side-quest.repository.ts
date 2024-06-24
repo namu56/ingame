@@ -3,7 +3,7 @@ import { ISideQuestRepository } from './side-quest-repository.interface';
 import { EntityTarget } from 'typeorm';
 import { SideQuest } from './side-quest.entity';
 
-export class sideQuestRepository
+export class SideQuestRepository
   extends GenericTypeOrmRepository<SideQuest>
   implements ISideQuestRepository
 {
