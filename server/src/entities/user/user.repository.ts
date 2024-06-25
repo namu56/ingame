@@ -8,7 +8,25 @@ export class UserRepository extends GenericTypeOrmRepository<User> implements IU
     return User.name;
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     return this.getRepository().findOneBy({ email });
+  }
+
+  async findById(id: number): Promise<User | null> {
+    const selectFields = [
+      'user.id',
+      'user.email',
+      'userInfo.nickname',
+      'userInfo.intro',
+      'userInfo.point',
+      'profilePhoto.profilePhotoUrl',
+    ];
+    return this.getRepository()
+      .createQueryBuilder('user')
+      .select(selectFields)
+      .leftJoin('user.userInfo', 'userInfo')
+      .leftJoin('user.profilePhoto', 'profilePhoto')
+      .where('user.id="id', { id })
+      .getOne();
   }
 }
