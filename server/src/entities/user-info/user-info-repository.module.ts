@@ -11,4 +11,4 @@ export const userInfoRepository: ClassProvider = {
   providers: [userInfoRepository],
   exports: [userInfoRepository],
 })
-export class UserRepositoryModule {}
+export class UserInfoRepositoryModule {}
