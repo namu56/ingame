@@ -11,6 +11,14 @@ export class UserInfoRepository
   getName(): EntityTarget<UserInfo> {
     return UserInfo.name;
   }
+
+  async findByUserId(userId: number): Promise<UserInfo | null> {
+    return this.getRepository().findOne({ where: { userId } });
+  }
+  async findByNickname(nickname: string): Promise<UserInfo | null> {
+    return this.getRepository().findOneBy({ nickname });
+  }
+
   async getRankings(offset: number, limit: number): Promise<UserInfoWithRankDto[]> {
     return this.getRepository()
       .createQueryBuilder('userInfo')

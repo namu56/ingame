@@ -1,5 +1,4 @@
 import {
-  BaseEntity,
   Column,
   Entity,
   JoinColumn,
@@ -8,9 +7,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 
 @Entity('profile_photo')
-export class ProfilePhoto extends BaseEntity {
+export class ProfilePhoto extends BaseTimeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,9 +24,13 @@ export class ProfilePhoto extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  create(profilePhotoUrl: string): ProfilePhoto {
+  static create(userId: number): ProfilePhoto {
     const profilePhoto = new ProfilePhoto();
-    profilePhoto.profilePhotoUrl = profilePhotoUrl;
+    profilePhoto.userId = userId;
     return profilePhoto;
+  }
+
+  update(profilePhotoUrl: string): void {
+    this.profilePhotoUrl = profilePhotoUrl;
   }
 }

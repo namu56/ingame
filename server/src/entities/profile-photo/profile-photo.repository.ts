@@ -14,11 +14,4 @@ export class ProfilePhotoRepository
   async findOneByUserId(userId: number): Promise<ProfilePhoto> {
     return this.getRepository().findOneBy({ userId });
   }
-
-  async updateByUserId(
-    profilePhoto: ProfilePhoto,
-    updateData: Partial<ProfilePhoto>
-  ): Promise<ProfilePhoto> {
-    return this.getRepository().merge(profilePhoto, updateData);
-  }
 }

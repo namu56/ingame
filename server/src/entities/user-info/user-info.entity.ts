@@ -23,7 +23,7 @@ export class UserInfo extends BaseTimeEntity {
   nickname: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
-  intro: string;
+  intro: string | null;
 
   @Column({ type: 'int', default: 0 })
   point: number;
@@ -37,5 +37,10 @@ export class UserInfo extends BaseTimeEntity {
     userInfo.userId = userId;
     userInfo.nickname = nickname;
     return userInfo;
+  }
+
+  update(nickname: string, intro: string | null): void {
+    this.nickname = nickname;
+    this.intro = intro;
   }
 }

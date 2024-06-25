@@ -13,12 +13,12 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity>
 
   abstract getName(): EntityTarget<T>;
 
-  async save(entity: T | T[]): Promise<T[]> {
-    return this.getRepository().save(Array.isArray(entity) ? entity : [entity]);
+  async save(entity: T): Promise<T> {
+    return this.getRepository().save(entity);
   }
 
-  async remove(entity: T | T[]): Promise<void> {
-    await this.getRepository().remove(Array.isArray(entity) ? entity : [entity]);
+  async delete(id: number): Promise<void> {
+    await this.getRepository().delete(id);
   }
 
   protected getRepository(): Repository<T> {
