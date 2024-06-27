@@ -13,6 +13,7 @@ export interface IUserService {
   localSignUp(createLocalUserRequest: CreateLocalUserRequest): Promise<void>;
   socialSignUp(createSocialUserRequest: CreateSocialUserRequest): Promise<User>;
   findUserById(id: number): Promise<UserResponse>;
+  findUserByEmail(email: string): Promise<User | null>;
   deleteUserById(id: number): Promise<void>;
   updateUserInfoById(userId: number, updateUserRequest: UpdateUserRequest): Promise<void>;
   updateProfilePhotoById(

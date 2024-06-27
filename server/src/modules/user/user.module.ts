@@ -19,7 +19,7 @@ const userService: ClassProvider = {
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, UserInfo, ProfilePhoto]),
-    forwardRef(() => AuthModule),
+    AuthModule,
     UserRepositoryModule,
     UserInfoRepositoryModule,
     ProfilePhotoRepositoryModule,

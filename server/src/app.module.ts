@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './modules/user/user.module';
+import { UserModule } from './modules/user/user.module';
 import { RankingModule } from './modules/ranking/ranking.module';
 import { QuestsModule } from './modules/quest/quests.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -18,7 +18,7 @@ import { CoreModule } from './core/core.module';
       envFilePath: process.env.NODE_ENV === 'production' ? '.production.env' : '.development.env',
     }),
     SchedulerModule,
-    UsersModule,
+    UserModule,
     AuthModule,
     QuestsModule,
     RankingModule,
