@@ -12,6 +12,7 @@ import {
   ValidationPipe,
   Param,
   ParseIntPipe,
+  Inject,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from '../../common/dto/user/create-user.dto';
@@ -34,11 +35,12 @@ import {
 } from '@nestjs/swagger';
 import { UserProfileDto } from '../../common/dto/user/user-profile.dto';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
+import { IUserService, USER_SERVICE_KEY } from './interfaces/user-service.interface';
 
 @Controller('users')
 @ApiTags('Users API')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(@Inject(USER_SERVICE_KEY) private readonly userService: IUserService) {}
 
   @Post('signup')
   @ApiOperation({ summary: '회원가입' })
@@ -48,7 +50,7 @@ export class UserController {
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.CREATED)
   async signUp(@Body() createUserDto: CreateUserDto) {
-    await this.userService.signUp(createUserDto);
+    await this.userService.localSignUp(createUserDto);
     return { message: 'success' };
   }
 
@@ -61,7 +63,7 @@ export class UserController {
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@CurrentUser() user: AccessTokenPayload) {
-    await this.userService.deleteCurrentUserById(user.id);
+    await this.userService.deleteUserById(user.id);
   }
 
   @Get('me')
@@ -73,7 +75,7 @@ export class UserController {
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
   @HttpCode(HttpStatus.OK)
   async getCurrentUser(@CurrentUser() user: AccessTokenPayload): Promise<UserProfileDto> {
-    return await this.userService.getUserById(user.id);
+    return await this.userService.findUserById(user.id);
   }
 
   @Patch('me')
@@ -90,7 +92,7 @@ export class UserController {
     @CurrentUser() user: AccessTokenPayload,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    await this.userService.updateCurrenUserInfoById(user.id, updateUserDto);
+    await this.userService.updateUserInfoById(user.id, updateUserDto);
   }
 
   @Patch('me/profile-photo')
@@ -115,6 +117,6 @@ export class UserController {
   @ApiNotFoundResponse({ description: 'Fail - User not found' })
   @HttpCode(HttpStatus.OK)
   async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserProfileDto> {
-    return await this.userService.getUserById(id);
+    return await this.userService.findUserById(id);
   }
 }

@@ -30,9 +30,7 @@ export class RankingController {
   @UsePipes(
     new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true } })
   )
-  findRankingByPage(
-    @Query() paginationRequestDto: PaginationRequestDto
-  ): Promise<UserRankingByPageDto> {
-    return this.rankingService.getRankingByPage(paginationRequestDto);
+  findRankingByPage(@Query() paginationRequestDto: PaginationRequestDto) {
+    // return this.rankingService.getRankingByPage(paginationRequestDto);
   }
 }

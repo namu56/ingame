@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
 import { CreateSnsUserDto } from 'src/common/dto/user/create-sns-user.dto';
 import { UserService } from 'src/modules/user/user.service';
 import { AuthService } from '../../modules/auth/auth.service';
 import { AccessTokenPayload } from '../../modules/auth/auth.interface';
+import { IUserService, USER_SERVICE_KEY } from 'src/modules/user/interfaces/user-service.interface';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly userService: UserService,
+    @Inject(USER_SERVICE_KEY) private readonly userService: IUserService,
     private readonly authService: AuthService
   ) {
     super({

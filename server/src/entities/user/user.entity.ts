@@ -3,6 +3,7 @@ import { UserInfo } from '../user-info/user-info.entity';
 import { Quest } from '../quest/quest.entity';
 import { ProfilePhoto } from '../profile-photo/profile-photo.entity';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
+import { RefreshToken } from '../refresh-token/refresh-token.entity';
 
 @Entity('user')
 @Unique(['email'])
@@ -33,6 +34,12 @@ export class User extends BaseTimeEntity {
     eager: true,
   })
   profilePhoto: ProfilePhoto;
+
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
+  refreshTokens: RefreshToken[];
 
   @OneToMany(() => Quest, (quest) => quest.user, { onDelete: 'CASCADE' })
   quests: Quest[];

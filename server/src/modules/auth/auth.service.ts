@@ -15,18 +15,19 @@ import { Redis } from 'ioredis';
 import { CreateSnsUserDto } from '../../common/dto/user/create-sns-user.dto';
 import { compareValue } from 'src/common/utils/compare-value.util';
 import { encryptValue } from 'src/common/utils/encrypt-value.util';
+import { IUserService, USER_SERVICE_KEY } from '../user/interfaces/user-service.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userService: UserService,
+    @Inject(USER_SERVICE_KEY) private readonly userService: IUserService,
     private readonly configService: ConfigService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userService.getUserByEmail(email);
+    const user = await this.userService.findUserByEmail(email);
     const isMatch = await bcrypt.compare(password, user.password);
     if (user && isMatch) {
       const { password, ...result } = user;
@@ -36,7 +37,7 @@ export class AuthService {
   }
 
   async validateSnsUser(createSnsUserDto: CreateSnsUserDto): Promise<User | null> {
-    const user = await this.userService.getUserByEmail(createSnsUserDto.email);
+    const user = await this.userService.findUserByEmail(createSnsUserDto.email);
     if (!user) return null;
     if (createSnsUserDto.provider !== user.provider) {
       throw new HttpException(
@@ -68,7 +69,7 @@ export class AuthService {
       const decodedToken: RefreshTokenPayload = this.jwtService.verify(refreshToken, {
         secret: secretKey,
       });
-      const user = await this.userService.getUserById(decodedToken.id);
+      const user = await this.userService.findUserById(decodedToken.id);
       const storedHashedToken = await this.redis.get(`refreshToken:${user.id}`);
       const isValid = await compareValue(refreshToken, storedHashedToken);
       if (!isValid) {

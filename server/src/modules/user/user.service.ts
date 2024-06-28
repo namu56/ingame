@@ -66,7 +66,7 @@ export class UserService implements IUserService {
     }
   }
 
-  async getUserByEmail(email: string): Promise<User> {
+  async findUserByEmail(email: string): Promise<User | null> {
     const user = await this.userRepository.findByEmail(email);
     return user;
   }
