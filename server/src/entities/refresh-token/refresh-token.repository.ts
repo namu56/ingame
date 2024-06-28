@@ -11,7 +11,7 @@ export class RefreshTokenRepository
     return RefreshToken.name;
   }
 
-  async findByUserId(userId: number): Promise<RefreshToken> {
-    return this.getRepository().findOneBy({ userId });
+  async findByUserId(userId: number, token: string): Promise<RefreshToken> {
+    return this.getRepository().findOneBy({ userId, token });
   }
 }

@@ -17,9 +17,15 @@ export class RefreshToken extends BaseTimeEntity {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  static create(userId: number, newToken: string): RefreshToken {
+  static create(userId: number, token: string): RefreshToken {
     const refreshToken = new RefreshToken();
     refreshToken.userId = userId;
+    refreshToken.token = token;
+    return refreshToken;
+  }
+
+  update(newToken: string): RefreshToken {
+    const refreshToken = new RefreshToken();
     refreshToken.token = newToken;
     return refreshToken;
   }

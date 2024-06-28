@@ -4,5 +4,5 @@ import { RefreshToken } from './refresh-token.entity';
 export const REFRESH_TOKEN_REPOSITORY_KEY = 'refreshTokenRepositoryKey';
 
 export interface IRefreshTokenRepository extends IGenericRepository<RefreshToken> {
-  findByUserId(userId: number): Promise<RefreshToken | null>;
+  findByUserId(userId: number, token: string): Promise<RefreshToken | null>;
 }
