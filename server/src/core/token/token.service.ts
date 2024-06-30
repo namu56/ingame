@@ -8,18 +8,22 @@ import {
 import { ITokenService } from './interfaces/token-service.interface';
 import { AccessTokenPayload, RefreshTokenPayload } from 'src/common/dto/token';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshTokenRepository } from 'src/entities/refresh-token/refresh-token.repository';
 import { ConfigService } from '@nestjs/config';
 import { RefreshToken } from 'src/entities/refresh-token/refresh-token.entity';
 import { AuthTokenResponse } from 'src/common/responses/token';
 import { TokenPayload } from 'src/common/types/token';
+import {
+  IRefreshTokenRepository,
+  REFRESH_TOKEN_REPOSITORY_KEY,
+} from 'src/entities/refresh-token/refresh-token-repository.interface';
 
 @Injectable()
 export class TokenService implements ITokenService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    @Inject(RefreshTokenRepository) private readonly refreshTokenRepository: RefreshTokenRepository
+    @Inject(REFRESH_TOKEN_REPOSITORY_KEY)
+    private readonly refreshTokenRepository: IRefreshTokenRepository
   ) {}
   async createAccessToken(payload: AccessTokenPayload): Promise<string> {
     return await this.jwtService.signAsync(payload);
