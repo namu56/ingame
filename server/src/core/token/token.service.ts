@@ -11,11 +11,11 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { RefreshToken } from 'src/entities/refresh-token/refresh-token.entity';
 import { AuthTokenResponse } from 'src/common/responses/token';
-import { TokenPayload } from 'src/common/types/token';
 import {
   IRefreshTokenRepository,
   REFRESH_TOKEN_REPOSITORY_KEY,
 } from 'src/entities/refresh-token/refresh-token-repository.interface';
+import { IUserService, USER_SERVICE_KEY } from 'src/modules/user/interfaces/user-service.interface';
 
 @Injectable()
 export class TokenService implements ITokenService {
@@ -28,8 +28,10 @@ export class TokenService implements ITokenService {
   async createAccessToken(payload: AccessTokenPayload): Promise<string> {
     return await this.jwtService.signAsync(payload);
   }
-  async createRefreshToken(payload: RefreshTokenPayload, userId: number): Promise<string> {
-    const token = await this.jwtService.signAsync(payload, {
+  async createRefreshToken(userId: number): Promise<string> {
+    const refreshTokenPayload = new RefreshTokenPayload(userId);
+
+    const token = await this.jwtService.signAsync(refreshTokenPayload, {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
       expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
     });
@@ -40,11 +42,9 @@ export class TokenService implements ITokenService {
     return token;
   }
 
-  async updateRefreshToken(
-    paylaod: RefreshTokenPayload,
-    refreshToken: RefreshToken
-  ): Promise<string> {
-    const token = await this.jwtService.signAsync(paylaod, {
+  async updateRefreshToken(userId: number, refreshToken: RefreshToken): Promise<string> {
+    const refreshTokenPayload = new RefreshTokenPayload(userId);
+    const token = await this.jwtService.signAsync(refreshTokenPayload, {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
       expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
     });
@@ -55,21 +55,20 @@ export class TokenService implements ITokenService {
     return token;
   }
 
-  async refresh(
-    refreshToken: string,
-    accessTokenPayload: AccessTokenPayload,
-    refreshTokenPayload: RefreshTokenPayload
-  ): Promise<AuthTokenResponse> {
+  async deleteToken(userId: number): Promise<void> {
+    this.refreshTokenRepository.deleteByUserId(userId);
+  }
+
+  async refresh(refreshToken: string, payload: AccessTokenPayload): Promise<AuthTokenResponse> {
     try {
-      const decodedToken = await this.verifiedToken<RefreshTokenPayload>(refreshToken);
-      const target = await this.refreshTokenRepository.findByUserId(decodedToken.id, refreshToken);
+      const target = await this.refreshTokenRepository.findByUserId(payload.id, refreshToken);
 
       if (!target) {
         throw new HttpException('refreshToken이 존재하지 않습니다', HttpStatus.NOT_FOUND);
       }
 
-      const newAccessToken = await this.createAccessToken(accessTokenPayload);
-      const newRefreshToken = await this.updateRefreshToken(refreshTokenPayload, target);
+      const newAccessToken = await this.createAccessToken(payload);
+      const newRefreshToken = await this.updateRefreshToken(payload.id, target);
 
       return new AuthTokenResponse(newAccessToken, newRefreshToken);
     } catch (error) {
@@ -77,10 +76,10 @@ export class TokenService implements ITokenService {
     }
   }
 
-  async verifiedToken<T extends TokenPayload>(token: string): Promise<T> {
+  async verifiedRefreshToken(refreshToken: string): Promise<RefreshTokenPayload> {
     try {
       const secretKey = this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY');
-      return await this.jwtService.verifyAsync(token, { secret: secretKey });
+      return await this.jwtService.verifyAsync(refreshToken, { secret: secretKey });
     } catch (error) {
       throw new UnauthorizedException();
     }

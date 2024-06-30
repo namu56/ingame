@@ -7,12 +7,9 @@ export const TOKEN_SERVICE_KEY = 'tokenServiceKey';
 
 export interface ITokenService {
   createAccessToken(payload: AccessTokenPayload): Promise<string>;
-  createRefreshToken(paylaod: RefreshTokenPayload, id: number): Promise<string>;
-  updateRefreshToken(paylaod: RefreshTokenPayload, refreshToken: RefreshToken): Promise<string>;
-  refresh(
-    refreshToken: string,
-    accessTokenPayload: AccessTokenPayload,
-    refreshTokenPayload: RefreshTokenPayload
-  ): Promise<AuthTokenResponse>;
-  verifiedToken<T extends TokenPayload>(token: string): Promise<T>;
+  createRefreshToken(userId: number): Promise<string>;
+  updateRefreshToken(userId: number, refreshToken: RefreshToken): Promise<string>;
+  deleteToken(userId: number): Promise<void>;
+  refresh(refreshToken: string, payload: AccessTokenPayload): Promise<AuthTokenResponse>;
+  verifiedRefreshToken(refreshToken: string): Promise<RefreshTokenPayload>;
 }
