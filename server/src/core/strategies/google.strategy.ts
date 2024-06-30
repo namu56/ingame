@@ -1,11 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
-import { CreateSnsUserDto } from 'src/common/dto/user/create-sns-user.dto';
-import { UserService } from 'src/modules/user/user.service';
 import { AuthService } from '../../modules/auth/auth.service';
-import { AccessTokenPayload } from '../../modules/auth/auth.interface';
 import { IUserService, USER_SERVICE_KEY } from 'src/modules/user/interfaces/user-service.interface';
+import { CreateSocialUserRequest } from 'src/common/requests/user';
+import { AccessTokenPayload } from 'src/common/dto/token';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
@@ -29,17 +28,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(_accessToken: string, _refreshToken: string, profile: Profile) {
-    const googleUser: CreateSnsUserDto = {
-      email: profile.emails[0].value,
-      provider: profile.provider,
-      providerId: profile.id,
-      nickname: profile.displayName,
-    };
+    const { emails, provider, id, displayName } = profile;
+    const googleUser = new CreateSocialUserRequest(emails[0].value, provider, id, displayName);
+
     try {
-      let user = await this.authService.validateSnsUser(googleUser);
+      let user = await this.authService.validateSocialUser(googleUser);
       user = user ? user : await this.userService.socialSignUp(googleUser);
-      const payload: AccessTokenPayload = { id: user.id, email: user.email };
-      console.log(payload);
+      const payload = new AccessTokenPayload(user.id, user.email);
 
       return payload;
     } catch (err) {
