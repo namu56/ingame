@@ -4,8 +4,9 @@ import { WinstonLoggerService } from './logger/winston-logger.service';
 import { redisProviders } from './database/redis/redis.provider';
 import { WinstonLoggerMiddleware } from './middlewares/winston-logger.middleware';
 import { CustomTypeOrmModule } from './database/typeorm/typeorm.module';
+import { TokenModule } from './token/token.module';
 
-const modules = [CustomTypeOrmModule];
+const modules = [CustomTypeOrmModule, TokenModule];
 
 @Global()
 @Module({
