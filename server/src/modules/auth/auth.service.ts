@@ -5,28 +5,31 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { AccessTokenPayload, AuthTokens, RefreshTokenPayload } from './auth.interface';
 import { User } from '../../entities/user/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
-import { CreateSnsUserDto } from '../../common/dto/user/create-sns-user.dto';
-import { compareValue } from 'src/common/utils/compare-value.util';
-import { encryptValue } from 'src/common/utils/encrypt-value.util';
 import { IUserService, USER_SERVICE_KEY } from '../user/interfaces/user-service.interface';
+import {
+  ITokenService,
+  TOKEN_SERVICE_KEY,
+} from 'src/core/token/interfaces/token-service.interface';
+import { CreateSocialUserRequest } from 'src/common/requests/user';
+import { AccessTokenPayload, RefreshTokenPayload } from 'src/common/dto/token';
+import { AuthTokenResponse } from 'src/common/responses/token';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     @Inject(USER_SERVICE_KEY) private readonly userService: IUserService,
+    @Inject(TOKEN_SERVICE_KEY) private readonly tokenService: ITokenService,
     private readonly configService: ConfigService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis
   ) {}
 
-  async validateUser(email: string, password: string): Promise<User | null> {
+  async validateLocalUser(email: string, password: string): Promise<User | null> {
     const user = await this.userService.findUserByEmail(email);
     const isMatch = await bcrypt.compare(password, user.password);
     if (user && isMatch) {
@@ -36,10 +39,10 @@ export class AuthService {
     return null;
   }
 
-  async validateSnsUser(createSnsUserDto: CreateSnsUserDto): Promise<User | null> {
-    const user = await this.userService.findUserByEmail(createSnsUserDto.email);
+  async validateSocialUser(createSocialUserRequest: CreateSocialUserRequest): Promise<User | null> {
+    const user = await this.userService.findUserByEmail(createSocialUserRequest.email);
     if (!user) return null;
-    if (createSnsUserDto.provider !== user.provider) {
+    if (createSocialUserRequest.provider !== user.provider) {
       throw new HttpException(
         `이 이메일은 이미 ${user.provider}계정을 통해 등록되었습니다.`,
         HttpStatus.CONFLICT
@@ -48,63 +51,26 @@ export class AuthService {
     return user;
   }
 
-  async login(payload: AccessTokenPayload): Promise<AuthTokens> {
-    const accessToken = await this.generateAccessToken(payload);
-    const refreshToken = await this.generateRefreshToken(payload.id);
+  async login(payload: AccessTokenPayload): Promise<AuthTokenResponse> {
+    const accessToken = await this.tokenService.createAccessToken(payload);
+    const refreshToken = await this.tokenService.createRefreshToken(payload.id);
 
-    const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
-    const hasedRefreshToken = await encryptValue(refreshToken, saltRounds);
-    await this.redis.set(`refreshToken:${payload.id}`, hasedRefreshToken, 'EX', 60 * 60 * 24 * 7);
-
-    return { accessToken, refreshToken };
+    return new AuthTokenResponse(accessToken, refreshToken);
   }
 
-  async logout(id: number): Promise<void> {
-    await this.redis.del(`refreshToken:${id}`);
+  async logout(userId: number): Promise<void> {
+    this.tokenService.deleteToken(userId);
   }
 
-  async refresh(refreshToken: string): Promise<AuthTokens> {
-    const secretKey = this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY');
+  async refresh(refreshToken: string): Promise<AuthTokenResponse> {
     try {
-      const decodedToken: RefreshTokenPayload = this.jwtService.verify(refreshToken, {
-        secret: secretKey,
-      });
+      const decodedToken = await this.tokenService.verifiedRefreshToken(refreshToken);
       const user = await this.userService.findUserById(decodedToken.id);
-      const storedHashedToken = await this.redis.get(`refreshToken:${user.id}`);
-      const isValid = await compareValue(refreshToken, storedHashedToken);
-      if (!isValid) {
-        throw new UnauthorizedException();
-      }
 
-      const payload: AccessTokenPayload = { id: user.id, email: user.email };
-      const newAccessToken = await this.generateAccessToken(payload);
-      const newRefreshToken = await this.generateRefreshToken(payload.id);
-
-      const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
-      const newHashedRefreshToken = await encryptValue(refreshToken, saltRounds);
-      await this.redis.set(
-        `refreshToken:${user.id}`,
-        newHashedRefreshToken,
-        'EX',
-        60 * 60 * 24 * 7
-      );
-
-      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+      const payload = new AccessTokenPayload(user.id, user.email);
+      return this.tokenService.refresh(refreshToken, payload);
     } catch {
       throw new UnauthorizedException();
     }
-  }
-
-  private async generateAccessToken(payload: AccessTokenPayload): Promise<string> {
-    return await this.jwtService.signAsync(payload);
-  }
-
-  private async generateRefreshToken(userId: number): Promise<string> {
-    const payload: RefreshTokenPayload = { id: userId };
-
-    return await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
-      expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
-    });
   }
 }
