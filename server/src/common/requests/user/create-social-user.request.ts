@@ -16,4 +16,11 @@ export class CreateSocialUserRequest {
   @IsNotEmpty()
   @IsString()
   nickname: string;
+
+  constructor(email: string, provider: string, providerId: string, nickname: string) {
+    this.email = email;
+    this.provider = provider;
+    this.providerId = providerId;
+    this.nickname = nickname;
+  }
 }

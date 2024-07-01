@@ -11,7 +11,11 @@ export class RefreshTokenRepository
     return RefreshToken.name;
   }
 
-  async findByUserId(userId: number, token: string): Promise<RefreshToken> {
+  findByUserId(userId: number, token: string): Promise<RefreshToken> {
     return this.getRepository().findOneBy({ userId, token });
+  }
+
+  async deleteByUserId(userId: number): Promise<void> {
+    await this.getRepository().delete({ userId });
   }
 }

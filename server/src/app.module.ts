@@ -6,7 +6,6 @@ import { QuestsModule } from './modules/quest/quests.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './core/filters/all-exception.filter';
-import { SchedulerModule } from './core/scheduler/scheduler.module';
 import { PointModule } from './modules/point/point.module';
 import { CoreModule } from './core/core.module';
 
@@ -17,13 +16,12 @@ import { CoreModule } from './core/core.module';
       cache: true,
       envFilePath: process.env.NODE_ENV === 'production' ? '.production.env' : '.development.env',
     }),
-    SchedulerModule,
+    CoreModule,
     UserModule,
     AuthModule,
     QuestsModule,
     RankingModule,
     PointModule,
-    CoreModule,
   ],
   providers: [
     {

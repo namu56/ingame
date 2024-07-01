@@ -14,11 +14,9 @@ import {
   ParseIntPipe,
   Inject,
 } from '@nestjs/common';
-import { UserService } from './user.service';
 import { CreateUserDto } from '../../common/dto/user/create-user.dto';
 import { UpdateUserDto } from '../../common/dto/user/update-user.dto';
 import { CurrentUser } from 'src/core/decorators/current-user.decorator';
-import { AccessTokenPayload } from '../auth/auth.interface';
 import { ProfilePhotoDto } from '../../common/dto/user/profile-photo.dto';
 import {
   ApiBearerAuth,
@@ -36,6 +34,7 @@ import {
 import { UserProfileDto } from '../../common/dto/user/user-profile.dto';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
 import { IUserService, USER_SERVICE_KEY } from './interfaces/user-service.interface';
+import { AccessTokenPayload } from 'src/common/dto/token';
 
 @Controller('users')
 @ApiTags('Users API')

@@ -1,1 +1,3 @@
-export class RefreshTokenPayload {}
+export class RefreshTokenPayload {
+  constructor(readonly id: number) {}
+}

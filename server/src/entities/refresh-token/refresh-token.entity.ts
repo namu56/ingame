@@ -24,9 +24,7 @@ export class RefreshToken extends BaseTimeEntity {
     return refreshToken;
   }
 
-  update(newToken: string): RefreshToken {
-    const refreshToken = new RefreshToken();
-    refreshToken.token = newToken;
-    return refreshToken;
+  update(newToken: string): void {
+    this.token = newToken;
   }
 }

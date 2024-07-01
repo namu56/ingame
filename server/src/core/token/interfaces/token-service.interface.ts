@@ -1,11 +1,15 @@
-import { AccessTokenPayload } from 'src/common/dto/token';
-import { AuthTokens } from 'src/modules/auth/auth.interface';
+import { AccessTokenPayload, RefreshTokenPayload } from 'src/common/dto/token';
+import { AuthTokenResponse } from 'src/common/responses/token';
+import { TokenPayload } from 'src/common/types/token';
+import { RefreshToken } from 'src/entities/refresh-token/refresh-token.entity';
 
 export const TOKEN_SERVICE_KEY = 'tokenServiceKey';
 
 export interface ITokenService {
   createAccessToken(payload: AccessTokenPayload): Promise<string>;
-  createRefreshToken(id: number): Promise<string>;
-  refresh(refreshToken: string, payload: AccessTokenPayload): Promise<AuthTokens>;
-  verifiedToken<T>(token: string): Promise<T>;
+  createRefreshToken(userId: number): Promise<string>;
+  updateRefreshToken(userId: number, refreshToken: RefreshToken): Promise<string>;
+  deleteToken(userId: number): Promise<void>;
+  refresh(refreshToken: string, payload: AccessTokenPayload): Promise<AuthTokenResponse>;
+  verifiedRefreshToken(refreshToken: string): Promise<RefreshTokenPayload>;
 }
