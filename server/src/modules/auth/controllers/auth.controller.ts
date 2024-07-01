@@ -8,8 +8,8 @@ import {
   UseGuards,
   HttpException,
   UseInterceptors,
+  Inject,
 } from '@nestjs/common';
-import { AuthService } from '../auth.service';
 import { Request, Response } from 'express';
 import {
   ApiBearerAuth,
@@ -26,11 +26,12 @@ import { JwtAuthGuard } from '../../../core/guards/jwt-auth.guard';
 import { AuthTokenInterceptor } from 'src/core/interceptors/auth-token.interceptor';
 import { AccessTokenPayload } from 'src/common/dto/token';
 import { AuthTokenResponse } from 'src/common/responses/token';
+import { AUTH_SERVICE_KEY, IAuthService } from 'src/modules/auth/interfaces/auth-service.interface';
 
 @Controller('auth')
 @ApiTags('Auth API')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(@Inject(AUTH_SERVICE_KEY) private readonly authService: IAuthService) {}
 
   @Post('login')
   @UseGuards(LocalAuthGuard)

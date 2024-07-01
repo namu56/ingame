@@ -1,13 +1,21 @@
-import { Controller, Get, HttpCode, HttpStatus, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { GoogleAuthGuard } from '../../../core/guards/google-auth.guard';
-import { AuthService } from '../auth.service';
 import { CurrentUser } from 'src/core/decorators/current-user.decorator';
 import { AccessTokenPayload, AuthTokens } from '../auth.interface';
 import { AuthTokenInterceptor } from 'src/core/interceptors/auth-token.interceptor';
+import { AUTH_SERVICE_KEY, IAuthService } from 'src/modules/auth/interfaces/auth-service.interface';
 
 @Controller('oauth')
 export class OAuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(@Inject(AUTH_SERVICE_KEY) private readonly authService: IAuthService) {}
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
