@@ -4,6 +4,7 @@ import { Quest } from '../quest/quest.entity';
 import { ProfilePhoto } from '../profile-photo/profile-photo.entity';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 import { RefreshToken } from '../refresh-token/refresh-token.entity';
+import { UserProvider } from 'src/common/types/user/user.type';
 
 @Entity('user')
 @Unique(['email'])
@@ -17,8 +18,8 @@ export class User extends BaseTimeEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   password: string | null;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
-  provider: string | null;
+  @Column({ type: 'enum', nullable: true, enum: UserProvider, default: UserProvider.LOCAL })
+  provider: UserProvider;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   providerId: string | null;
@@ -51,7 +52,7 @@ export class User extends BaseTimeEntity {
     return user;
   }
 
-  static createSocial(email: string, provider: string, providerId: string): User {
+  static createSocial(email: string, provider: UserProvider, providerId: string): User {
     const user = new User();
     user.email = email;
     user.provider = provider;

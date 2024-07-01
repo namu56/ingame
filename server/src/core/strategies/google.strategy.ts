@@ -5,6 +5,7 @@ import { IUserService, USER_SERVICE_KEY } from 'src/modules/user/interfaces/user
 import { CreateSocialUserRequest } from 'src/common/requests/user';
 import { AccessTokenPayload } from 'src/common/dto/token';
 import { AUTH_SERVICE_KEY, IAuthService } from 'src/modules/auth/interfaces/auth-service.interface';
+import { UserProvider } from 'src/common/types/user/user.type';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
@@ -28,8 +29,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(_accessToken: string, _refreshToken: string, profile: Profile) {
-    const { emails, provider, id, displayName } = profile;
-    const googleUser = new CreateSocialUserRequest(emails[0].value, provider, id, displayName);
+    const { emails, id, displayName } = profile;
+    const googleUser = new CreateSocialUserRequest(
+      emails[0].value,
+      UserProvider.GOOGLE,
+      id,
+      displayName
+    );
 
     try {
       let user = await this.authService.validateSocialUser(googleUser);
