@@ -29,25 +29,25 @@ export class QuestsService {
       const quest = this.questRepository.create({
         userId: userId,
         title: title,
-        difficulty: mode === Mode.Main ? difficulty : Difficulty.Default,
+        difficulty: mode === Mode.MAIN ? difficulty : Difficulty.DEFAULT,
         mode: mode,
         startDate: startDate,
         endDate: endDate,
         hidden: hidden,
-        status: status ? status : Status.onProgress,
+        status: status ? status : Status.ON_PROGRESS,
         createdAt: currentDate,
         updatedAt: currentDate,
       });
       const savedQuest = await queryRunner.manager.save(quest);
 
-      if (mode === Mode.Main) {
+      if (mode === Mode.MAIN) {
         for (const sideQuest of sideQuests) {
           const { content } = sideQuest;
 
           const side = this.sideQuestRepository.create({
             questId: savedQuest.id,
             content: content,
-            status: Status.onProgress,
+            status: Status.ON_PROGRESS,
             createdAt: currentDate,
             updatedAt: currentDate,
           });
@@ -71,7 +71,7 @@ export class QuestsService {
     const mainOptions: FindManyOptions<Quest> = {
       where: {
         userId: userId,
-        mode: Mode.Main,
+        mode: Mode.MAIN,
         startDate: LessThanOrEqual(queryDate),
         endDate: MoreThanOrEqual(queryDate),
       },
@@ -93,13 +93,13 @@ export class QuestsService {
       ],
     };
     const subOptions: FindManyOptions<Quest> = {
-      where: { userId: userId, mode: Mode.Sub, startDate: queryDate },
+      where: { userId: userId, mode: Mode.SUB, startDate: queryDate },
       order: {
         id: 'DESC',
       },
       select: ['id', 'title', 'hidden', 'status', 'createdAt', 'updatedAt'],
     };
-    const quests = await this.questRepository.find(mode === Mode.Main ? mainOptions : subOptions);
+    const quests = await this.questRepository.find(mode === Mode.MAIN ? mainOptions : subOptions);
 
     if (!quests) {
       throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
@@ -110,7 +110,7 @@ export class QuestsService {
 
   async findOne(userId: number, questId: number) {
     const options: FindManyOptions<Quest> = {
-      where: { id: questId, userId: userId, mode: Mode.Main },
+      where: { id: questId, userId: userId, mode: Mode.MAIN },
       order: {
         id: 'DESC',
       },

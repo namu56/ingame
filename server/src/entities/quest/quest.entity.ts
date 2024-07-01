@@ -29,7 +29,7 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'enum', enum: isHidden, nullable: false })
   hidden: isHidden;
 
-  @Column({ type: 'enum', enum: Status, default: Status.onProgress, nullable: false })
+  @Column({ type: 'enum', enum: Status, default: Status.ON_PROGRESS, nullable: false })
   status: Status;
 
   @Column({ type: 'varchar', nullable: false })

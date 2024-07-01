@@ -10,7 +10,7 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
   }
 
   async findMainQuestsByUserId(userId: number, dateString: string): Promise<Quest[]> {
-    return this.baseSelectQueryBuilder(userId, Mode.Main)
+    return this.baseSelectQueryBuilder(userId, Mode.MAIN)
       .leftJoinAndSelect('quest.sideQuests', 'sideQuest')
       .andWhere('quest.startDate <= :dateString', { dateString })
       .andWhere('quest.endDate >= :dateString', { dateString })
@@ -19,18 +19,18 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
   }
 
   async findSubQuestsByUserId(userId: number, dateString: string): Promise<Quest[]> {
-    return this.baseSelectQueryBuilder(userId, Mode.Sub)
+    return this.baseSelectQueryBuilder(userId, Mode.SUB)
       .andWhere('quest.startDate = :dateString', { dateString })
       .orderBy('quest.id', 'DESC')
       .getMany();
   }
 
   async findMainQuestById(id: number, userId: number): Promise<Quest> {
-    return this.baseSelectQueryBuilder(userId, Mode.Main).andWhere('qeust.id=:id', { id }).getOne();
+    return this.baseSelectQueryBuilder(userId, Mode.MAIN).andWhere('qeust.id=:id', { id }).getOne();
   }
 
   async findSubQuestById(id: number, userId: number): Promise<Quest> {
-    return this.baseSelectQueryBuilder(userId, Mode.Sub).andWhere('qeust.id=:id', { id }).getOne();
+    return this.baseSelectQueryBuilder(userId, Mode.SUB).andWhere('qeust.id=:id', { id }).getOne();
   }
 
   private baseSelectQueryBuilder(userId: number, mode: Mode): SelectQueryBuilder<Quest> {
@@ -51,7 +51,7 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
       'quest.updatedAt',
     ];
 
-    return mode === Mode.Main
+    return mode === Mode.MAIN
       ? [...commonFields, 'quest.difficulty', 'quest.startDate', 'quest.endDate']
       : commonFields;
   }

@@ -98,7 +98,7 @@ export class QuestsController {
     const queryDate = query
       ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
       : new Date().toISOString().split('T')[0];
-    return await this.questsService.findAll(user.id, Mode.Main, queryDate);
+    return await this.questsService.findAll(user.id, Mode.MAIN, queryDate);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -187,7 +187,7 @@ export class QuestsController {
     const queryDate = query
       ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
       : new Date().toISOString().split('T')[0];
-    return await this.questsService.findAll(user.id, Mode.Sub, queryDate);
+    return await this.questsService.findAll(user.id, Mode.SUB, queryDate);
   }
 
   @UseGuards(JwtAuthGuard)
