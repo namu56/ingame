@@ -5,33 +5,28 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
 import { User } from '../../entities/user/user.entity';
-import { ConfigService } from '@nestjs/config';
-import { Redis } from 'ioredis';
 import { IUserService, USER_SERVICE_KEY } from '../user/interfaces/user-service.interface';
 import {
   ITokenService,
   TOKEN_SERVICE_KEY,
 } from 'src/core/token/interfaces/token-service.interface';
 import { CreateSocialUserRequest } from 'src/common/requests/user';
-import { AccessTokenPayload, RefreshTokenPayload } from 'src/common/dto/token';
+import { AccessTokenPayload } from 'src/common/dto/token';
 import { AuthTokenResponse } from 'src/common/responses/token';
+import { IAuthService } from './interfaces/auth-service.interface';
+import { compareValue } from 'src/common/utils/compare-value.util';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
   constructor(
-    private readonly jwtService: JwtService,
     @Inject(USER_SERVICE_KEY) private readonly userService: IUserService,
-    @Inject(TOKEN_SERVICE_KEY) private readonly tokenService: ITokenService,
-    private readonly configService: ConfigService,
-    @Inject('REDIS_CLIENT') private readonly redis: Redis
+    @Inject(TOKEN_SERVICE_KEY) private readonly tokenService: ITokenService
   ) {}
 
   async validateLocalUser(email: string, password: string): Promise<User | null> {
     const user = await this.userService.findUserByEmail(email);
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await compareValue(password, user.password);
     if (user && isMatch) {
       const { password, ...result } = user;
       return result as User;
