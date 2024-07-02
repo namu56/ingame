@@ -28,14 +28,14 @@ export class SchedulerService {
 
     const targetQuests = await this.questRepository.find({
       where: {
-        mode: Mode.Main,
-        status: Status.onProgress,
+        mode: Mode.MAIN,
+        status: Status.ON_PROGRESS,
         endDate: dueDate.toISOString().split('T')[0],
       },
       relations: ['sideQuests'],
     });
     const targetSubQuests = await this.questRepository.find({
-      where: { mode: Mode.Sub, status: Status.onProgress },
+      where: { mode: Mode.SUB, status: Status.ON_PROGRESS },
     });
 
     if (targetQuests.length === 0) {
@@ -44,20 +44,20 @@ export class SchedulerService {
     } else {
       for (const quest of targetQuests) {
         const completedSideQuestsCount = quest.sideQuests.filter(
-          (sideQuest) => sideQuest.status === Status.Completed
+          (sideQuest) => sideQuest.status === Status.COMPLETED
         ).length;
 
         if (completedSideQuestsCount > 0) {
-          quest.status = Status.Completed;
+          quest.status = Status.COMPLETED;
           quest.updatedAt = currentDate;
         } else {
-          quest.status = Status.Fail;
+          quest.status = Status.FAIL;
           quest.updatedAt = currentDate;
         }
 
         for (const sideQuest of quest.sideQuests) {
-          if (sideQuest.status === Status.onProgress) {
-            sideQuest.status = Status.Fail;
+          if (sideQuest.status === Status.ON_PROGRESS) {
+            sideQuest.status = Status.FAIL;
             sideQuest.updatedAt = currentDate;
           }
         }
@@ -79,7 +79,7 @@ export class SchedulerService {
       return;
     } else {
       const updatedSubQuests = targetSubQuests.map((it) => {
-        it.status = Status.Fail;
+        it.status = Status.FAIL;
         it.updatedAt = currentDate;
         return it;
       });
@@ -89,7 +89,7 @@ export class SchedulerService {
       for (const quest of updatedSubQuests) {
         const updatePointDto = {
           questId: quest.id,
-          status: Status.Fail,
+          status: Status.FAIL,
         } satisfies UpdatePointDto;
 
         await pointService.updatePoint(quest.userId, updatePointDto);

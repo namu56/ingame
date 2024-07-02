@@ -24,6 +24,7 @@ import {
   UpdateUserRequest,
 } from 'src/common/requests/user';
 import { UserResponse } from 'src/common/responses/user';
+import { UserProvider } from 'src/common/types/user/user.type';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -138,7 +139,7 @@ export class UserService implements IUserService {
     return await this.userRepository.save(user);
   }
 
-  private async createSocialUser(email: string, provider: string, providerId: string) {
+  private async createSocialUser(email: string, provider: UserProvider, providerId: string) {
     const newUser = User.createSocial(email, provider, providerId);
     return this.userRepository.save(newUser);
   }

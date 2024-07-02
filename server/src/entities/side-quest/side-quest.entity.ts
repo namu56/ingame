@@ -19,7 +19,7 @@ export class SideQuest extends BaseTimeEntity {
   @Column({ type: 'varchar', length: 50, nullable: false })
   content: string;
 
-  @Column({ type: 'enum', name: 'status', enum: Status, default: Status.onProgress })
+  @Column({ type: 'enum', name: 'status', enum: Status, default: Status.ON_PROGRESS })
   status: Status;
 
   @ManyToOne(() => Quest, (quest) => quest.sideQuests, {

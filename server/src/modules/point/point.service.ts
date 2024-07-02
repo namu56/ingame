@@ -39,15 +39,15 @@ export class PointService {
       quest.status = status;
       quest.updatedAt = currentDate;
       const completedSideQuestsCount = quest.sideQuests.filter(
-        (sideQuest) => sideQuest.status === Status.Completed
+        (sideQuest) => sideQuest.status === Status.COMPLETED
       ).length;
 
       const totalPoint =
-        quest.mode === Mode.Main ? completedSideQuestsCount * difficultyPoint : difficultyPoint;
+        quest.mode === Mode.MAIN ? completedSideQuestsCount * difficultyPoint : difficultyPoint;
       userInfo.point +=
-        status === Status.Completed
+        status === Status.COMPLETED
           ? totalPoint
-          : status === Status.onProgress
+          : status === Status.ON_PROGRESS
             ? -totalPoint
             : -difficultyPoint;
 
@@ -66,13 +66,13 @@ export class PointService {
 
   private getPointByDifficulty(difficulty: Difficulty): number {
     switch (difficulty) {
-      case Difficulty.Default:
+      case Difficulty.DEFAULT:
         return 2;
-      case Difficulty.Easy:
+      case Difficulty.EASY:
         return 3;
-      case Difficulty.Normal:
+      case Difficulty.NORMAL:
         return 4;
-      case Difficulty.Hard:
+      case Difficulty.HARD:
         return 5;
       default:
         throw new HttpException('Invalid difficulty', HttpStatus.UNPROCESSABLE_ENTITY);

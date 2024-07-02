@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { UserProvider } from 'src/common/types/user/user.type';
 
 export class CreateSocialUserRequest {
   @IsNotEmpty()
@@ -6,8 +7,8 @@ export class CreateSocialUserRequest {
   email: string;
 
   @IsNotEmpty()
-  @IsString()
-  provider: string;
+  @IsEnum(UserProvider)
+  provider: UserProvider;
 
   @IsNotEmpty()
   @IsString()
@@ -17,7 +18,7 @@ export class CreateSocialUserRequest {
   @IsString()
   nickname: string;
 
-  constructor(email: string, provider: string, providerId: string, nickname: string) {
+  constructor(email: string, provider: UserProvider, providerId: string, nickname: string) {
     this.email = email;
     this.provider = provider;
     this.providerId = providerId;
