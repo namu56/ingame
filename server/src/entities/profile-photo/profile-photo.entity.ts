@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 
@@ -14,7 +7,7 @@ export class ProfilePhoto extends BaseTimeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @PrimaryColumn()
+  @Column()
   userId: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })

@@ -10,7 +10,7 @@ export enum Mode {
   SUB = 'sub',
 }
 
-export enum isHidden {
+export enum Hidden {
   TRUE = 'true',
   FALSE = 'false',
 }
