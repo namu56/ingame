@@ -1,7 +1,7 @@
-import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 import { Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { BigIntTransformer } from 'src/core/database/typeorm/transformer/big-int.transformer';
+import { BaseTimeEntity } from '@core/database/typeorm/base-time.entity';
 
 @Entity('refresh_token')
 export class RefreshToken extends BaseTimeEntity {

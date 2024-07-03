@@ -7,8 +7,8 @@ dotenv.config({
   path: process.env.NODE_ENV === 'production' ? '.production.env' : '.development.env',
 });
 
-const entityPath = path.join(__dirname, '../entities/*/*.entity.{js,ts}');
-const migrationPath = path.join(__dirname, '../migrations/*.{js,ts}');
+const entityPath = path.join(__dirname, '../../entities/**/*.entity.{js,ts}');
+const migrationPath = path.join(__dirname, '../../migrations/*.{js,ts}');
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'mysql',
