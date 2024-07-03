@@ -31,8 +31,8 @@ export class QuestsService {
         title: title,
         difficulty: mode === Mode.MAIN ? difficulty : Difficulty.DEFAULT,
         mode: mode,
-        startDate: startDate,
-        endDate: endDate,
+        start: startDate,
+        end: endDate,
         hidden: hidden,
         status: status ? status : Status.ON_PROGRESS,
         createdAt: currentDate,
@@ -72,8 +72,8 @@ export class QuestsService {
       where: {
         userId: userId,
         mode: Mode.MAIN,
-        startDate: LessThanOrEqual(queryDate),
-        endDate: MoreThanOrEqual(queryDate),
+        start: LessThanOrEqual(queryDate),
+        end: MoreThanOrEqual(queryDate),
       },
       order: {
         id: 'DESC',
@@ -84,8 +84,8 @@ export class QuestsService {
         'title',
         'difficulty',
         'mode',
-        'startDate',
-        'endDate',
+        'start',
+        'end',
         'hidden',
         'status',
         'createdAt',
@@ -93,7 +93,7 @@ export class QuestsService {
       ],
     };
     const subOptions: FindManyOptions<Quest> = {
-      where: { userId: userId, mode: Mode.SUB, startDate: queryDate },
+      where: { userId: userId, mode: Mode.SUB, start: queryDate },
       order: {
         id: 'DESC',
       },
@@ -120,8 +120,8 @@ export class QuestsService {
         'title',
         'difficulty',
         'mode',
-        'startDate',
-        'endDate',
+        'start',
+        'end',
         'hidden',
         'status',
         'createdAt',

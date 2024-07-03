@@ -5,8 +5,8 @@ import {
   SideQuestResponseDto,
   UpdateSideQuestRequestDto,
 } from './create-side-quest.dto';
-import { Difficulty, isHidden, Mode, Status } from '../../types/quest/quest.type';
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import { Difficulty, Hidden, Mode, Status } from '@common/types/quest/quest.type';
 
 export class CreateQuestDto {
   @ApiProperty({
@@ -82,14 +82,14 @@ export class CreateQuestDto {
   public endDate: string; // YYYY-MM-DD 형식
 
   @ApiProperty({
-    enum: isHidden,
+    enum: Hidden,
     example: 'FALSE',
     description: '퀘스트 숨김 여부',
     required: true,
   })
-  @IsEnum(isHidden)
+  @IsEnum(Hidden)
   @IsNotEmpty()
-  public hidden: isHidden;
+  public hidden: Hidden;
 
   @ApiProperty({
     enum: Status,
