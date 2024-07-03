@@ -1,19 +1,21 @@
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from '../user/user.entity';
+import { BigIntTransformer } from 'src/core/database/typeorm/transformer/big-int.transformer';
 
 @Entity('refresh_token')
 export class RefreshToken extends BaseTimeEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({ type: 'bigint', transformer: new BigIntTransformer() })
+  @Generated('increment')
   id: number;
 
   @Column()
   userId: number;
 
-  @Column({ type: 'varchar', length: 500 })
+  @Column({ type: 'varchar', length: 500, nullable: false, unique: true })
   token: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
