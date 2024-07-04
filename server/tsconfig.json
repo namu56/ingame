@@ -11,7 +11,14 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@common/*": ["src/common/*"],
+      "@core/*": ["src/core/*"],
+      "@entities/*": ["src/entities/*"],
+      "@migrations/*": ["src/migrations/*"],
+      "@modules/*": ["src/modules/*"]
+    }
   },
   "include": ["src/**/*"]
 }

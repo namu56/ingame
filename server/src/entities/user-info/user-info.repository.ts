@@ -19,12 +19,18 @@ export class UserInfoRepository
     return this.getRepository().findOneBy({ nickname });
   }
 
-  async getRankings(offset: number, limit: number): Promise<UserInfoWithRankDto[]> {
+  async getRanking(offset: number, limit: number): Promise<UserInfoWithRankDto[]> {
     return this.getRepository()
       .createQueryBuilder('userInfo')
       .select('userInfo.id', 'id')
       .addSelect('userInfo.nickname', 'nickname')
-      .addSelect('SELECT COUNT(*) + 1 FROM user_info ui WHERE ui.point > userInfo.point', 'rank')
+      .addSelect('userInfo.point', 'point')
+      .addSelect((subQuery) => {
+        return subQuery
+          .select('COUNT(*) + 1')
+          .from('user_info', 'ui')
+          .where('ui.point > userInfo.point');
+      }, 'rank')
       .orderBy('userInfo.point', 'DESC')
       .offset(offset)
       .limit(limit)

@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Generated, ManyToOne, PrimaryColumn } from 'typeorm';
+import { BigIntTransformer } from 'src/core/database/typeorm/transformer/big-int.transformer';
+import { Status } from '@common/types/quest/quest.type';
 import { Quest } from '../quest/quest.entity';
-import { Status } from '../../common/types/quest/quest.type';
-import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
+import { BaseTimeEntity } from '@core/database/typeorm/base-time.entity';
 
 @Entity('side_quest')
 export class SideQuest extends BaseTimeEntity {
@@ -10,10 +11,11 @@ export class SideQuest extends BaseTimeEntity {
     Object.assign(this, sideQuestData);
   }
 
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({ type: 'bigint', transformer: new BigIntTransformer() })
+  @Generated('increment')
   id: number;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'bigint', nullable: false, transformer: new BigIntTransformer() })
   questId: number;
 
   @Column({ type: 'varchar', length: 50, nullable: false })

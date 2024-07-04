@@ -1,10 +1,10 @@
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { UserInfo } from '../user-info/user-info.entity';
-import { Quest } from '../quest/quest.entity';
 import { ProfilePhoto } from '../profile-photo/profile-photo.entity';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 import { RefreshToken } from '../refresh-token/refresh-token.entity';
 import { UserProvider } from 'src/common/types/user/user.type';
+import { Quest } from '@entities/quest/quest.entity';
 
 @Entity('user')
 @Unique(['email'])

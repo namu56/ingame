@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../user/user.entity';
-import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
+import { BaseTimeEntity } from '@core/database/typeorm/base-time.entity';
 
 @Entity('profile_photo')
 export class ProfilePhoto extends BaseTimeEntity {

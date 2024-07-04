@@ -30,7 +30,7 @@ export class SchedulerService {
       where: {
         mode: Mode.MAIN,
         status: Status.ON_PROGRESS,
-        endDate: dueDate.toISOString().split('T')[0],
+        end: dueDate.toISOString().split('T')[0],
       },
       relations: ['sideQuests'],
     });

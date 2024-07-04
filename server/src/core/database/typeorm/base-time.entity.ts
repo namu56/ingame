@@ -1,7 +1,7 @@
 import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { RootEntity } from '../generic/root.entity';
 
-export class BaseTimeEntity extends RootEntity {
+export abstract class BaseTimeEntity extends RootEntity {
   @CreateDateColumn({ nullable: false, type: 'timestamp', comment: '생성 일자' })
   createdAt: Date;
 

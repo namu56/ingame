@@ -1,12 +1,17 @@
-import { Module } from '@nestjs/common';
+import { ClassProvider, Module } from '@nestjs/common';
 import { RankingService } from './ranking.service';
 import { RankingController } from './ranking.controller';
-import { UserModule } from '../user/user.module';
-import { CoreModule } from 'src/core/core.module';
+import { RANKING_SERVICE_KEY } from './interfaces/ranking-service.interface';
+import { UserInfoRepositoryModule } from 'src/entities/user-info/user-info-repository.module';
+
+const rankingService: ClassProvider = {
+  provide: RANKING_SERVICE_KEY,
+  useClass: RankingService,
+};
 
 @Module({
-  imports: [UserModule, CoreModule],
+  imports: [UserInfoRepositoryModule],
   controllers: [RankingController],
-  providers: [RankingService],
+  providers: [rankingService],
 })
 export class RankingModule {}
