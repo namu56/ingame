@@ -14,7 +14,6 @@ import {
   ParseIntPipe,
   Inject,
 } from '@nestjs/common';
-import { CreateUserDto } from '../../common/dto/user/create-user.dto';
 import { UpdateUserDto } from '../../common/dto/user/update-user.dto';
 import { CurrentUser } from 'src/core/decorators/current-user.decorator';
 import { ProfilePhotoDto } from '../../common/dto/user/profile-photo.dto';
@@ -35,6 +34,7 @@ import { UserProfileDto } from '../../common/dto/user/user-profile.dto';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
 import { IUserService, USER_SERVICE_KEY } from './interfaces/user-service.interface';
 import { AccessTokenPayload } from 'src/common/dto/token';
+import { CreateLocalUserRequest } from '@common/requests/user';
 
 @Controller('users')
 @ApiTags('Users API')
@@ -45,10 +45,10 @@ export class UserController {
   @ApiOperation({ summary: '회원가입' })
   @ApiCreatedResponse({ description: 'success' })
   @ApiConflictResponse({ description: '이미 존재하는 회원입니다.' })
-  @ApiBody({ type: CreateUserDto })
+  @ApiBody({ type: CreateLocalUserRequest })
   @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.CREATED)
-  async signUp(@Body() createUserDto: CreateUserDto) {
+  async signUp(@Body() createUserDto: CreateLocalUserRequest) {
     await this.userService.localSignUp(createUserDto);
     return { message: 'success' };
   }

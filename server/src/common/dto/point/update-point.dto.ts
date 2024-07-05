@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
-import { Status } from 'src/common/types/quest/quest.type';
+import { Status } from '@common/types/quest/quest.type';
 
 export class UpdatePointDto {
   @ApiProperty({
