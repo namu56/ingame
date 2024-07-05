@@ -13,20 +13,6 @@ export class UserRepository extends GenericTypeOrmRepository<User> implements IU
   }
 
   async findById(id: number): Promise<User | null> {
-    const selectFields = [
-      'user.id',
-      'user.email',
-      'userInfo.nickname',
-      'userInfo.intro',
-      'userInfo.point',
-      'profilePhoto.profilePhotoUrl',
-    ];
-    return this.getRepository()
-      .createQueryBuilder('user')
-      .select(selectFields)
-      .leftJoin('user.userInfo', 'userInfo')
-      .leftJoin('user.profilePhoto', 'profilePhoto')
-      .where('user.id="id', { id })
-      .getOne();
+    return this.getRepository().findOne({ where: { id } });
   }
 }
