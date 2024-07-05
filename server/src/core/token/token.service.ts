@@ -15,7 +15,6 @@ import {
   IRefreshTokenRepository,
   REFRESH_TOKEN_REPOSITORY_KEY,
 } from 'src/entities/refresh-token/refresh-token-repository.interface';
-import { IUserService, USER_SERVICE_KEY } from 'src/modules/user/interfaces/user-service.interface';
 
 @Injectable()
 export class TokenService implements ITokenService {
@@ -26,12 +25,12 @@ export class TokenService implements ITokenService {
     private readonly refreshTokenRepository: IRefreshTokenRepository
   ) {}
   async createAccessToken(payload: AccessTokenPayload): Promise<string> {
-    return await this.jwtService.signAsync(payload);
+    return await this.jwtService.signAsync(payload.toPlain());
   }
   async createRefreshToken(userId: number): Promise<string> {
     const refreshTokenPayload = new RefreshTokenPayload(userId);
 
-    const token = await this.jwtService.signAsync(refreshTokenPayload, {
+    const token = await this.jwtService.signAsync(refreshTokenPayload.toPlain(), {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
       expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
     });
@@ -44,7 +43,8 @@ export class TokenService implements ITokenService {
 
   async updateRefreshToken(userId: number, refreshToken: RefreshToken): Promise<string> {
     const refreshTokenPayload = new RefreshTokenPayload(userId);
-    const token = await this.jwtService.signAsync(refreshTokenPayload, {
+
+    const token = await this.jwtService.signAsync(refreshTokenPayload.toPlain(), {
       secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
       expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
     });

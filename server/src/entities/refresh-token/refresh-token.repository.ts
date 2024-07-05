@@ -12,7 +12,7 @@ export class RefreshTokenRepository
   }
 
   findByUserId(userId: number, token: string): Promise<RefreshToken> {
-    return this.getRepository().findOneBy({ userId, token });
+    return this.getRepository().findOne({ where: { userId, token } });
   }
 
   async deleteByUserId(userId: number): Promise<void> {
