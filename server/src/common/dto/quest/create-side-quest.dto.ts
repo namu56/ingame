@@ -1,6 +1,6 @@
 import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { Status } from '../../types/quest/quest.type';
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import { Status } from '@common/types/quest/quest.type';
 
 export class CreateSideQuestDto {
   @ApiProperty({

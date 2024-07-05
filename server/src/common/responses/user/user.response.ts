@@ -1,6 +1,14 @@
-import { User } from 'src/entities/user/user.entity';
+import { User } from '../../../entities/user/user.entity';
 
 export class UserResponse {
+  readonly id: number;
+  readonly email: string;
+  readonly nickname: string;
+  readonly intro: string | null;
+  readonly point: number;
+  readonly profilePhotoUrl: string | null;
+  readonly level: number;
+
   constructor(user: User, level: number) {
     this.id = user.id;
     this.email = user.email;
@@ -10,11 +18,4 @@ export class UserResponse {
     this.profilePhotoUrl = user.profilePhoto.profilePhotoUrl;
     this.level = level;
   }
-  readonly id: number;
-  readonly email: string;
-  readonly nickname: string;
-  readonly intro: string | null;
-  readonly point: number;
-  readonly profilePhotoUrl: string | null;
-  readonly level: number;
 }

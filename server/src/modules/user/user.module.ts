@@ -1,10 +1,6 @@
 import { ClassProvider, Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../../entities/user/user.entity';
-import { UserInfo } from '../../entities/user-info/user-info.entity';
-import { ProfilePhoto } from '../../entities/profile-photo/profile-photo.entity';
 import { USER_SERVICE_KEY } from './interfaces/user-service.interface';
 import { UserRepositoryModule } from 'src/entities/user/user-repository.module';
 import { UserInfoRepositoryModule } from 'src/entities/user-info/user-info-repository.module';
@@ -16,12 +12,7 @@ const userService: ClassProvider = {
 };
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, UserInfo, ProfilePhoto]),
-    UserRepositoryModule,
-    UserInfoRepositoryModule,
-    ProfilePhotoRepositoryModule,
-  ],
+  imports: [UserRepositoryModule, UserInfoRepositoryModule, ProfilePhotoRepositoryModule],
   exports: [userService],
   providers: [userService],
   controllers: [UserController],

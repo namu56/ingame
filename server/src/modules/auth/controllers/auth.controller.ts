@@ -20,13 +20,13 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { CurrentUser } from 'src/core/decorators/current-user.decorator';
 import { LocalAuthGuard } from '../../../core/guards/local-auth.guard';
 import { JwtAuthGuard } from '../../../core/guards/jwt-auth.guard';
 import { AuthTokenInterceptor } from 'src/core/interceptors/auth-token.interceptor';
 import { AccessTokenPayload } from 'src/common/dto/token';
 import { AuthTokenResponse } from 'src/common/responses/token';
 import { AUTH_SERVICE_KEY, IAuthService } from 'src/modules/auth/interfaces/auth-service.interface';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
 
 @Controller('auth')
 @ApiTags('Auth API')
@@ -62,6 +62,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Req() req: Request): Promise<AuthTokenResponse> {
     const refreshToken: string = req.cookies.refreshToken;
+    console.log(refreshToken);
     if (!refreshToken) {
       throw new HttpException('Refresh token not found', HttpStatus.UNAUTHORIZED);
     }
