@@ -1,4 +1,4 @@
-import { LevelInfo } from './level-info.interface';
+import { LevelInfo } from './interfaces/level-info.interface';
 
 export class LevelCalculatorService {
   private levelInfoList: LevelInfo[] = [];
