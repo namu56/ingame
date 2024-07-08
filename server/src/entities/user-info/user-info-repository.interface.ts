@@ -1,6 +1,6 @@
 import { IGenericRepository } from 'src/core/database/generic/generic.repository';
 import { UserInfo } from './user-info.entity';
-import { UserInfoWithRankDto } from 'src/common/dto/ranking/user-info-with-rank.dto';
+import { UserInfoWithRankDto } from '@common/dto/user-info';
 
 export const USER_INFO_REPOSITORY_KEY = 'USER_INFO_REPOSITORY_KEY';
 

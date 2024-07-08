@@ -1,4 +1,4 @@
-import { UserInfoWithRankDto } from './user-info-with-rank.dto';
+import { UserInfoWithRankDto } from '../user-info';
 
 export class RankingDto {
   readonly id: number;
