@@ -2,7 +2,7 @@ import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-type
 import { UserInfo } from './user-info.entity';
 import { IUserInfoRepository } from './user-info-repository.interface';
 import { EntityTarget } from 'typeorm';
-import { UserInfoWithRankDto } from 'src/common/dto/ranking/user-info-with-rank.dto';
+import { UserInfoWithRankDto } from '@common/dto/user-info';
 
 export class UserInfoRepository
   extends GenericTypeOrmRepository<UserInfo>

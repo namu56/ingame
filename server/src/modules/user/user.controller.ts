@@ -14,9 +14,7 @@ import {
   ParseIntPipe,
   Inject,
 } from '@nestjs/common';
-import { UpdateUserDto } from '../../common/dto/user/update-user.dto';
 import { CurrentUser } from 'src/core/decorators/current-user.decorator';
-import { ProfilePhotoDto } from '../../common/dto/user/profile-photo.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -30,11 +28,15 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { UserProfileDto } from '../../common/dto/user/user-profile.dto';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
 import { IUserService, USER_SERVICE_KEY } from './interfaces/user-service.interface';
 import { AccessTokenPayload } from 'src/common/dto/token';
-import { CreateLocalUserRequest } from '@common/requests/user';
+import {
+  CreateLocalUserRequest,
+  UpdateProfilePhotoRequest,
+  UpdateUserRequest,
+} from '@common/requests/user';
+import { UserResponse } from '@common/responses/user';
 
 @Controller('users')
 @ApiTags('Users API')
@@ -69,11 +71,11 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '나의 정보 조회' })
   @ApiBearerAuth('accessToken')
-  @ApiOkResponse({ type: UserProfileDto })
+  @ApiOkResponse({ type: UserResponse })
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
   @HttpCode(HttpStatus.OK)
-  async getCurrentUser(@CurrentUser() user: AccessTokenPayload): Promise<UserProfileDto> {
+  async getCurrentUser(@CurrentUser() user: AccessTokenPayload): Promise<UserResponse> {
     return await this.userService.findUserById(user.id);
   }
 
@@ -89,9 +91,9 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateUserInfo(
     @CurrentUser() user: AccessTokenPayload,
-    @Body() updateUserDto: UpdateUserDto
+    @Body() updateUserRequest: UpdateUserRequest
   ) {
-    await this.userService.updateUserInfoById(user.id, updateUserDto);
+    await this.userService.updateUserInfoById(user.id, updateUserRequest);
   }
 
   @Patch('me/profile-photo')
@@ -105,17 +107,17 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateProfilePhoto(
     @CurrentUser() user: AccessTokenPayload,
-    @Body() profilePhotoDto: ProfilePhotoDto
+    @Body() updateProfilePhotoRequest: UpdateProfilePhotoRequest
   ) {
-    await this.userService.updateProfilePhotoById(user.id, profilePhotoDto);
+    await this.userService.updateProfilePhotoById(user.id, updateProfilePhotoRequest);
   }
 
   @Get(':id')
   @ApiOperation({ summary: '특정 유저의 정보 조회' })
-  @ApiOkResponse({ type: UserProfileDto })
+  @ApiOkResponse({ type: UserResponse })
   @ApiNotFoundResponse({ description: 'Fail - User not found' })
   @HttpCode(HttpStatus.OK)
-  async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserProfileDto> {
+  async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserResponse> {
     return await this.userService.findUserById(id);
   }
 }
