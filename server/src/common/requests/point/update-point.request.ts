@@ -1,8 +1,8 @@
+import { Status } from '@common/types/quest/quest.type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
-import { Status } from '@common/types/quest/quest.type';
 
-export class UpdatePointDto {
+export class UpdatePointRequest {
   @ApiProperty({
     example: 1,
     description: '퀘스트의 아이디',

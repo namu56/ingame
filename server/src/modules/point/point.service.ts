@@ -1,66 +1,48 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Quest } from '../../entities/quest/quest.entity';
-import { DataSource, Repository } from 'typeorm';
-import { UpdatePointDto } from '../../common/dto/point/update-point.dto';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { Difficulty, Mode, Status } from '../../common/types/quest/quest.type';
-import { UserInfo } from '../../entities/user-info/user-info.entity';
+import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
+import {
+  IUserInfoRepository,
+  USER_INFO_REPOSITORY_KEY,
+} from '@entities/user-info/user-info-repository.interface';
+import { Transactional } from '@core/decorators/transactional.decorator';
+import { UpdatePointRequest } from '@common/requests/point';
+import { IPointService } from './interfaces/point-service.interface';
+import { Quest } from '@entities/quest/quest.entity';
 
 @Injectable()
-export class PointService {
+export class PointService implements IPointService {
   constructor(
-    @InjectRepository(Quest) private readonly questRepository: Repository<Quest>,
-    @InjectRepository(UserInfo) private readonly userInfoRepository: Repository<UserInfo>,
-    private readonly dataSource: DataSource
+    @Inject(QUEST_REPOSITORY_KEY) private readonly questRepository: IQuestRepository,
+    @Inject(USER_INFO_REPOSITORY_KEY) private readonly userInfoRepository: IUserInfoRepository
   ) {}
 
-  async updatePoint(userId: number, updatePointDto: UpdatePointDto) {
-    const { questId, status } = updatePointDto;
-    const currentDate = new Date();
-    const userInfo = await this.userInfoRepository.findOne({ where: { userId } });
+  @Transactional()
+  async updatePoint(userId: number, updatePointRequest: UpdatePointRequest) {
+    const { questId, status } = updatePointRequest;
+
+    const userInfo = await this.userInfoRepository.findByUserId(userId);
     if (!userInfo) {
-      throw new HttpException('fail - User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('유저의 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
     }
 
-    const quest = await this.questRepository.findOne({
-      where: { id: questId, userId },
-      relations: ['sideQuests'],
-    });
+    const quest = await this.questRepository.findById(questId);
     if (!quest) {
       throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
     }
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     try {
       const difficultyPoint = this.getPointByDifficulty(quest.difficulty);
+      const totalPoint = this.calculateTotalPoint(quest, status, difficultyPoint);
+
       quest.status = status;
-      quest.updatedAt = currentDate;
-      const completedSideQuestsCount = quest.sideQuests.filter(
-        (sideQuest) => sideQuest.status === Status.COMPLETED
-      ).length;
+      userInfo.point = Math.max(0, userInfo.point + totalPoint);
 
-      const totalPoint =
-        quest.mode === Mode.MAIN ? completedSideQuestsCount * difficultyPoint : difficultyPoint;
-      userInfo.point +=
-        status === Status.COMPLETED
-          ? totalPoint
-          : status === Status.ON_PROGRESS
-            ? -totalPoint
-            : -difficultyPoint;
-
-      if (userInfo.point < 0) userInfo.point = 0;
-
-      await queryRunner.manager.save([quest, userInfo]);
-
-      await queryRunner.commitTransaction();
+      await this.questRepository.save(quest);
+      await this.userInfoRepository.save(userInfo);
     } catch (error) {
-      await queryRunner.rollbackTransaction();
       throw error;
-    } finally {
-      await queryRunner.release();
     }
   }
 
@@ -76,6 +58,24 @@ export class PointService {
         return 5;
       default:
         throw new HttpException('Invalid difficulty', HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+  }
+
+  private calculateTotalPoint(quest: Quest, status: Status, difficultyPoint: number): number {
+    const completedSideQuestsCount = quest.sideQuests.filter(
+      (sideQuest) => sideQuest.status === Status.COMPLETED
+    ).length;
+
+    const totalPoint =
+      quest.mode === Mode.MAIN ? completedSideQuestsCount * difficultyPoint : difficultyPoint;
+
+    switch (status) {
+      case Status.COMPLETED:
+        return totalPoint;
+      case Status.ON_PROGRESS:
+        return -totalPoint;
+      default:
+        return -difficultyPoint;
     }
   }
 }

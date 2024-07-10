@@ -1,7 +1,7 @@
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { Quest } from './quest.entity';
 import { IQuestRepository } from './quest-repository.interface';
-import { EntityTarget, SelectQueryBuilder } from 'typeorm';
+import { EntityTarget, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { Mode } from 'src/common/types/quest/quest.type';
 
 export class QuestRepository extends GenericTypeOrmRepository<Quest> implements IQuestRepository {
@@ -9,11 +9,15 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
     return Quest.name;
   }
 
+  async findById(id: number): Promise<Quest | null> {
+    const findOption: FindOneOptions = { where: { id }, relations: ['sideQuests'] };
+    return this.getRepository().findOne(findOption);
+  }
+
   async findMainQuestsByUserId(userId: number, dateString: string): Promise<Quest[]> {
     return this.baseSelectQueryBuilder(userId, Mode.MAIN)
-      .leftJoinAndSelect('quest.sideQuests', 'sideQuest')
-      .andWhere('quest.startDate <= :dateString', { dateString })
-      .andWhere('quest.endDate >= :dateString', { dateString })
+      .andWhere('quest.start <= :dateString', { dateString })
+      .andWhere('quest.end >= :dateString', { dateString })
       .orderBy('quest.id', 'DESC')
       .getMany();
   }
@@ -34,11 +38,15 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
   }
 
   private baseSelectQueryBuilder(userId: number, mode: Mode): SelectQueryBuilder<Quest> {
-    return this.getRepository()
+    let query = this.getRepository()
       .createQueryBuilder('quest')
       .select(this.getSelectFields(mode))
       .where('quest.userId = :userId', { userId })
       .andWhere('quest.mode= :mode', { mode });
+
+    if (mode === Mode.MAIN) query = query.leftJoinAndSelect('quest.sideQuests', 'sideQuest');
+
+    return query;
   }
 
   private getSelectFields(mode: Mode): string[] {

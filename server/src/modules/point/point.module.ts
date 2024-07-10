@@ -1,14 +1,19 @@
-import { Module } from '@nestjs/common';
+import { ClassProvider, Module } from '@nestjs/common';
 import { PointService } from './point.service';
 import { PointController } from './point.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Quest } from '../../entities/quest/quest.entity';
-import { UserInfo } from '../../entities/user-info/user-info.entity';
+import { UserInfoRepositoryModule } from '@entities/user-info/user-info-repository.module';
+import { QuestRepositoryModule } from '@entities/quest/quest-repository.module';
+import { POINT_SERVICE_KEY } from './interfaces/point-service.interface';
+
+const pointService: ClassProvider = {
+  provide: POINT_SERVICE_KEY,
+  useClass: PointService,
+};
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Quest, UserInfo])],
-  providers: [PointService],
+  imports: [UserInfoRepositoryModule, QuestRepositoryModule],
+  providers: [pointService],
   controllers: [PointController],
-  exports: [PointService],
+  exports: [pointService],
 })
 export class PointModule {}

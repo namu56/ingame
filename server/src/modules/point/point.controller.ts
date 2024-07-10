@@ -3,14 +3,13 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Inject,
   Patch,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { PointService } from './point.service';
 import { AccessTokenPayload } from '../auth/auth.interface';
-import { UpdatePointDto } from '../../common/dto/point/update-point.dto';
 import { CurrentUser } from 'src/core/decorators/current-user.decorator';
 import {
   ApiBearerAuth,
@@ -20,11 +19,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
+import { IPointService, POINT_SERVICE_KEY } from './interfaces/point-service.interface';
+import { UpdatePointRequest } from '@common/requests/point';
 
 @Controller('point')
 @ApiTags('Point API')
 export class PointController {
-  constructor(private readonly pointService: PointService) {}
+  constructor(@Inject(POINT_SERVICE_KEY) private readonly pointService: IPointService) {}
 
   @UseGuards(JwtAuthGuard)
   @Patch()
@@ -37,8 +38,8 @@ export class PointController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePoint(
     @CurrentUser() user: AccessTokenPayload,
-    @Body() updatePointDto: UpdatePointDto
+    @Body() updatePointRequest: UpdatePointRequest
   ) {
-    await this.pointService.updatePoint(user.id, updatePointDto);
+    await this.pointService.updatePoint(user.id, updatePointRequest);
   }
 }
