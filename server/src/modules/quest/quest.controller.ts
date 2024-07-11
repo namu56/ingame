@@ -11,7 +11,7 @@ import {
   HttpStatus,
   Query,
 } from '@nestjs/common';
-import { QuestsService } from './quests.service';
+import { QuestService } from './quest.service';
 import {
   CreateQuestDto,
   CreateQuestRequestDto,
@@ -39,24 +39,26 @@ import {
   ApiUnauthorizedResponse,
   PickType,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@core/guards';
+import { CreateQuestRequest } from '@common/requests/quest';
 
 @Controller('quests')
 @ApiTags('Quests API')
-export class QuestsController {
-  constructor(private readonly questsService: QuestsService) {}
+export class QuestController {
+  constructor(private readonly questService: QuestService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post('')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 / 서브 퀘스트 생성' })
   @ApiBearerAuth('accessToken')
-  @ApiBody({ type: CreateQuestRequestDto })
+  @ApiBody({ type: CreateQuestRequest })
   @ApiCreatedResponse({ description: 'success' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.CREATED)
-  async create(@CurrentUser() user: AccessTokenPayload, @Body() createQuestDto: CreateQuestDto) {
-    return await this.questsService.create(user.id, createQuestDto);
+  async create(@CurrentUser() user: AccessTokenPayload, @Body() request: CreateQuestRequest) {
+    await this.questService.create(user.id, request);
+    return { message: 'success' };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -75,7 +77,7 @@ export class QuestsController {
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateQuestDto
   ) {
-    await this.questsService.update(user.id, +id, updateQuestDto);
+    await this.questService.update(user.id, +id, updateQuestDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -98,7 +100,7 @@ export class QuestsController {
     const queryDate = query
       ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
       : new Date().toISOString().split('T')[0];
-    return await this.questsService.findAll(user.id, Mode.MAIN, queryDate);
+    return await this.questService.findAll(user.id, Mode.MAIN, queryDate);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -112,7 +114,7 @@ export class QuestsController {
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
   async findOne(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    return await this.questsService.findOne(user.id, +id);
+    return await this.questService.findOne(user.id, +id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -131,7 +133,7 @@ export class QuestsController {
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateQuestDto
   ) {
-    await this.questsService.update(user.id, +id, updateQuestDto);
+    await this.questService.update(user.id, +id, updateQuestDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -145,7 +147,7 @@ export class QuestsController {
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    await this.questsService.remove(user.id, +id);
+    await this.questService.remove(user.id, +id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -164,7 +166,7 @@ export class QuestsController {
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateSideQuestDto
   ) {
-    await this.questsService.updateSideStatus(user.id, +id, updateQuestDto);
+    await this.questService.updateSideStatus(user.id, +id, updateQuestDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -187,7 +189,7 @@ export class QuestsController {
     const queryDate = query
       ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
       : new Date().toISOString().split('T')[0];
-    return await this.questsService.findAll(user.id, Mode.SUB, queryDate);
+    return await this.questService.findAll(user.id, Mode.SUB, queryDate);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -206,7 +208,7 @@ export class QuestsController {
     @Param('id') id: string,
     @Body() updateQuestDto: UpdateQuestDto
   ) {
-    await this.questsService.update(user.id, +id, updateQuestDto);
+    await this.questService.update(user.id, +id, updateQuestDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -220,6 +222,6 @@ export class QuestsController {
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeSub(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    await this.questsService.remove(user.id, +id);
+    await this.questService.remove(user.id, +id);
   }
 }

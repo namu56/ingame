@@ -1,70 +1,57 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateQuestDto } from '../../common/dto/quest/create-quest.dto';
 import { UpdateQuestDto } from '../../common/dto/quest/update-quest.dto';
 import { UpdateSideQuestDto } from '../../common/dto/quest/update-side-quest.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from '../../entities/quest/quest.entity';
-import { DataSource, FindManyOptions, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { FindManyOptions, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { SideQuest } from '../../entities/side-quest/side-quest.entity';
 import { Difficulty, Mode, Status } from '../../common/types/quest/quest.type';
+import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
+import {
+  ISideQuestRepository,
+  SIDE_QUEST_REPOSITORY_KEY,
+} from '@entities/side-quest/side-quest-repository.interface';
+import { Transactional } from '@core/decorators/transactional.decorator';
+import { CreateQuestRequest, CreateSideQuestRequest } from '@common/requests/quest';
 
 @Injectable()
-export class QuestsService {
+export class QuestService {
   constructor(
-    @InjectRepository(Quest) private readonly questRepository: Repository<Quest>,
-    @InjectRepository(SideQuest) private readonly sideQuestRepository: Repository<SideQuest>,
-    private readonly dataSource: DataSource
+    @Inject(QUEST_REPOSITORY_KEY) private readonly questRepository: IQuestRepository,
+    @Inject(SIDE_QUEST_REPOSITORY_KEY) private readonly sideQuestRepository: ISideQuestRepository
   ) {}
 
-  async create(userId: number, createQuestDto: CreateQuestDto) {
-    const currentDate = new Date();
-    const { title, difficulty, mode, sideQuests, startDate, endDate, hidden, status } =
-      createQuestDto;
-
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
+  @Transactional()
+  async create(userId: number, request: CreateQuestRequest): Promise<void> {
+    const { mode, sideQuests } = request;
     try {
-      const quest = this.questRepository.create({
-        userId: userId,
-        title: title,
-        difficulty: mode === Mode.MAIN ? difficulty : Difficulty.DEFAULT,
-        mode: mode,
-        start: startDate,
-        end: endDate,
-        hidden: hidden,
-        status: status ? status : Status.ON_PROGRESS,
-        createdAt: currentDate,
-        updatedAt: currentDate,
-      });
-      const savedQuest = await queryRunner.manager.save(quest);
+      const quest = await this.createQuest(userId, request);
 
-      if (mode === Mode.MAIN) {
-        for (const sideQuest of sideQuests) {
-          const { content } = sideQuest;
-
-          const side = this.sideQuestRepository.create({
-            questId: savedQuest.id,
-            content: content,
-            status: Status.ON_PROGRESS,
-            createdAt: currentDate,
-            updatedAt: currentDate,
-          });
-
-          await queryRunner.manager.save(side);
-        }
-      }
-
-      await queryRunner.commitTransaction();
+      if (mode === Mode.MAIN) await this.createSideQuest(quest.id, sideQuests);
     } catch (error) {
-      await queryRunner.rollbackTransaction();
       throw error;
-    } finally {
-      await queryRunner.release();
     }
+  }
 
-    return { message: 'success' };
+  private async createQuest(userId: number, request: CreateQuestRequest): Promise<Quest> {
+    const { title, difficulty, mode, startDate, endDate, hidden } = request;
+
+    const quest =
+      mode === Mode.MAIN
+        ? Quest.createMainQuest(userId, title, difficulty, startDate, endDate, hidden)
+        : Quest.createSubQuest(userId, title, startDate, endDate, hidden);
+
+    return this.questRepository.save(quest);
+  }
+
+  private async createSideQuest(
+    questId: number,
+    sideQuests: CreateSideQuestRequest[]
+  ): Promise<void> {
+    for (const sideQuest of sideQuests) {
+      const { content } = sideQuest;
+      await this.sideQuestRepository.save(SideQuest.create(questId, content));
+    }
   }
 
   async findAll(userId: number, mode: Mode, queryDate: string) {

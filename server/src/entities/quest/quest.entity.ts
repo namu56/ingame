@@ -7,11 +7,6 @@ import { BigIntTransformer } from 'src/core/database/typeorm/transformer/big-int
 
 @Entity('quest')
 export class Quest extends BaseTimeEntity {
-  constructor(questData: Partial<Quest>) {
-    super();
-    Object.assign(this, questData);
-  }
-
   @PrimaryColumn({ type: 'bigint', transformer: new BigIntTransformer() })
   @Generated('increment')
   id: number;
@@ -35,10 +30,10 @@ export class Quest extends BaseTimeEntity {
   status: Status;
 
   @Column({ type: 'varchar', nullable: false })
-  start: string;
+  startDate: string;
 
   @Column({ type: 'varchar', nullable: true })
-  end: string | null;
+  endDate: string | null;
 
   @ManyToOne(() => User, (user) => user.quests, {
     onDelete: 'CASCADE',
@@ -47,4 +42,45 @@ export class Quest extends BaseTimeEntity {
 
   @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest)
   sideQuests: SideQuest[];
+
+  static createMainQuest(
+    userId: number,
+    title: string,
+    difficulty: Difficulty,
+    startDate: string,
+    endDate: string,
+    hidden: Hidden
+  ): Quest {
+    const quest = new Quest();
+    quest.userId = userId;
+    quest.title = title;
+    quest.difficulty = difficulty;
+    quest.mode = Mode.MAIN;
+    quest.startDate = startDate;
+    quest.endDate = endDate;
+    quest.hidden = hidden;
+    quest.status = Status.ON_PROGRESS;
+
+    return quest;
+  }
+
+  static createSubQuest(
+    userId: number,
+    title: string,
+    startDate: string,
+    endDate: string,
+    hidden: Hidden
+  ): Quest {
+    const quest = new Quest();
+    quest.userId = userId;
+    quest.title = title;
+    quest.difficulty = Difficulty.DEFAULT;
+    quest.mode = Mode.MAIN;
+    quest.startDate = startDate;
+    quest.endDate = endDate;
+    quest.hidden = hidden;
+    quest.status = Status.ON_PROGRESS;
+
+    return quest;
+  }
 }
