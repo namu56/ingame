@@ -1,11 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Quest } from '../../entities/quest/quest.entity';
 import { Repository } from 'typeorm';
 import { Mode, Status } from '../../common/types/quest/quest.type';
-import { PointService } from '../../modules/point/point.service';
-import { UpdatePointDto } from '../../common/dto/point/update-point.dto';
 import { SideQuest } from '../../entities/side-quest/side-quest.entity';
+import {
+  IPointService,
+  POINT_SERVICE_KEY,
+} from '@modules/point/interfaces/point-service.interface';
+import { UpdatePointRequest } from '@common/requests/point';
 
 @Injectable()
 export class SchedulerService {
@@ -13,10 +16,11 @@ export class SchedulerService {
 
   constructor(
     @InjectRepository(Quest) private readonly questRepository: Repository<Quest>,
-    @InjectRepository(SideQuest) private readonly sideQuestRepository: Repository<SideQuest>
+    @InjectRepository(SideQuest) private readonly sideQuestRepository: Repository<SideQuest>,
+    @Inject(POINT_SERVICE_KEY) private readonly pointService: IPointService
   ) {}
 
-  async updateQuestStatus(pointService: PointService) {
+  async updateQuestStatus() {
     const moveDate = (date: Date, days: number) => {
       const newDate = new Date(date);
       newDate.setHours(newDate.getHours() + 9); // KST 기준으로 변경, UTC일 경우에는 제거
@@ -65,12 +69,12 @@ export class SchedulerService {
         await this.sideQuestRepository.save(quest.sideQuests);
         await this.questRepository.save(quest);
 
-        const updatePointDto = {
+        const updatePointRequest = {
           questId: quest.id,
           status: quest.status,
-        } satisfies UpdatePointDto;
+        } satisfies UpdatePointRequest;
 
-        await pointService.updatePoint(quest.userId, updatePointDto);
+        await this.pointService.updatePoint(quest.userId, updatePointRequest);
       }
     }
 
@@ -87,12 +91,12 @@ export class SchedulerService {
       await this.questRepository.save(updatedSubQuests);
 
       for (const quest of updatedSubQuests) {
-        const updatePointDto = {
+        const updatePointRequest = {
           questId: quest.id,
           status: Status.FAIL,
-        } satisfies UpdatePointDto;
+        } satisfies UpdatePointRequest;
 
-        await pointService.updatePoint(quest.userId, updatePointDto);
+        await this.pointService.updatePoint(quest.userId, updatePointRequest);
       }
     }
 
