@@ -4,6 +4,7 @@ import { SideQuest } from '../side-quest/side-quest.entity';
 import { Difficulty, Hidden, Mode, Status } from '../../common/types/quest/quest.type';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 import { BigIntTransformer } from 'src/core/database/typeorm/transformer/big-int.transformer';
+import { toUTCEndOfDay, toUTCStartOfDay } from '@common/utils/date.util';
 
 @Entity('quest')
 export class Quest extends BaseTimeEntity {
@@ -29,11 +30,11 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'enum', enum: Status, default: Status.ON_PROGRESS, nullable: false })
   status: Status;
 
-  @Column({ type: 'varchar', nullable: false })
-  startDate: string;
+  @Column({ type: 'timestamp', nullable: false })
+  startDate: Date;
 
-  @Column({ type: 'varchar', nullable: true })
-  endDate: string | null;
+  @Column({ type: 'timestamp', nullable: true })
+  endDate: Date | null;
 
   @ManyToOne(() => User, (user) => user.quests, {
     onDelete: 'CASCADE',
@@ -56,8 +57,8 @@ export class Quest extends BaseTimeEntity {
     quest.title = title;
     quest.difficulty = difficulty;
     quest.mode = Mode.MAIN;
-    quest.startDate = startDate;
-    quest.endDate = endDate;
+    quest.startDate = toUTCStartOfDay(startDate);
+    quest.endDate = endDate ? toUTCEndOfDay(endDate) : null;
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
@@ -76,8 +77,8 @@ export class Quest extends BaseTimeEntity {
     quest.title = title;
     quest.difficulty = Difficulty.DEFAULT;
     quest.mode = Mode.MAIN;
-    quest.startDate = startDate;
-    quest.endDate = endDate;
+    quest.startDate = toUTCStartOfDay(startDate);
+    quest.endDate = toUTCEndOfDay(endDate);
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
