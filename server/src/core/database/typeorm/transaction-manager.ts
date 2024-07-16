@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { getNamespace } from 'cls-hooked';
 import { EntityManager } from 'typeorm';
-import { ENTITY_MANAGER, TRANSACTION } from '../../../common/utils/constants.util';
+import { ENTITY_MANAGER, TRANSACTION } from '../../../common/constants/transaction.constant';
 
 @Injectable()
 export class TransactionManager {

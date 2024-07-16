@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ENTITY_MANAGER, TRANSACTION } from '../../common/utils/constants.util';
+import { ENTITY_MANAGER, TRANSACTION } from '../../common/constants/transaction.constant';
 import { getNamespace } from 'cls-hooked';
 import { EntityManager } from 'typeorm';
 
