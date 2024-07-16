@@ -7,6 +7,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { CreateSideQuestRequest } from './create-side-quest.request';
@@ -34,7 +35,7 @@ export class CreateQuestRequest {
   @ApiProperty({
     enum: Mode,
     example: 'main',
-    description: '퀘스트 모드 (서브 퀘스트는 EASY 고정)',
+    description: '퀘스트 모드',
     required: true,
   })
   @IsEnum(Mode)
@@ -44,7 +45,7 @@ export class CreateQuestRequest {
   @ApiProperty({
     enum: Status,
     example: 'onProgress',
-    description: '퀘스트 진행 상태 (생성 시에는 onProgress 로 고정)',
+    description: '퀘스트 진행 상태',
     required: true,
   })
   @IsEnum(Status)
@@ -66,6 +67,7 @@ export class CreateQuestRequest {
     description: '사이드 퀘스트의 내용들',
     required: false,
   })
+  @ValidateIf((quest) => quest.mode === Mode.MAIN)
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateSideQuestRequest)
@@ -73,7 +75,7 @@ export class CreateQuestRequest {
 
   @ApiProperty({
     example: '2024-05-15',
-    description: '퀘스트 시작일 (YYYY-MM-DD 형식)',
+    description: '퀘스트 시작일',
     required: true,
   })
   @IsDateString()
@@ -82,9 +84,10 @@ export class CreateQuestRequest {
 
   @ApiProperty({
     example: '2024-05-15',
-    description: '퀘스트 종료일 (YYYY-MM-DD 형식)',
+    description: '퀘스트 종료일',
     required: true,
   })
   @IsDateString()
+  @IsNotEmpty()
   endDate: string; // YYYY-MM-DD 형식
 }

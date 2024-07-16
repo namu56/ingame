@@ -33,8 +33,8 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'timestamp', nullable: false })
   startDate: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
-  endDate: Date | null;
+  @Column({ type: 'timestamp', nullable: false })
+  endDate: Date;
 
   @ManyToOne(() => User, (user) => user.quests, {
     onDelete: 'CASCADE',
@@ -58,7 +58,7 @@ export class Quest extends BaseTimeEntity {
     quest.difficulty = difficulty;
     quest.mode = Mode.MAIN;
     quest.startDate = toUTCStartOfDay(startDate);
-    quest.endDate = endDate ? toUTCEndOfDay(endDate) : null;
+    quest.endDate = toUTCEndOfDay(endDate);
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
@@ -76,7 +76,7 @@ export class Quest extends BaseTimeEntity {
     quest.userId = userId;
     quest.title = title;
     quest.difficulty = Difficulty.DEFAULT;
-    quest.mode = Mode.MAIN;
+    quest.mode = Mode.SUB;
     quest.startDate = toUTCStartOfDay(startDate);
     quest.endDate = toUTCEndOfDay(endDate);
     quest.hidden = hidden;
