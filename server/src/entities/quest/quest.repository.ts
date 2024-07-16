@@ -1,8 +1,19 @@
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { Quest } from './quest.entity';
 import { IQuestRepository } from './quest-repository.interface';
-import { EntityTarget, FindOneOptions, SelectQueryBuilder } from 'typeorm';
+import {
+  EntityTarget,
+  FindManyOptions,
+  FindOneOptions,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { Mode } from 'src/common/types/quest/quest.type';
+import { QUEST_SELECT_FIELDS } from '@common/constants';
+import { plainToInstance } from 'class-transformer';
+import { MainQuestResponse } from '@common/responses/quest';
+import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 
 export class QuestRepository extends GenericTypeOrmRepository<Quest> implements IQuestRepository {
   getName(): EntityTarget<Quest> {
@@ -10,37 +21,44 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
   }
 
   async findById(id: number): Promise<Quest | null> {
-    const findOption: FindOneOptions = { where: { id }, relations: ['sideQuests'] };
+    const findOption: FindOneOptions<Quest> = { where: { id }, relations: ['sideQuests'] };
     return this.getRepository().findOne(findOption);
   }
 
-  async findMainQuestsByUserId(userId: number, dateString: string): Promise<Quest[]> {
-    return this.baseSelectQueryBuilder(userId, Mode.MAIN)
-      .andWhere('quest.start <= :dateString', { dateString })
-      .andWhere('quest.end >= :dateString', { dateString })
-      .orderBy('quest.id', 'DESC')
+  async findMainQuests(userId: number, date: Date): Promise<MainQuestResponse[]> {
+    const rows = await this.baseSelectQueryBuilder(userId, Mode.MAIN)
+      .andWhere('quest.startDate <=:date', { date })
+      .andWhere('quest.endDate >= :date', { date })
       .getMany();
-  }
 
-  async findSubQuestsByUserId(userId: number, dateString: string): Promise<Quest[]> {
-    return this.baseSelectQueryBuilder(userId, Mode.SUB)
-      .andWhere('quest.startDate = :dateString', { dateString })
-      .orderBy('quest.id', 'DESC')
+    return plainToInstance(MainQuestResponse, rows);
+  }
+  async findSubQuests(userId: number, date: Date): Promise<SubQuestResponse[]> {
+    const rows = await this.baseSelectQueryBuilder(userId, Mode.SUB)
+      .andWhere('quest.startDate =:date', { date })
       .getMany();
+
+    return plainToInstance(SubQuestResponse, rows);
   }
 
-  async findMainQuestById(id: number, userId: number): Promise<Quest> {
-    return this.baseSelectQueryBuilder(userId, Mode.MAIN).andWhere('qeust.id=:id', { id }).getOne();
+  async findMainQuest(id: number, userId: number): Promise<MainQuestResponse | null> {
+    const row = await this.baseSelectQueryBuilder(userId, Mode.MAIN)
+      .andWhere('quest.id=:id', { id })
+      .getOne();
+    return plainToInstance(MainQuestResponse, row);
   }
 
-  async findSubQuestById(id: number, userId: number): Promise<Quest> {
-    return this.baseSelectQueryBuilder(userId, Mode.SUB).andWhere('qeust.id=:id', { id }).getOne();
+  async findSubQuest(id: number, userId: number): Promise<SubQuestResponse | null> {
+    const row = await this.baseSelectQueryBuilder(userId, Mode.SUB)
+      .andWhere('quest.id=:id', { id })
+      .getOne();
+    return plainToInstance(SubQuestResponse, row);
   }
 
   private baseSelectQueryBuilder(userId: number, mode: Mode): SelectQueryBuilder<Quest> {
     let query = this.getRepository()
       .createQueryBuilder('quest')
-      .select(this.getSelectFields(mode))
+      .select(QUEST_SELECT_FIELDS)
       .where('quest.userId = :userId', { userId })
       .andWhere('quest.mode= :mode', { mode });
 
@@ -48,19 +66,18 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
 
     return query;
   }
-
-  private getSelectFields(mode: Mode): string[] {
-    const commonFields = [
-      'quest.id',
-      'quest.title',
-      'quest.hidden',
-      'quest.status',
-      'quest.createdAt',
-      'quest.updatedAt',
-    ];
-
-    return mode === Mode.MAIN
-      ? [...commonFields, 'quest.difficulty', 'quest.startDate', 'quest.endDate']
-      : commonFields;
-  }
 }
+//   private getSelectFields(mode: Mode): string[] {
+//     const commonFields = [
+//       'quest.id',
+//       'quest.title',
+//       'quest.hidden',
+//       'quest.status',
+//       'quest.createdAt',
+//       'quest.updatedAt',
+//     ];
+
+//     return mode === Mode.MAIN
+//       ? [...commonFields, 'quest.difficulty', 'quest.startDate', 'quest.endDate']
+//       : commonFields;
+//   }

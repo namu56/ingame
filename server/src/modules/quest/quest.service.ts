@@ -1,11 +1,9 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { CreateQuestDto } from '../../common/dto/quest/create-quest.dto';
-import { UpdateQuestDto } from '../../common/dto/quest/update-quest.dto';
 import { UpdateSideQuestDto } from '../../common/dto/quest/update-side-quest.dto';
 import { Quest } from '../../entities/quest/quest.entity';
 import { FindManyOptions, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { SideQuest } from '../../entities/side-quest/side-quest.entity';
-import { Difficulty, Mode, Status } from '../../common/types/quest/quest.type';
+import { Mode, Status } from '../../common/types/quest/quest.type';
 import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
 import {
   ISideQuestRepository,
@@ -13,6 +11,9 @@ import {
 } from '@entities/side-quest/side-quest-repository.interface';
 import { Transactional } from '@core/decorators/transactional.decorator';
 import { CreateQuestRequest, CreateSideQuestRequest } from '@common/requests/quest';
+import { toUTCStartOfDay } from '@common/utils/date.util';
+import { MainQuestResponse } from '@common/responses/quest';
+import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 
 @Injectable()
 export class QuestService {
@@ -54,44 +55,21 @@ export class QuestService {
     }
   }
 
-  async findAll(userId: number, mode: Mode, queryDate: string) {
-    const mainOptions: FindManyOptions<Quest> = {
-      where: {
-        userId: userId,
-        mode: Mode.MAIN,
-        start: LessThanOrEqual(queryDate),
-        end: MoreThanOrEqual(queryDate),
-      },
-      order: {
-        id: 'DESC',
-      },
-      relations: ['sideQuests'],
-      select: [
-        'id',
-        'title',
-        'difficulty',
-        'mode',
-        'start',
-        'end',
-        'hidden',
-        'status',
-        'createdAt',
-        'updatedAt',
-      ],
-    };
-    const subOptions: FindManyOptions<Quest> = {
-      where: { userId: userId, mode: Mode.SUB, start: queryDate },
-      order: {
-        id: 'DESC',
-      },
-      select: ['id', 'title', 'hidden', 'status', 'createdAt', 'updatedAt'],
-    };
-    const quests = await this.questRepository.find(mode === Mode.MAIN ? mainOptions : subOptions);
-
+  async findMainQuests(userId: number, dateString: string): Promise<MainQuestResponse[]> {
+    const date = toUTCStartOfDay(dateString);
+    const quests = await this.questRepository.findMainQuests(userId, date);
     if (!quests) {
-      throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
+    return quests;
+  }
 
+  async findSubQuests(userId: number, dateString: string): Promise<SubQuestResponse[]> {
+    const date = toUTCStartOfDay(dateString);
+    const quests = await this.questRepository.findSubQuests(userId, date);
+    if (!quests) {
+      throw new HttpException('서브 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+    }
     return quests;
   }
 

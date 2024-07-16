@@ -14,8 +14,6 @@ import {
 import { QuestService } from './quest.service';
 import {
   CreateQuestDto,
-  CreateQuestRequestDto,
-  SubQuestResponseDto,
   UpdateQuestRequestDto,
   UpdateSubQuestRequestDto,
 } from '../../common/dto/quest/create-quest.dto';
@@ -24,7 +22,6 @@ import { UpdateSideQuestRequestDto } from '../../common/dto/quest/create-side-qu
 import { UpdateSideQuestDto } from '../../common/dto/quest/update-side-quest.dto';
 import { CurrentUser } from '../../core/decorators/current-user.decorator';
 import { AccessTokenPayload } from '../auth/auth.interface';
-import { Mode } from '../../common/types/quest/quest.type';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -41,6 +38,8 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@core/guards';
 import { CreateQuestRequest } from '@common/requests/quest';
+import { MainQuestResponse } from '@common/responses/quest';
+import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 
 @Controller('quests')
 @ApiTags('Quests API')
@@ -80,8 +79,8 @@ export class QuestController {
     await this.questService.update(user.id, +id, updateQuestDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('main')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({
@@ -89,18 +88,18 @@ export class QuestController {
     required: false,
     type: String,
     description: '조회 일자',
-    example: '20240521',
+    example: '2024-05-21',
   })
-  @ApiOkResponse({ type: [CreateQuestDto] })
+  @ApiOkResponse({ type: [MainQuestResponse] })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAll(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
-    const queryDate = query
-      ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
-      : new Date().toISOString().split('T')[0];
-    return await this.questService.findAll(user.id, Mode.MAIN, queryDate);
+  async findAll(
+    @CurrentUser() user: AccessTokenPayload,
+    @Query('date') dateString: string
+  ): Promise<MainQuestResponse[]> {
+    return await this.questService.findMainQuests(user.id, dateString);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -169,8 +168,8 @@ export class QuestController {
     await this.questService.updateSideStatus(user.id, +id, updateQuestDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('sub')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '서브(일일) 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({
@@ -178,18 +177,18 @@ export class QuestController {
     required: false,
     type: String,
     description: '조회 일자',
-    example: '20240521',
+    example: '2024-05-21',
   })
-  @ApiOkResponse({ type: [SubQuestResponseDto] })
+  @ApiOkResponse({ type: [SubQuestResponse] })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAllSub(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
-    const queryDate = query
-      ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
-      : new Date().toISOString().split('T')[0];
-    return await this.questService.findAll(user.id, Mode.SUB, queryDate);
+  async findAllSub(
+    @CurrentUser() user: AccessTokenPayload,
+    @Query('date') dateString: string
+  ): Promise<SubQuestResponse[]> {
+    return await this.questService.findSubQuests(user.id, dateString);
   }
 
   @UseGuards(JwtAuthGuard)
