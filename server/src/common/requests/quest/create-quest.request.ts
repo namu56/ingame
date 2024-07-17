@@ -1,6 +1,6 @@
 import { Difficulty, Hidden, Mode, Status } from '@common/types/quest/quest.type';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
@@ -11,6 +11,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateSideQuestRequest } from './create-side-quest.request';
+import { toUTCEndOfDay, toUTCStartOfDay } from '@common/utils/date.util';
 
 export class CreateQuestRequest {
   @ApiProperty({
@@ -80,7 +81,10 @@ export class CreateQuestRequest {
   })
   @IsDateString()
   @IsNotEmpty()
-  startDate: string; // YYYY-MM-DD 형식
+  @Transform((property) => {
+    return toUTCStartOfDay(property.value);
+  })
+  startDate: Date;
 
   @ApiProperty({
     example: '2024-05-15',
@@ -89,5 +93,10 @@ export class CreateQuestRequest {
   })
   @IsDateString()
   @IsNotEmpty()
-  endDate: string; // YYYY-MM-DD 형식
+  @Transform((property) => {
+    return toUTCEndOfDay(property.value);
+  })
+  endDate: Date;
+
+  constructor() {}
 }

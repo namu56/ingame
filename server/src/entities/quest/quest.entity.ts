@@ -4,7 +4,6 @@ import { SideQuest } from '../side-quest/side-quest.entity';
 import { Difficulty, Hidden, Mode, Status } from '../../common/types/quest/quest.type';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 import { BigIntTransformer } from 'src/core/database/typeorm/transformer/big-int.transformer';
-import { toUTCEndOfDay, toUTCStartOfDay } from '@common/utils/date.util';
 
 @Entity('quest')
 export class Quest extends BaseTimeEntity {
@@ -44,12 +43,16 @@ export class Quest extends BaseTimeEntity {
   @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest)
   sideQuests: SideQuest[];
 
+  constructor() {
+    super();
+  }
+
   static createMainQuest(
     userId: number,
     title: string,
     difficulty: Difficulty,
-    startDate: string,
-    endDate: string,
+    startDate: Date,
+    endDate: Date,
     hidden: Hidden
   ): Quest {
     const quest = new Quest();
@@ -57,8 +60,8 @@ export class Quest extends BaseTimeEntity {
     quest.title = title;
     quest.difficulty = difficulty;
     quest.mode = Mode.MAIN;
-    quest.startDate = toUTCStartOfDay(startDate);
-    quest.endDate = toUTCEndOfDay(endDate);
+    quest.startDate = startDate;
+    quest.endDate = endDate;
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
@@ -68,8 +71,8 @@ export class Quest extends BaseTimeEntity {
   static createSubQuest(
     userId: number,
     title: string,
-    startDate: string,
-    endDate: string,
+    startDate: Date,
+    endDate: Date,
     hidden: Hidden
   ): Quest {
     const quest = new Quest();
@@ -77,8 +80,8 @@ export class Quest extends BaseTimeEntity {
     quest.title = title;
     quest.difficulty = Difficulty.DEFAULT;
     quest.mode = Mode.SUB;
-    quest.startDate = toUTCStartOfDay(startDate);
-    quest.endDate = toUTCEndOfDay(endDate);
+    quest.startDate = startDate;
+    quest.endDate = endDate;
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
