@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { QuestService } from './quest.service';
 import {
@@ -46,7 +47,7 @@ import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 export class QuestController {
   constructor(private readonly questService: QuestService) {}
 
-  @Post('')
+  @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 / 서브 퀘스트 생성' })
   @ApiBearerAuth('accessToken')
@@ -102,18 +103,18 @@ export class QuestController {
     return await this.questService.findMainQuests(user.id, dateString);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('main/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 퀘스트 개별 조회' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
-  @ApiOkResponse({ type: CreateQuestDto })
+  @ApiOkResponse({ type: MainQuestResponse })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findOne(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    return await this.questService.findOne(user.id, +id);
+  async findOne(@CurrentUser() user: AccessTokenPayload, @Param('id', ParseIntPipe) id: number) {
+    return await this.questService.findMainQuest(user.id, id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -145,8 +146,11 @@ export class QuestController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    await this.questService.remove(user.id, +id);
+  async deleteMainQuest(
+    @CurrentUser() user: AccessTokenPayload,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<void> {
+    await this.questService.deleteQuest(user.id, id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -210,8 +214,8 @@ export class QuestController {
     await this.questService.update(user.id, +id, updateQuestDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete('sub/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '서브 퀘스트 개별 삭제' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
@@ -220,7 +224,10 @@ export class QuestController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeSub(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    await this.questService.remove(user.id, +id);
+  async deleteSubQuest(
+    @CurrentUser() user: AccessTokenPayload,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<void> {
+    await this.questService.deleteQuest(user.id, id);
   }
 }

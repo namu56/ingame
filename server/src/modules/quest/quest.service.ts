@@ -72,11 +72,12 @@ export class QuestService {
     return quests;
   }
 
-  async findMainQuest(userId: number, questId: number) {
+  async findMainQuest(userId: number, questId: number): Promise<MainQuestResponse> {
     const quest = await this.questRepository.findMainQuest(questId, userId);
     if (!quest) {
       throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
+    return quest;
   }
 
   async update(userId: number, questId: number, updateQuestDto: UpdateQuestDto) {
@@ -139,15 +140,13 @@ export class QuestService {
     }
   }
 
-  async remove(userId: number, questId: number) {
-    const targetQuest = await this.questRepository.findOne({
-      where: { userId: userId, id: questId },
-    });
-    if (!targetQuest) {
-      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+  async deleteQuest(userId: number, questId: number): Promise<void> {
+    const quest = await this.questRepository.findMainQuest(questId, userId);
+    if (!quest) {
+      throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
 
-    await this.questRepository.delete({ id: questId });
+    await this.questRepository.delete(questId);
   }
 
   async updateSideStatus(userId: number, questId: number, updateQuestDto: UpdateSideQuestDto) {
