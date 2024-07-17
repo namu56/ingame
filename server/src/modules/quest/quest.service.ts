@@ -1,9 +1,8 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { UpdateSideQuestDto } from '../../common/dto/quest/update-side-quest.dto';
 import { Quest } from '../../entities/quest/quest.entity';
-import { FindManyOptions, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { SideQuest } from '../../entities/side-quest/side-quest.entity';
-import { Mode, Status } from '../../common/types/quest/quest.type';
+import { Mode } from '../../common/types/quest/quest.type';
 import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
 import {
   ISideQuestRepository,
@@ -30,7 +29,7 @@ export class QuestService {
 
       if (mode === Mode.MAIN) await this.createSideQuest(quest.id, sideQuests);
     } catch (error) {
-      throw error;
+      throw new HttpException('퀘스트를 생성하는데 실패했습니다', HttpStatus.CONFLICT);
     }
   }
 
@@ -73,34 +72,11 @@ export class QuestService {
     return quests;
   }
 
-  async findOne(userId: number, questId: number) {
-    const options: FindManyOptions<Quest> = {
-      where: { id: questId, userId: userId, mode: Mode.MAIN },
-      order: {
-        id: 'DESC',
-      },
-      relations: ['sideQuests'],
-      select: [
-        'id',
-        'title',
-        'difficulty',
-        'mode',
-        'start',
-        'end',
-        'hidden',
-        'status',
-        'createdAt',
-        'updatedAt',
-      ],
-    };
-
-    const quests = await this.questRepository.findOne(options);
-
-    if (!quests) {
-      throw new HttpException('fail - Quests not found', HttpStatus.NOT_FOUND);
+  async findMainQuest(userId: number, questId: number) {
+    const quest = await this.questRepository.findMainQuest(questId, userId);
+    if (!quest) {
+      throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
-
-    return quests;
   }
 
   async update(userId: number, questId: number, updateQuestDto: UpdateQuestDto) {
