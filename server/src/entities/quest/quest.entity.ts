@@ -40,7 +40,10 @@ export class Quest extends BaseTimeEntity {
   })
   user: User;
 
-  @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest)
+  @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest, {
+    cascade: ['insert', 'update'],
+    orphanedRowAction: 'delete',
+  })
   sideQuests: SideQuest[];
 
   constructor() {
@@ -86,5 +89,26 @@ export class Quest extends BaseTimeEntity {
     quest.status = Status.ON_PROGRESS;
 
     return quest;
+  }
+
+  updateMainQuest(
+    title: string,
+    difficulty: Difficulty,
+    hidden: Hidden,
+    startDate: Date,
+    endDate: Date,
+    sideQuests: SideQuest[]
+  ): void {
+    this.title = title;
+    this.difficulty = difficulty;
+    this.hidden = hidden;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.sideQuests = sideQuests;
+  }
+
+  updateSubQuest(title: string, hidden: Hidden): void {
+    this.title = title;
+    this.hidden = hidden;
   }
 }
