@@ -31,7 +31,6 @@ import {
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
-  PickType,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@core/guards';
 import {
@@ -58,7 +57,7 @@ export class QuestController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.CREATED)
-  async create(@CurrentUser() user: AccessTokenPayload, @Body() request: CreateQuestRequest) {
+  async createQuest(@CurrentUser() user: AccessTokenPayload, @Body() request: CreateQuestRequest) {
     await this.questService.create(user.id, request);
     return { message: 'success' };
   }
@@ -74,11 +73,11 @@ export class QuestController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateStatus(
+  async updateQuestStatus(
     @CurrentUser() user: AccessTokenPayload,
     @Param('id', ParseIntPipe) id: number,
     @Body() request: UpdateQuestStatusRequest
-  ) {
+  ): Promise<void> {
     await this.questService.updateQuestStatus(user.id, id, request);
   }
 
@@ -98,7 +97,7 @@ export class QuestController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAll(
+  async getMainQuests(
     @CurrentUser() user: AccessTokenPayload,
     @Query('date') dateString: string
   ): Promise<MainQuestResponse[]> {
@@ -115,7 +114,10 @@ export class QuestController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findOne(@CurrentUser() user: AccessTokenPayload, @Param('id', ParseIntPipe) id: number) {
+  async getMainQuest(
+    @CurrentUser() user: AccessTokenPayload,
+    @Param('id', ParseIntPipe) id: number
+  ) {
     return await this.questService.findMainQuest(user.id, id);
   }
 
@@ -171,7 +173,7 @@ export class QuestController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAllSub(
+  async getSubQuests(
     @CurrentUser() user: AccessTokenPayload,
     @Query('date') dateString: string
   ): Promise<SubQuestResponse[]> {
@@ -189,7 +191,7 @@ export class QuestController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateSub(
+  async updateSubQuest(
     @CurrentUser() user: AccessTokenPayload,
     @Param('id', ParseIntPipe) id: number,
     @Body() request: UpdateSubQuestRequest
