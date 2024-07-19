@@ -18,7 +18,7 @@ import { UpdateQuestDto } from '../../common/dto/quest/update-quest.dto';
 import { UpdateSideQuestRequestDto } from '../../common/dto/quest/create-side-quest.dto';
 import { UpdateSideQuestDto } from '../../common/dto/quest/update-side-quest.dto';
 import { CurrentUser } from '../../core/decorators/current-user.decorator';
-import { AccessTokenPayload } from '../auth/auth.interface';
+
 import {
   ApiBearerAuth,
   ApiBody,
@@ -34,10 +34,15 @@ import {
   PickType,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@core/guards';
-import { CreateQuestRequest, UpdateMainQuestRequest } from '@common/requests/quest';
+import {
+  CreateQuestRequest,
+  UpdateMainQuestRequest,
+  UpdateQuestStatusRequest,
+} from '@common/requests/quest';
 import { MainQuestResponse } from '@common/responses/quest';
 import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 import { UpdateSubQuestRequest } from '@common/requests/quest/update-sub-quest.request';
+import { AccessTokenPayload } from '@common/dto/token';
 
 @Controller('quests')
 @ApiTags('Quests API')
@@ -63,7 +68,7 @@ export class QuestController {
   @ApiOperation({ summary: '메인 / 서브 퀘스트 완료 상태로 변경' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
-  @ApiBody({ type: PickType(CreateQuestDto, ['status']) })
+  @ApiBody({ type: UpdateQuestStatusRequest })
   @ApiNoContentResponse({ description: 'success' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
@@ -71,10 +76,10 @@ export class QuestController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateStatus(
     @CurrentUser() user: AccessTokenPayload,
-    @Param('id') id: string,
-    @Body() updateQuestDto: UpdateQuestDto
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: UpdateQuestStatusRequest
   ) {
-    await this.questService.update(user.id, +id, updateQuestDto);
+    await this.questService.updateQuestStatus(user.id, id, request);
   }
 
   @Get('main')

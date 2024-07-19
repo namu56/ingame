@@ -91,6 +91,10 @@ export class Quest extends BaseTimeEntity {
     return quest;
   }
 
+  updateStatus(status: Status): void {
+    this.status = status;
+  }
+
   updateMainQuest(
     title: string,
     difficulty: Difficulty,

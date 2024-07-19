@@ -12,6 +12,7 @@ import {
   CreateQuestRequest,
   CreateSideQuestRequest,
   UpdateMainQuestRequest,
+  UpdateQuestStatusRequest,
   UpdateSideQuestRequest,
 } from '@common/requests/quest';
 import { toUTCStartOfDay } from '@common/utils/date.util';
@@ -39,24 +40,20 @@ export class QuestService {
     }
   }
 
-  private async createQuest(userId: number, request: CreateQuestRequest): Promise<Quest> {
-    const { title, difficulty, mode, startDate, endDate, hidden } = request;
-
-    const quest =
-      mode === Mode.MAIN
-        ? Quest.createMainQuest(userId, title, difficulty, startDate, endDate, hidden)
-        : Quest.createSubQuest(userId, title, startDate, endDate, hidden);
-
-    return this.questRepository.save(quest);
-  }
-
-  private async createSideQuest(
+  async updateQuestStatus(
+    userId: number,
     questId: number,
-    sideQuests: CreateSideQuestRequest[]
+    request: UpdateQuestStatusRequest
   ): Promise<void> {
-    for (const sideQuest of sideQuests) {
-      const { content } = sideQuest;
-      await this.sideQuestRepository.save(SideQuest.create(questId, content));
+    try {
+      const quest = await this.questRepository.findById(userId, questId);
+      if (!quest) {
+        throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+      }
+      quest.updateStatus(request.status);
+      this.questRepository.save(quest);
+    } catch (error) {
+      throw new HttpException('퀘스트 상태 변경에 실패했습니다', HttpStatus.CONFLICT);
     }
   }
 
@@ -167,6 +164,27 @@ export class QuestService {
   //   });
   //   await this.sideQuestRepository.save(updatedSideQuest);
   // }
+
+  private async createQuest(userId: number, request: CreateQuestRequest): Promise<Quest> {
+    const { title, difficulty, mode, startDate, endDate, hidden } = request;
+
+    const quest =
+      mode === Mode.MAIN
+        ? Quest.createMainQuest(userId, title, difficulty, startDate, endDate, hidden)
+        : Quest.createSubQuest(userId, title, startDate, endDate, hidden);
+
+    return this.questRepository.save(quest);
+  }
+
+  private async createSideQuest(
+    questId: number,
+    sideQuests: CreateSideQuestRequest[]
+  ): Promise<void> {
+    for (const sideQuest of sideQuests) {
+      const { content } = sideQuest;
+      await this.sideQuestRepository.save(SideQuest.create(questId, content));
+    }
+  }
 
   private async findMainById(userId: number, questId: number): Promise<Quest> {
     const quest = await this.questRepository.findMainQuest(userId, questId);

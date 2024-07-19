@@ -1,7 +1,7 @@
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { Quest } from './quest.entity';
 import { IQuestRepository } from './quest-repository.interface';
-import { EntityTarget, SelectQueryBuilder } from 'typeorm';
+import { EntityTarget, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { Mode } from 'src/common/types/quest/quest.type';
 import { QUEST_SELECT_FIELDS } from '@common/constants';
 
@@ -9,6 +9,12 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
   getName(): EntityTarget<Quest> {
     return Quest.name;
   }
+
+  async findById(userId: number, questId: number): Promise<Quest | null> {
+    const findOptions: FindOneOptions = { where: { id: questId, userId } };
+    return this.getRepository().findOne(findOptions);
+  }
+
   async findMainQuests(userId: number, date: Date): Promise<Quest[]> {
     return await this.baseSelectQueryBuilder(userId, Mode.MAIN)
       .andWhere('quest.startDate <=:date', { date })
@@ -21,15 +27,15 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
       .getMany();
   }
 
-  async findMainQuest(id: number, userId: number): Promise<Quest | null> {
+  async findMainQuest(userId: number, questId: number): Promise<Quest | null> {
     return await this.baseSelectQueryBuilder(userId, Mode.MAIN)
-      .andWhere('quest.id=:id', { id })
+      .andWhere('quest.id=:id', { id: questId })
       .getOne();
   }
 
-  async findSubQuest(id: number, userId: number): Promise<Quest | null> {
+  async findSubQuest(userId: number, questId: number): Promise<Quest | null> {
     return await this.baseSelectQueryBuilder(userId, Mode.SUB)
-      .andWhere('quest.id=:id', { id })
+      .andWhere('quest.id=:id', { id: questId })
       .getOne();
   }
 
