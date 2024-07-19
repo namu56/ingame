@@ -13,11 +13,6 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { QuestService } from './quest.service';
-import { CreateQuestDto } from '../../common/dto/quest/create-quest.dto';
-import { UpdateQuestDto } from '../../common/dto/quest/update-quest.dto';
-import { UpdateSideQuestRequestDto } from '../../common/dto/quest/create-side-quest.dto';
-import { UpdateSideQuestDto } from '../../common/dto/quest/update-side-quest.dto';
-import { CurrentUser } from '../../core/decorators/current-user.decorator';
 
 import {
   ApiBearerAuth,
@@ -42,6 +37,7 @@ import { MainQuestResponse } from '@common/responses/quest';
 import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 import { UpdateSubQuestRequest } from '@common/requests/quest/update-sub-quest.request';
 import { AccessTokenPayload } from '@common/dto/token';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
 
 @Controller('quests')
 @ApiTags('Quests API')
@@ -221,17 +217,17 @@ export class QuestController {
   @ApiOperation({ summary: '사이드 퀘스트 상태 수정' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '사이드 퀘스트 ID' })
-  @ApiBody({ type: UpdateSideQuestRequestDto })
+  @ApiBody({ type: UpdateQuestStatusRequest })
   @ApiNoContentResponse({ description: 'success' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateSideStatus(
+  async updateSideQuestStatus(
     @CurrentUser() user: AccessTokenPayload,
-    @Param('id') id: string,
-    @Body() updateQuestDto: UpdateSideQuestDto
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: UpdateQuestStatusRequest
   ) {
-    await this.questService.updateSideStatus(user.id, +id, updateQuestDto);
+    await this.questService.updateSideQuestStatus(user.id, id, request);
   }
 }

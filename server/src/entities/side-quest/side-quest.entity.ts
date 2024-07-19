@@ -36,4 +36,8 @@ export class SideQuest extends BaseTimeEntity {
   updateContent(content: string): void {
     this.content = content;
   }
+
+  updateStatus(status: Status): void {
+    this.status = status;
+  }
 }

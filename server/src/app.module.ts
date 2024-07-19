@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
 import { RankingModule } from './modules/ranking/ranking.module';
-import { QuestsModule } from './modules/quest/quests.module';
+import { QuestModule } from './modules/quest/quest.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './core/filters/all-exception.filter';
@@ -19,7 +19,7 @@ import { CoreModule } from './core/core.module';
     CoreModule,
     UserModule,
     AuthModule,
-    QuestsModule,
+    QuestModule,
     RankingModule,
     PointModule,
   ],

@@ -141,29 +141,22 @@ export class QuestService {
     await this.questRepository.delete(questId);
   }
 
-  // async updateSideStatus(userId: number, questId: number, updateQuestDto: UpdateSideQuestDto) {
-  //   const currentDate = new Date();
-
-  //   const targetSideQuest = await this.sideQuestRepository.findOne({
-  //     where: { id: questId },
-  //   });
-  //   if (!targetSideQuest) {
-  //     throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
-  //   }
-
-  //   const quest = await this.questRepository.find({
-  //     where: { id: updateQuestDto.questId, userId: userId },
-  //   });
-  //   if (!quest) {
-  //     throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
-  //   }
-
-  //   const updatedSideQuest = this.sideQuestRepository.merge(targetSideQuest, {
-  //     status: updateQuestDto.status,
-  //     updatedAt: currentDate,
-  //   });
-  //   await this.sideQuestRepository.save(updatedSideQuest);
-  // }
+  async updateSideQuestStatus(
+    userId: number,
+    sideQuestId: number,
+    request: UpdateQuestStatusRequest
+  ): Promise<void> {
+    try {
+      const sideQuest = await this.sideQuestRepository.findById(userId, sideQuestId);
+      if (!sideQuest) {
+        throw new HttpException('사이드 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+      }
+      sideQuest.updateStatus(request.status);
+      this.sideQuestRepository.save(sideQuest);
+    } catch (error) {
+      throw new HttpException('사이드 퀘스트 업데이트에 실패하였습니다', HttpStatus.CONFLICT);
+    }
+  }
 
   private async createQuest(userId: number, request: CreateQuestRequest): Promise<Quest> {
     const { title, difficulty, mode, startDate, endDate, hidden } = request;
