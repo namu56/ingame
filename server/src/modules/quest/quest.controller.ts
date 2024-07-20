@@ -10,21 +10,10 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { QuestsService } from './quests.service';
-import {
-  CreateQuestDto,
-  CreateQuestRequestDto,
-  SubQuestResponseDto,
-  UpdateQuestRequestDto,
-  UpdateSubQuestRequestDto,
-} from '../../common/dto/quest/create-quest.dto';
-import { UpdateQuestDto } from '../../common/dto/quest/update-quest.dto';
-import { UpdateSideQuestRequestDto } from '../../common/dto/quest/create-side-quest.dto';
-import { UpdateSideQuestDto } from '../../common/dto/quest/update-side-quest.dto';
-import { CurrentUser } from '../../core/decorators/current-user.decorator';
-import { AccessTokenPayload } from '../auth/auth.interface';
-import { Mode } from '../../common/types/quest/quest.type';
+import { QuestService } from './quest.service';
+
 import {
   ApiBearerAuth,
   ApiBody,
@@ -37,49 +26,59 @@ import {
   ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
-  PickType,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../core/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@core/guards';
+import {
+  CreateQuestRequest,
+  UpdateMainQuestRequest,
+  UpdateQuestStatusRequest,
+} from '@common/requests/quest';
+import { MainQuestResponse } from '@common/responses/quest';
+import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
+import { UpdateSubQuestRequest } from '@common/requests/quest/update-sub-quest.request';
+import { AccessTokenPayload } from '@common/dto/token';
+import { CurrentUser } from '@core/decorators/current-user.decorator';
 
 @Controller('quests')
 @ApiTags('Quests API')
-export class QuestsController {
-  constructor(private readonly questsService: QuestsService) {}
+export class QuestController {
+  constructor(private readonly questService: QuestService) {}
 
+  @Post()
   @UseGuards(JwtAuthGuard)
-  @Post('')
   @ApiOperation({ summary: '메인 / 서브 퀘스트 생성' })
   @ApiBearerAuth('accessToken')
-  @ApiBody({ type: CreateQuestRequestDto })
+  @ApiBody({ type: CreateQuestRequest })
   @ApiCreatedResponse({ description: 'success' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.CREATED)
-  async create(@CurrentUser() user: AccessTokenPayload, @Body() createQuestDto: CreateQuestDto) {
-    return await this.questsService.create(user.id, createQuestDto);
+  async createQuest(@CurrentUser() user: AccessTokenPayload, @Body() request: CreateQuestRequest) {
+    await this.questService.create(user.id, request);
+    return { message: 'success' };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 / 서브 퀘스트 완료 상태로 변경' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
-  @ApiBody({ type: PickType(CreateQuestDto, ['status']) })
+  @ApiBody({ type: UpdateQuestStatusRequest })
   @ApiNoContentResponse({ description: 'success' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateStatus(
+  async updateQuestStatus(
     @CurrentUser() user: AccessTokenPayload,
-    @Param('id') id: string,
-    @Body() updateQuestDto: UpdateQuestDto
-  ) {
-    await this.questsService.update(user.id, +id, updateQuestDto);
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: UpdateQuestStatusRequest
+  ): Promise<void> {
+    await this.questService.updateQuestStatus(user.id, id, request);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('main')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({
@@ -87,55 +86,58 @@ export class QuestsController {
     required: false,
     type: String,
     description: '조회 일자',
-    example: '20240521',
+    example: '2024-05-21',
   })
-  @ApiOkResponse({ type: [CreateQuestDto] })
+  @ApiOkResponse({ type: [MainQuestResponse] })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAll(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
-    const queryDate = query
-      ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
-      : new Date().toISOString().split('T')[0];
-    return await this.questsService.findAll(user.id, Mode.MAIN, queryDate);
+  async getMainQuests(
+    @CurrentUser() user: AccessTokenPayload,
+    @Query('date') dateString: string
+  ): Promise<MainQuestResponse[]> {
+    return await this.questService.findMainQuests(user.id, dateString);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('main/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 퀘스트 개별 조회' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
-  @ApiOkResponse({ type: CreateQuestDto })
+  @ApiOkResponse({ type: MainQuestResponse })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findOne(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    return await this.questsService.findOne(user.id, +id);
+  async getMainQuest(
+    @CurrentUser() user: AccessTokenPayload,
+    @Param('id', ParseIntPipe) id: number
+  ) {
+    return await this.questService.findMainQuest(user.id, id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch('main/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 퀘스트 개별 수정' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
-  @ApiBody({ type: UpdateQuestRequestDto })
+  @ApiBody({ type: UpdateMainQuestRequest })
   @ApiNoContentResponse({ description: 'success' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async update(
+  async updateMainQuest(
     @CurrentUser() user: AccessTokenPayload,
-    @Param('id') id: string,
-    @Body() updateQuestDto: UpdateQuestDto
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: UpdateMainQuestRequest
   ) {
-    await this.questsService.update(user.id, +id, updateQuestDto);
+    await this.questService.updateMainQuest(user.id, id, request);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete('main/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '메인 퀘스트 개별 삭제' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
@@ -144,31 +146,15 @@ export class QuestsController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    await this.questsService.remove(user.id, +id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch('side/:id')
-  @ApiOperation({ summary: '사이드 퀘스트 상태 수정' })
-  @ApiBearerAuth('accessToken')
-  @ApiQuery({ name: 'id', type: Number, description: '사이드 퀘스트 ID' })
-  @ApiBody({ type: UpdateSideQuestRequestDto })
-  @ApiNoContentResponse({ description: 'success' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiNotFoundResponse({ description: 'fail - Quests not found' })
-  @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async updateSideStatus(
+  async deleteMainQuest(
     @CurrentUser() user: AccessTokenPayload,
-    @Param('id') id: string,
-    @Body() updateQuestDto: UpdateSideQuestDto
-  ) {
-    await this.questsService.updateSideStatus(user.id, +id, updateQuestDto);
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<void> {
+    await this.questService.deleteQuest(user.id, id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('sub')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '서브(일일) 퀘스트 전체 조회' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({
@@ -176,41 +162,41 @@ export class QuestsController {
     required: false,
     type: String,
     description: '조회 일자',
-    example: '20240521',
+    example: '2024-05-21',
   })
-  @ApiOkResponse({ type: [SubQuestResponseDto] })
+  @ApiOkResponse({ type: [SubQuestResponse] })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  async findAllSub(@CurrentUser() user: AccessTokenPayload, @Query('date') query: string) {
-    const queryDate = query
-      ? query.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3')
-      : new Date().toISOString().split('T')[0];
-    return await this.questsService.findAll(user.id, Mode.SUB, queryDate);
+  async getSubQuests(
+    @CurrentUser() user: AccessTokenPayload,
+    @Query('date') dateString: string
+  ): Promise<SubQuestResponse[]> {
+    return await this.questService.findSubQuests(user.id, dateString);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch('sub/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '서브 퀘스트 개별 수정' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
-  @ApiBody({ type: UpdateSubQuestRequestDto })
+  @ApiBody({ type: UpdateSubQuestRequest })
   @ApiNoContentResponse({ description: 'success' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateSub(
+  async updateSubQuest(
     @CurrentUser() user: AccessTokenPayload,
-    @Param('id') id: string,
-    @Body() updateQuestDto: UpdateQuestDto
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: UpdateSubQuestRequest
   ) {
-    await this.questsService.update(user.id, +id, updateQuestDto);
+    await this.questService.updateSubQuest(user.id, id, request);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete('sub/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '서브 퀘스트 개별 삭제' })
   @ApiBearerAuth('accessToken')
   @ApiQuery({ name: 'id', type: Number, description: '퀘스트 ID' })
@@ -219,7 +205,29 @@ export class QuestsController {
   @ApiNotFoundResponse({ description: 'fail - Quests not found' })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeSub(@CurrentUser() user: AccessTokenPayload, @Param('id') id: string) {
-    await this.questsService.remove(user.id, +id);
+  async deleteSubQuest(
+    @CurrentUser() user: AccessTokenPayload,
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<void> {
+    await this.questService.deleteQuest(user.id, id);
+  }
+
+  @Patch('side/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: '사이드 퀘스트 상태 수정' })
+  @ApiBearerAuth('accessToken')
+  @ApiQuery({ name: 'id', type: Number, description: '사이드 퀘스트 ID' })
+  @ApiBody({ type: UpdateQuestStatusRequest })
+  @ApiNoContentResponse({ description: 'success' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'fail - Quests not found' })
+  @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateSideQuestStatus(
+    @CurrentUser() user: AccessTokenPayload,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: UpdateQuestStatusRequest
+  ) {
+    await this.questService.updateSideQuestStatus(user.id, id, request);
   }
 }

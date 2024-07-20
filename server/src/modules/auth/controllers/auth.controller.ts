@@ -62,7 +62,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Req() req: Request): Promise<AuthTokenResponse> {
     const refreshToken: string = req.cookies.refreshToken;
-    console.log(refreshToken);
     if (!refreshToken) {
       throw new HttpException('Refresh token not found', HttpStatus.UNAUTHORIZED);
     }

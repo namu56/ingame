@@ -6,11 +6,6 @@ import { BaseTimeEntity } from '@core/database/typeorm/base-time.entity';
 
 @Entity('side_quest')
 export class SideQuest extends BaseTimeEntity {
-  constructor(sideQuestData: Partial<SideQuest>) {
-    super();
-    Object.assign(this, sideQuestData);
-  }
-
   @PrimaryColumn({ type: 'bigint', transformer: new BigIntTransformer() })
   @Generated('increment')
   id: number;
@@ -28,4 +23,21 @@ export class SideQuest extends BaseTimeEntity {
     onDelete: 'CASCADE',
   })
   quest: Quest;
+
+  static create(questId: number, content: string): SideQuest {
+    const sideQuest = new SideQuest();
+    sideQuest.questId = questId;
+    sideQuest.content = content;
+    sideQuest.status = Status.ON_PROGRESS;
+
+    return sideQuest;
+  }
+
+  updateContent(content: string): void {
+    this.content = content;
+  }
+
+  updateStatus(status: Status): void {
+    this.status = status;
+  }
 }
