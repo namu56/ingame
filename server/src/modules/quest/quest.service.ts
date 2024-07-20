@@ -99,24 +99,6 @@ export class QuestService {
     }
   }
 
-  private async updateSideQuests(
-    sideQuests: SideQuest[],
-    sideQuestRequests: UpdateSideQuestRequest[]
-  ): Promise<SideQuest[]> {
-    sideQuests = sideQuests.filter((sideQuest) =>
-      sideQuestRequests.some((sideQuestRequest) => sideQuestRequest.id === sideQuest.id)
-    );
-
-    for (const sideQuest of sideQuests) {
-      const target = sideQuestRequests.find(
-        (sideQuestRequest) => sideQuestRequest.id === sideQuest.id
-      );
-      sideQuest.updateContent(target.content);
-    }
-
-    return sideQuests;
-  }
-
   async updateSubQuest(
     userId: number,
     questId: number,
@@ -193,5 +175,23 @@ export class QuestService {
       throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
     return quest;
+  }
+
+  private async updateSideQuests(
+    sideQuests: SideQuest[],
+    sideQuestRequests: UpdateSideQuestRequest[]
+  ): Promise<SideQuest[]> {
+    sideQuests = sideQuests.filter((sideQuest) =>
+      sideQuestRequests.some((sideQuestRequest) => sideQuestRequest.id === sideQuest.id)
+    );
+
+    for (const sideQuest of sideQuests) {
+      const target = sideQuestRequests.find(
+        (sideQuestRequest) => sideQuestRequest.id === sideQuest.id
+      );
+      sideQuest.updateContent(target.content);
+    }
+
+    return sideQuests;
   }
 }
