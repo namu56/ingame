@@ -24,3 +24,8 @@ export const toUTCStartOfDay = (dateString: string): Date => {
 export const toUTCEndOfDay = (dateString: string): Date => {
   return dayjs.tz(dateString, DEFAULT_TIMEZONE).endOf('day').utc().toDate();
 };
+
+export const getUTCMidnightFromKRTime = (): Date => {
+  const koreanMidnight = dayjs().tz(DEFAULT_TIMEZONE).startOf('day');
+  return koreanMidnight.utc().toDate();
+};

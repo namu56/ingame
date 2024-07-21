@@ -20,4 +20,14 @@ export class UpdatePointRequest {
   @IsEnum(Status)
   @IsNotEmpty()
   status: Status;
+
+  constructor() {}
+
+  static create(questId: number, status: Status): UpdatePointRequest {
+    const request = new UpdatePointRequest();
+    request.questId = questId;
+    request.status = status;
+
+    return request;
+  }
 }

@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
 import { Difficulty, Mode, Status } from '../../common/types/quest/quest.type';
 import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
 import {
@@ -19,15 +18,15 @@ export class PointService implements IPointService {
   ) {}
 
   @Transactional()
-  async updatePoint(userId: number, updatePointRequest: UpdatePointRequest) {
-    const { questId, status } = updatePointRequest;
+  async updatePoint(userId: number, request: UpdatePointRequest) {
+    const { questId, status } = request;
 
     const userInfo = await this.userInfoRepository.findByUserId(userId);
     if (!userInfo) {
       throw new HttpException('유저의 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
     }
 
-    const quest = await this.questRepository.findById(questId);
+    const quest = await this.questRepository.findById(userId, questId);
     if (!quest) {
       throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
     }

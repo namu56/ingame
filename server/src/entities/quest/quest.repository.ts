@@ -1,8 +1,14 @@
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { Quest } from './quest.entity';
 import { IQuestRepository } from './quest-repository.interface';
-import { EntityTarget, FindOneOptions, SelectQueryBuilder } from 'typeorm';
-import { Mode } from 'src/common/types/quest/quest.type';
+import {
+  EntityTarget,
+  FindManyOptions,
+  FindOneOptions,
+  LessThan,
+  SelectQueryBuilder,
+} from 'typeorm';
+import { Mode, Status } from 'src/common/types/quest/quest.type';
 import { QUEST_SELECT_FIELDS } from '@common/constants';
 
 export class QuestRepository extends GenericTypeOrmRepository<Quest> implements IQuestRepository {
@@ -15,12 +21,20 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
     return this.getRepository().findOne(findOptions);
   }
 
+  async findExpiredSubQuests(date: Date): Promise<Quest[]> {
+    const findOptions: FindManyOptions = {
+      where: { mode: Mode.SUB, status: Status.ON_PROGRESS, endDate: LessThan(date) },
+    };
+    return this.getRepository().find(findOptions);
+  }
+
   async findMainQuests(userId: number, date: Date): Promise<Quest[]> {
     return await this.baseSelectQueryBuilder(userId, Mode.MAIN)
       .andWhere('quest.startDate <=:date', { date })
       .andWhere('quest.endDate >= :date', { date })
       .getMany();
   }
+
   async findSubQuests(userId: number, date: Date): Promise<Quest[]> {
     return await this.baseSelectQueryBuilder(userId, Mode.SUB)
       .andWhere('quest.startDate =:date', { date })
