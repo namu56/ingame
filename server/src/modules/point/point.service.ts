@@ -28,15 +28,15 @@ export class PointService implements IPointService {
 
     const quest = await this.questRepository.findById(userId, questId);
     if (!quest) {
-      throw new HttpException('fail - Quest not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('퀘스트가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
     }
 
     try {
       const difficultyPoint = this.getPointByDifficulty(quest.difficulty);
       const totalPoint = this.calculateTotalPoint(quest, status, difficultyPoint);
 
-      quest.status = status;
-      userInfo.point = Math.max(0, userInfo.point + totalPoint);
+      quest.updateStatus(status);
+      userInfo.updatePoint(Math.max(0, userInfo.point + totalPoint));
 
       await this.questRepository.save(quest);
       await this.userInfoRepository.save(userInfo);

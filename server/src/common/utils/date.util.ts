@@ -5,7 +5,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const DEFAULT_TIMEZONE = 'Asia/Seoul';
+export const DEFAULT_TIMEZONE = 'Asia/Seoul';
 
 /**
  * 주어진 날짜 문자열을 UTC 기준의 시작 시간(00:00:00)으로 변환

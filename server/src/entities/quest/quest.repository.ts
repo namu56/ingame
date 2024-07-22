@@ -21,6 +21,14 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
     return this.getRepository().findOne(findOptions);
   }
 
+  async findExpiredMainQuests(date: Date): Promise<Quest[]> {
+    const findOptions: FindManyOptions = {
+      where: { modde: Mode.MAIN, status: Status.ON_PROGRESS, endDate: LessThan(date) },
+      relations: ['sideQuests'],
+    };
+    return this.getRepository().find(findOptions);
+  }
+
   async findExpiredSubQuests(date: Date): Promise<Quest[]> {
     const findOptions: FindManyOptions = {
       where: { mode: Mode.SUB, status: Status.ON_PROGRESS, endDate: LessThan(date) },
