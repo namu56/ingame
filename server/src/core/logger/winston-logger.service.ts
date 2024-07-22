@@ -1,8 +1,8 @@
-import * as winston from 'winston';
-import * as winstonDaily from 'winston-daily-rotate-file';
+import winston from 'winston';
+import winstonDaily from 'winston-daily-rotate-file';
 import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import { Injectable, LoggerService } from '@nestjs/common';
-import * as winstonCloudWatch from 'winston-cloudwatch';
+import winstonCloudWatch from 'winston-cloudwatch';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
