@@ -35,4 +35,8 @@ export class UserInfo extends BaseTimeEntity {
     this.nickname = nickname;
     this.intro = intro;
   }
+
+  updatePoint(point: number): void {
+    this.point = point;
+  }
 }
