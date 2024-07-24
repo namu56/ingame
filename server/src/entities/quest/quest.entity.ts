@@ -32,8 +32,8 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'timestamp', nullable: false })
   startDate: Date;
 
-  @Column({ type: 'timestamp', nullable: false })
-  endDate: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  endDate: Date | null;
 
   @ManyToOne(() => User, (user) => user.quests, {
     onDelete: 'CASCADE',
