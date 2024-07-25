@@ -1,8 +1,7 @@
 import { Difficulty, Hidden } from '@common/types/quest/quest.type';
-import { toUTCEndOfDay, toUTCStartOfDay } from '@common/utils/date.util';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { UpdateSideQuestRequest } from './update-side-quest.request';
 import { TransformDateToUTC } from '@core/decorators/transform-date-to-utc.decorator';
 
