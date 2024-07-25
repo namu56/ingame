@@ -141,7 +141,7 @@ export class QuestService {
   }
 
   private async createQuest(userId: number, request: CreateQuestRequest): Promise<Quest> {
-    const { title, difficulty, mode, startDate, endDate, hidden } = request;
+    const { title, difficulty, mode, hidden, startDate, endDate } = request;
 
     const quest =
       mode === Mode.MAIN
