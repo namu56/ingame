@@ -35,20 +35,13 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'timestamp', nullable: false })
   endDate: Date;
 
-  @ManyToOne(() => User, (user) => user.quests, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => User, (user) => user.quests)
   user: User;
 
   @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest, {
-    cascade: ['insert', 'update'],
-    orphanedRowAction: 'delete',
+    cascade: true,
   })
   sideQuests: SideQuest[];
-
-  constructor() {
-    super();
-  }
 
   static createMainQuest(
     userId: number,
@@ -95,20 +88,18 @@ export class Quest extends BaseTimeEntity {
     this.status = status;
   }
 
-  updateMainQuest(
+  async updateMainQuest(
     title: string,
     difficulty: Difficulty,
     hidden: Hidden,
     startDate: Date,
-    endDate: Date,
-    sideQuests: SideQuest[]
-  ): void {
+    endDate: Date
+  ): Promise<void> {
     this.title = title;
     this.difficulty = difficulty;
     this.hidden = hidden;
     this.startDate = startDate;
     this.endDate = endDate;
-    this.sideQuests = sideQuests;
   }
 
   updateSubQuest(title: string, hidden: Hidden): void {

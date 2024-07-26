@@ -1,4 +1,4 @@
-import { Column, Entity, Generated, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { BigIntTransformer } from 'src/core/database/typeorm/transformer/big-int.transformer';
 import { Status } from '@common/types/quest/quest.type';
 import { Quest } from '../quest/quest.entity';
@@ -19,9 +19,7 @@ export class SideQuest extends BaseTimeEntity {
   @Column({ type: 'enum', name: 'status', enum: Status, default: Status.ON_PROGRESS })
   status: Status;
 
-  @ManyToOne(() => Quest, (quest) => quest.sideQuests, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => Quest, (quest) => quest.sideQuests)
   quest: Quest;
 
   static create(questId: number, content: string): SideQuest {
@@ -33,7 +31,7 @@ export class SideQuest extends BaseTimeEntity {
     return sideQuest;
   }
 
-  updateContent(content: string): void {
+  async updateContent(content: string): Promise<void> {
     this.content = content;
   }
 
