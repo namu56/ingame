@@ -1,22 +1,17 @@
-import { Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { BigIntTransformer } from 'src/core/database/typeorm/transformer/big-int.transformer';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { Status } from '@common/types/quest/quest.type';
 import { Quest } from '../quest/quest.entity';
 import { BaseTimeEntity } from '@core/database/typeorm/base-time.entity';
 
 @Entity('side_quest')
 export class SideQuest extends BaseTimeEntity {
-  @PrimaryColumn({ type: 'bigint', transformer: new BigIntTransformer() })
-  @Generated('increment')
-  id: number;
-
-  @Column({ type: 'bigint', nullable: false, transformer: new BigIntTransformer() })
+  @Column({ type: 'int' })
   questId: number;
 
-  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Column({ type: 'varchar', length: 50 })
   content: string;
 
-  @Column({ type: 'enum', name: 'status', enum: Status, default: Status.ON_PROGRESS })
+  @Column({ type: 'enum', enum: Status, default: Status.ON_PROGRESS })
   status: Status;
 
   @ManyToOne(() => Quest, (quest) => quest.sideQuests)

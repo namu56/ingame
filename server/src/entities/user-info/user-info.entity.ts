@@ -1,17 +1,13 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import { User } from '../user/user.entity';
 import { BaseTimeEntity } from '@core/database/typeorm/base-time.entity';
 
 @Entity('user_info')
-@Unique(['nickname'])
 export class UserInfo extends BaseTimeEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @Column({ type: 'int' })
   userId: number;
 
-  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Column({ type: 'varchar', length: 50, unique: true })
   nickname: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
@@ -21,7 +17,6 @@ export class UserInfo extends BaseTimeEntity {
   point: number;
 
   @OneToOne(() => User, (user) => user.userInfo, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
   user: User;
 
   static create(userId: number, nickname: string): UserInfo {

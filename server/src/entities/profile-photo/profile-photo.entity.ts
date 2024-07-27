@@ -1,20 +1,16 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import { User } from '../user/user.entity';
 import { BaseTimeEntity } from '@core/database/typeorm/base-time.entity';
 
 @Entity('profile_photo')
 export class ProfilePhoto extends BaseTimeEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @Column({ type: 'int' })
   userId: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   profilePhotoUrl: string;
 
   @OneToOne(() => User, (user) => user.profilePhoto, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
   user: User;
 
   static create(userId: number): ProfilePhoto {
