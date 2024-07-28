@@ -2,7 +2,7 @@ import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'type
 import { RootEntity } from '../generic/root.entity';
 
 export abstract class BaseTimeEntity extends RootEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @CreateDateColumn({ type: 'timestamp' })

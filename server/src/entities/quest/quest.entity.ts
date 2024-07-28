@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../user/user.entity';
 import { SideQuest } from '../side-quest/side-quest.entity';
 import { Difficulty, Hidden, Mode, Status } from '../../common/types/quest/quest.type';
@@ -6,7 +6,7 @@ import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 
 @Entity('quest')
 export class Quest extends BaseTimeEntity {
-  @Column({ type: 'int' })
+  @Column({ type: 'bigint' })
   userId: number;
 
   @Column({ type: 'varchar', length: 50 })
@@ -30,12 +30,14 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'timestamp' })
   endDate: Date;
 
-  @ManyToOne(() => User, (user) => user.quests)
+  @ManyToOne(() => User)
   user: User;
 
   @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
+  @JoinTable()
   sideQuests: SideQuest[];
 
   static createMainQuest(
@@ -88,15 +90,15 @@ export class Quest extends BaseTimeEntity {
     difficulty: Difficulty,
     hidden: Hidden,
     startDate: Date,
-    endDate: Date,
-    sideQuests: SideQuest[]
+    endDate: Date
+    // sideQuests: SideQuest[]
   ): Promise<void> {
     this.title = title;
     this.difficulty = difficulty;
     this.hidden = hidden;
     this.startDate = startDate;
     this.endDate = endDate;
-    this.sideQuests = sideQuests;
+    // this.sideQuests = sideQuests;
   }
 
   updateSubQuest(title: string, hidden: Hidden): void {

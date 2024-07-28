@@ -20,13 +20,14 @@ export const dataSourceOptions: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   entities: [entityPath],
-  synchronize: false,
-  migrationsRun: isProduction ? true : false,
+  synchronize: true,
+  migrationsRun: false,
   namingStrategy: new SnakeNamingStrategy(),
   migrationsTableName: 'migrations',
   migrations: [migrationPath],
   logging: isProduction ? ['error'] : true,
   timezone: 'Z',
+  bigNumberStrings: false,
 };
 
 export const MysqlDataSource = new DataSource(dataSourceOptions);
