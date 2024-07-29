@@ -1,6 +1,6 @@
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { ISideQuestRepository } from './side-quest-repository.interface';
-import { EntityTarget, FindOneOptions } from 'typeorm';
+import { EntityTarget, FindManyOptions, FindOneOptions } from 'typeorm';
 import { SideQuest } from './side-quest.entity';
 
 export class SideQuestRepository
@@ -17,6 +17,7 @@ export class SideQuestRepository
   }
 
   async findByQuestId(questId: number): Promise<SideQuest[]> {
-    return this.getRepository().find({ where: { questId } });
+    const findOptions: FindManyOptions<SideQuest> = { where: { questId } };
+    return this.getRepository().find(findOptions);
   }
 }

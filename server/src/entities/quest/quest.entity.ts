@@ -34,7 +34,7 @@ export class Quest extends BaseTimeEntity {
   user: User;
 
   @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest, {
-    cascade: true,
+    cascade: ['insert'],
     onDelete: 'CASCADE',
   })
   @JoinTable()
@@ -81,24 +81,26 @@ export class Quest extends BaseTimeEntity {
     return quest;
   }
 
-  updateStatus(status: Status): void {
-    this.status = status;
-  }
-
-  async updateMainQuest(
+  updateMainQuest(
     title: string,
     difficulty: Difficulty,
     hidden: Hidden,
     startDate: Date,
     endDate: Date
-    // sideQuests: SideQuest[]
-  ): Promise<void> {
+  ): void {
     this.title = title;
     this.difficulty = difficulty;
     this.hidden = hidden;
     this.startDate = startDate;
     this.endDate = endDate;
-    // this.sideQuests = sideQuests;
+  }
+
+  updateStatus(status: Status): void {
+    this.status = status;
+  }
+
+  updateSideQuests(sideQuests: SideQuest[]): void {
+    this.sideQuests = sideQuests;
   }
 
   updateSubQuest(title: string, hidden: Hidden): void {

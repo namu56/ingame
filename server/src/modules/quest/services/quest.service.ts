@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { Quest } from '../../entities/quest/quest.entity';
-import { SideQuest } from '../../entities/side-quest/side-quest.entity';
-import { Mode } from '../../common/types/quest/quest.type';
+import { Quest } from '../../../entities/quest/quest.entity';
+import { SideQuest } from '../../../entities/side-quest/side-quest.entity';
+import { Mode } from '../../../common/types/quest/quest.type';
 import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
 import {
   ISideQuestRepository,
@@ -13,18 +13,19 @@ import {
   CreateSideQuestRequest,
   UpdateMainQuestRequest,
   UpdateQuestStatusRequest,
-  UpdateSideQuestRequest,
 } from '@common/requests/quest';
 import { toUTCStartOfDay } from '@common/utils/date.util';
 import { MainQuestResponse } from '@common/responses/quest';
 import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 import { plainToInstance } from 'class-transformer';
 import { UpdateSubQuestRequest } from '@common/requests/quest/update-sub-quest.request';
+import { SideQuestService } from '@modules/quest/services/side-quest.service';
 
 @Injectable()
 export class QuestService {
   constructor(
     @Inject(QUEST_REPOSITORY_KEY) private readonly questRepository: IQuestRepository,
+    private readonly sideQuestService: SideQuestService,
     @Inject(SIDE_QUEST_REPOSITORY_KEY) private readonly sideQuestRepository: ISideQuestRepository
   ) {}
 
@@ -34,7 +35,12 @@ export class QuestService {
     try {
       const quest = await this.createQuest(userId, request);
 
-      if (mode === Mode.MAIN) await this.createSideQuest(quest.id, sideQuests);
+      if (mode === Mode.MAIN) {
+        const newSideQuests = await this.createSideQuests(quest.id, sideQuests);
+        quest.updateSideQuests(newSideQuests);
+      }
+
+      await this.questRepository.save(quest);
     } catch (error) {
       throw new HttpException('퀘스트를 생성하는데 실패했습니다', HttpStatus.CONFLICT);
     }
@@ -65,6 +71,7 @@ export class QuestService {
     }
     return plainToInstance(MainQuestResponse, quests);
   }
+  b;
 
   async findSubQuests(userId: number, dateString: string): Promise<SubQuestResponse[]> {
     const date = toUTCStartOfDay(dateString);
@@ -89,11 +96,11 @@ export class QuestService {
   ): Promise<void> {
     try {
       const { title, difficulty, startDate, endDate, hidden, sideQuests } = request;
-      let quest = await this.findMainById(userId, questId);
-      const updateSideQuests = await this.updateSideQuests(quest.sideQuests, sideQuests);
-      quest.updateMainQuest(title, difficulty, hidden, startDate, endDate, updateSideQuests);
+      const quest = await this.findById(userId, questId);
+      quest.updateMainQuest(title, difficulty, hidden, startDate, endDate);
 
-      this.questRepository.save(quest);
+      await this.sideQuestService.updateSideQuests(questId, sideQuests);
+      await this.questRepository.save(quest);
     } catch (error) {
       throw new HttpException('퀘스트 업데이트에 실패하였습니다', HttpStatus.CONFLICT);
     }
@@ -151,14 +158,24 @@ export class QuestService {
     return this.questRepository.save(quest);
   }
 
-  private async createSideQuest(
+  private async createSideQuests(
     questId: number,
     sideQuests: CreateSideQuestRequest[]
-  ): Promise<void> {
+  ): Promise<SideQuest[]> {
+    const newSideQuests: SideQuest[] = [];
     for (const sideQuest of sideQuests) {
       const { content } = sideQuest;
-      await this.sideQuestRepository.save(SideQuest.create(questId, content));
+      newSideQuests.push(SideQuest.create(questId, content));
     }
+    return newSideQuests;
+  }
+
+  private async findById(userId: number, questId: number): Promise<Quest> {
+    const quest = await this.questRepository.findById(userId, questId);
+    if (!quest) {
+      throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+    }
+    return quest;
   }
 
   private async findMainById(userId: number, questId: number): Promise<Quest> {
@@ -175,23 +192,5 @@ export class QuestService {
       throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
     return quest;
-  }
-
-  private async updateSideQuests(
-    sideQuests: SideQuest[],
-    sideQuestRequests: UpdateSideQuestRequest[]
-  ): Promise<SideQuest[]> {
-    sideQuests = sideQuests.filter((sideQuest) =>
-      sideQuestRequests.some((sideQuestRequest) => sideQuestRequest.id === sideQuest.id)
-    );
-
-    for (const sideQuest of sideQuests) {
-      const target = sideQuestRequests.find(
-        (sideQuestRequest) => sideQuestRequest.id === sideQuest.id
-      );
-      sideQuest.updateContent(target.content);
-    }
-
-    return sideQuests;
   }
 }

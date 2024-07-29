@@ -12,7 +12,7 @@ import {
   Query,
   ParseIntPipe,
 } from '@nestjs/common';
-import { QuestService } from './quest.service';
+import { QuestService } from './services/quest.service';
 
 import {
   ApiBearerAuth,
