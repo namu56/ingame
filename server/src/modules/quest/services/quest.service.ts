@@ -52,14 +52,11 @@ export class QuestService {
     request: UpdateQuestStatusRequest
   ): Promise<void> {
     try {
-      const quest = await this.questRepository.findById(userId, questId);
-      if (!quest) {
-        throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
-      }
+      const quest = await this.findById(userId, questId);
       quest.updateStatus(request.status);
-      this.questRepository.save(quest);
+
+      await this.questRepository.save(quest);
     } catch (error) {
-      console.log(error);
       throw new HttpException('퀘스트 상태 변경에 실패했습니다', HttpStatus.CONFLICT);
     }
   }
