@@ -59,6 +59,7 @@ export class QuestService {
       quest.updateStatus(request.status);
       this.questRepository.save(quest);
     } catch (error) {
+      console.log(error);
       throw new HttpException('퀘스트 상태 변경에 실패했습니다', HttpStatus.CONFLICT);
     }
   }
@@ -113,7 +114,7 @@ export class QuestService {
   ): Promise<void> {
     try {
       const { title, hidden } = request;
-      let quest = await this.findSubById(userId, questId);
+      let quest = await this.findById(userId, questId);
       quest.updateSubQuest(title, hidden);
       this.questRepository.save(quest);
     } catch (error) {
@@ -155,7 +156,7 @@ export class QuestService {
         ? Quest.createMainQuest(userId, title, difficulty, startDate, endDate, hidden)
         : Quest.createSubQuest(userId, title, startDate, endDate, hidden);
 
-    return this.questRepository.save(quest);
+    return quest;
   }
 
   private async createSideQuests(
