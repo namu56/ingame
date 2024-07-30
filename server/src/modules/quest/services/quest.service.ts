@@ -69,7 +69,6 @@ export class QuestService {
     }
     return plainToInstance(MainQuestResponse, quests);
   }
-  b;
 
   async findSubQuests(userId: number, dateString: string): Promise<SubQuestResponse[]> {
     const date = toUTCStartOfDay(dateString);
@@ -119,10 +118,19 @@ export class QuestService {
     }
   }
 
-  async deleteQuest(userId: number, questId: number): Promise<void> {
-    const quest = await this.questRepository.findMainQuest(questId, userId);
+  async deleteMainQuest(userId: number, questId: number): Promise<void> {
+    const quest = await this.questRepository.findMainQuest(userId, questId);
     if (!quest) {
-      throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+      throw new HttpException('메인 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+    }
+
+    await this.questRepository.delete(questId);
+  }
+
+  async deleteSubQuest(userId: number, questId: number): Promise<void> {
+    const quest = await this.questRepository.findSubQuest(userId, questId);
+    if (!quest) {
+      throw new HttpException('서브 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
 
     await this.questRepository.delete(questId);

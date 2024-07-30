@@ -37,7 +37,6 @@ export class Quest extends BaseTimeEntity {
     cascade: ['insert'],
     onDelete: 'CASCADE',
   })
-  @JoinTable()
   sideQuests: SideQuest[];
 
   static createMainQuest(

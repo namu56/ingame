@@ -14,7 +14,9 @@ export class SideQuest extends BaseTimeEntity {
   @Column({ type: 'enum', enum: Status, default: Status.ON_PROGRESS })
   status: Status;
 
-  @ManyToOne(() => Quest, (quest) => quest.sideQuests)
+  @ManyToOne(() => Quest, (quest) => quest.sideQuests, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'quest_id', referencedColumnName: 'id' })
   quest: Quest;
 

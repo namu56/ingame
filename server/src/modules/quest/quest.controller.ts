@@ -150,7 +150,7 @@ export class QuestController {
     @CurrentUser() user: AccessTokenPayload,
     @Param('id', ParseIntPipe) id: number
   ): Promise<void> {
-    await this.questService.deleteQuest(user.id, id);
+    await this.questService.deleteMainQuest(user.id, id);
   }
 
   @Get('sub')
@@ -209,7 +209,7 @@ export class QuestController {
     @CurrentUser() user: AccessTokenPayload,
     @Param('id', ParseIntPipe) id: number
   ): Promise<void> {
-    await this.questService.deleteQuest(user.id, id);
+    await this.questService.deleteSubQuest(user.id, id);
   }
 
   @Patch('side/:id')
