@@ -8,6 +8,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionFilter } from './core/filters/all-exception.filter';
 import { PointModule } from './modules/point/point.module';
 import { CoreModule } from './core/core.module';
+import { SideQuestModule } from '@modules/side-quest/side-quest.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CoreModule } from './core/core.module';
     UserModule,
     AuthModule,
     QuestModule,
+    SideQuestModule,
     RankingModule,
     PointModule,
   ],

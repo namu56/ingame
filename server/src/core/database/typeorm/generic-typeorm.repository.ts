@@ -17,8 +17,8 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity>
     return this.getRepository().save(entity);
   }
 
-  async delete(id: number): Promise<void> {
-    await this.getRepository().delete(id);
+  async delete(ids: number | number[]): Promise<void> {
+    await this.getRepository().delete(ids);
   }
 
   protected getRepository(): Repository<T> {

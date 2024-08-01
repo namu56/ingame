@@ -11,8 +11,8 @@ export class SideQuestRepository
     return SideQuest.name;
   }
 
-  async findById(userId: number, sideQuestId: number): Promise<SideQuest | null> {
-    const findOptions: FindOneOptions = { where: { id: sideQuestId, userId } };
+  async findById(questId: number, sideQuestId: number): Promise<SideQuest | null> {
+    const findOptions: FindOneOptions = { where: { id: sideQuestId, questId } };
     return this.getRepository().findOne(findOptions);
   }
 
