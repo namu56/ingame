@@ -111,9 +111,9 @@ export class QuestService {
     questId: number,
     request: UpdateSubQuestRequest
   ): Promise<void> {
+    const { title, hidden } = request;
+    const quest = await this.findSubById(userId, questId);
     try {
-      const { title, hidden } = request;
-      const quest = await this.findSubById(userId, questId);
       quest.updateSubQuest(title, hidden);
       await this.questRepository.save(quest);
     } catch (error) {
@@ -182,7 +182,7 @@ export class QuestService {
   private async findMainById(userId: number, questId: number): Promise<Quest> {
     const quest = await this.questRepository.findMainQuest(userId, questId);
     if (!quest) {
-      throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+      throw new HttpException('메인 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
     return quest;
   }
@@ -190,7 +190,7 @@ export class QuestService {
   private async findSubById(userId: number, questId: number): Promise<Quest> {
     const quest = await this.questRepository.findSubQuest(userId, questId);
     if (!quest) {
-      throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+      throw new HttpException('서브 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
     return quest;
   }
