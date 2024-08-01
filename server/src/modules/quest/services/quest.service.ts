@@ -1,16 +1,10 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Quest } from '../../../entities/quest/quest.entity';
-import { SideQuest } from '../../../entities/side-quest/side-quest.entity';
 import { Mode } from '../../../common/types/quest/quest.type';
 import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
-import {
-  ISideQuestRepository,
-  SIDE_QUEST_REPOSITORY_KEY,
-} from '@entities/side-quest/side-quest-repository.interface';
 import { Transactional } from '@core/decorators/transactional.decorator';
 import {
   CreateQuestRequest,
-  CreateSideQuestRequest,
   UpdateMainQuestRequest,
   UpdateQuestStatusRequest,
 } from '@common/requests/quest';
@@ -19,14 +13,13 @@ import { MainQuestResponse } from '@common/responses/quest';
 import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 import { plainToInstance } from 'class-transformer';
 import { UpdateSubQuestRequest } from '@common/requests/quest/update-sub-quest.request';
-import { SideQuestService } from '@modules/quest/services/side-quest.service';
+import { SideQuestService } from '@modules/side-quest/side-quest.service';
 
 @Injectable()
 export class QuestService {
   constructor(
     @Inject(QUEST_REPOSITORY_KEY) private readonly questRepository: IQuestRepository,
-    private readonly sideQuestService: SideQuestService,
-    @Inject(SIDE_QUEST_REPOSITORY_KEY) private readonly sideQuestRepository: ISideQuestRepository
+    private readonly sideQuestService: SideQuestService
   ) {}
 
   @Transactional()
@@ -36,7 +29,7 @@ export class QuestService {
       const quest = await this.createQuest(userId, request);
 
       if (mode === Mode.MAIN) {
-        const newSideQuests = await this.createSideQuests(quest.id, sideQuests);
+        const newSideQuests = await this.sideQuestService.createSideQuests(quest.id, sideQuests);
         quest.updateSideQuests(newSideQuests);
       }
 
@@ -131,23 +124,6 @@ export class QuestService {
     await this.questRepository.delete(questId);
   }
 
-  async updateSideQuestStatus(
-    userId: number,
-    sideQuestId: number,
-    request: UpdateQuestStatusRequest
-  ): Promise<void> {
-    try {
-      const sideQuest = await this.sideQuestRepository.findById(userId, sideQuestId);
-      if (!sideQuest) {
-        throw new HttpException('사이드 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
-      }
-      sideQuest.updateStatus(request.status);
-      this.sideQuestRepository.save(sideQuest);
-    } catch (error) {
-      throw new HttpException('사이드 퀘스트 업데이트에 실패하였습니다', HttpStatus.CONFLICT);
-    }
-  }
-
   private async createQuest(userId: number, request: CreateQuestRequest): Promise<Quest> {
     const { title, difficulty, mode, hidden, startDate, endDate } = request;
 
@@ -157,18 +133,6 @@ export class QuestService {
         : Quest.createSubQuest(userId, title, startDate, endDate, hidden);
 
     return quest;
-  }
-
-  private async createSideQuests(
-    questId: number,
-    sideQuests: CreateSideQuestRequest[]
-  ): Promise<SideQuest[]> {
-    const newSideQuests: SideQuest[] = [];
-    for (const sideQuest of sideQuests) {
-      const { content } = sideQuest;
-      newSideQuests.push(SideQuest.create(questId, content));
-    }
-    return newSideQuests;
   }
 
   private async findById(userId: number, questId: number): Promise<Quest> {

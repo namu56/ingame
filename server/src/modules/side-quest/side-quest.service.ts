@@ -1,19 +1,36 @@
-import { UpdateSideQuestRequest } from '@common/requests/quest';
+import {
+  CreateSideQuestRequest,
+  UpdateQuestStatusRequest,
+  UpdateSideQuestRequest,
+} from '@common/requests/quest';
 import {
   ISideQuestRepository,
   SIDE_QUEST_REPOSITORY_KEY,
 } from '@entities/side-quest/side-quest-repository.interface';
 import { SideQuest } from '@entities/side-quest/side-quest.entity';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class SideQuestService {
   constructor(
     @Inject(SIDE_QUEST_REPOSITORY_KEY) private readonly sideQuestRepository: ISideQuestRepository
   ) {}
+  async createSideQuests(
+    questId: number,
+    sideQuests: CreateSideQuestRequest[]
+  ): Promise<SideQuest[]> {
+    const newSideQuests: SideQuest[] = [];
+    for (const sideQuest of sideQuests) {
+      const { content } = sideQuest;
+      newSideQuests.push(SideQuest.create(questId, content));
+    }
+    return newSideQuests;
+  }
+
   async findSideQuests(questId: number): Promise<SideQuest[]> {
     return await this.sideQuestRepository.findByQuestId(questId);
   }
+
   async updateSideQuests(
     questId: number,
     sideQuestRequests: UpdateSideQuestRequest[]
@@ -31,7 +48,22 @@ export class SideQuestService {
       await this.sideQuestRepository.save(sideQuest);
     }
   }
-  async updateSideQuestStatus() {}
+  async updateSideQuestStatus(
+    userId: number,
+    sideQuestId: number,
+    request: UpdateQuestStatusRequest
+  ): Promise<void> {
+    const sideQuest = await this.sideQuestRepository.findById(userId, sideQuestId);
+    if (!sideQuest) {
+      throw new HttpException('사이드 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
+    }
+    try {
+      sideQuest.updateStatus(request.status);
+      await this.sideQuestRepository.save(sideQuest);
+    } catch (error) {
+      throw new HttpException('사이드 퀘스트 업데이트에 실패하였습니다', HttpStatus.CONFLICT);
+    }
+  }
 
   async deleteSideQuests() {}
 }
