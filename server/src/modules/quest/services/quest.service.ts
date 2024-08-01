@@ -51,8 +51,8 @@ export class QuestService {
     questId: number,
     request: UpdateQuestStatusRequest
   ): Promise<void> {
+    const quest = await this.findById(userId, questId);
     try {
-      const quest = await this.findById(userId, questId);
       quest.updateStatus(request.status);
 
       await this.questRepository.save(quest);
@@ -91,9 +91,12 @@ export class QuestService {
     questId: number,
     request: UpdateMainQuestRequest
   ): Promise<void> {
+    const { title, difficulty, startDate, endDate, hidden, sideQuests } = request;
+    const quest = await this.findById(userId, questId);
+    if (quest.mode !== Mode.MAIN) {
+      throw new HttpException('메인 퀘스트가 아닙니다', HttpStatus.BAD_REQUEST);
+    }
     try {
-      const { title, difficulty, startDate, endDate, hidden, sideQuests } = request;
-      const quest = await this.findById(userId, questId);
       quest.updateMainQuest(title, difficulty, hidden, startDate, endDate);
 
       await this.sideQuestService.updateSideQuests(questId, sideQuests);
@@ -110,29 +113,21 @@ export class QuestService {
   ): Promise<void> {
     try {
       const { title, hidden } = request;
-      let quest = await this.findById(userId, questId);
+      const quest = await this.findSubById(userId, questId);
       quest.updateSubQuest(title, hidden);
-      this.questRepository.save(quest);
+      await this.questRepository.save(quest);
     } catch (error) {
       throw new HttpException('퀘스트 업데이트에 실패하였습니다', HttpStatus.CONFLICT);
     }
   }
 
   async deleteMainQuest(userId: number, questId: number): Promise<void> {
-    const quest = await this.questRepository.findMainQuest(userId, questId);
-    if (!quest) {
-      throw new HttpException('메인 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
-    }
-
+    await this.findMainById(userId, questId);
     await this.questRepository.delete(questId);
   }
 
   async deleteSubQuest(userId: number, questId: number): Promise<void> {
-    const quest = await this.questRepository.findSubQuest(userId, questId);
-    if (!quest) {
-      throw new HttpException('서브 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
-    }
-
+    await this.findSubById(userId, questId);
     await this.questRepository.delete(questId);
   }
 
