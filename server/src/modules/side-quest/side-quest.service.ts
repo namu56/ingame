@@ -49,11 +49,11 @@ export class SideQuestService {
     }
   }
   async updateSideQuestStatus(
-    userId: number,
+    questId: number,
     sideQuestId: number,
     request: UpdateQuestStatusRequest
   ): Promise<void> {
-    const sideQuest = await this.sideQuestRepository.findById(userId, sideQuestId);
+    const sideQuest = await this.sideQuestRepository.findById(questId, sideQuestId);
     if (!sideQuest) {
       throw new HttpException('사이드 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
     }
