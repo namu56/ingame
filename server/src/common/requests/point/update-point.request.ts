@@ -1,4 +1,4 @@
-import { Status } from '@common/types/quest/quest.type';
+import { ActiveStatus, Status } from '@common/types/quest/quest.type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
 
@@ -17,7 +17,7 @@ export class UpdatePointRequest {
     description: '완료 또는 진행중',
     required: true,
   })
-  @IsEnum(Status)
+  @IsEnum(ActiveStatus)
   @IsNotEmpty()
   status: Status;
 

@@ -13,8 +13,8 @@ export class CreateQuestTable1720008215507 implements MigrationInterface {
       mode            ENUM('main', 'sub')                            NOT NULL                                          COMMENT '퀘스트 모드',
       hidden          ENUM('true', 'false')                          NOT NULL      DEFAULT 'false'                     COMMENT '퀘스트 숨김',
       status          ENUM('completed', 'fail', 'onProgress')        NOT NULL      DEFAULT 'onProgress'                COMMENT '퀘스트 상태',
-      start           VARCHAR(10)                                    NOT NULL                                          COMMENT '퀘스트 시작 날',
-      end             VARCHAR(10)                                    NULL                                              COMMENT '퀘스트 끝나는 날',
+      start_date      TIMESTAMP(6)                                   NOT NULL                                          COMMENT '퀘스트 시작 날',
+      end_date        TIMESTAMP(6)                                   NULL                                              COMMENT '퀘스트 끝나는 날',
       created_at      TIMESTAMP(6)      NOT NULL      DEFAULT CURRENT_TIMESTAMP(6)                                     COMMENT '생성 시간',
       updated_at      TIMESTAMP(6)      NOT NULL      DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)      COMMENT '수정 시간',
       CONSTRAINT fk_quest_user FOREIGN KEY (user_id) REFERENCES \`user\` (id) ON DELETE CASCADE

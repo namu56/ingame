@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { UserInfo } from '../user-info/user-info.entity';
 import { ProfilePhoto } from '../profile-photo/profile-photo.entity';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
@@ -7,15 +7,11 @@ import { UserProvider } from 'src/common/types/user/user.type';
 import { Quest } from '@entities/quest/quest.entity';
 
 @Entity('user')
-@Unique(['email'])
 export class User extends BaseTimeEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Column({ type: 'varchar', length: 50, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100 })
   password: string | null;
 
   @Column({ type: 'enum', nullable: true, enum: UserProvider, default: UserProvider.LOCAL })
@@ -25,30 +21,39 @@ export class User extends BaseTimeEntity {
   providerId: string | null;
 
   @OneToOne(() => UserInfo, (userInfo) => userInfo.user, {
+    cascade: true,
     onDelete: 'CASCADE',
-    eager: true,
   })
   userInfo: UserInfo;
 
   @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user, {
+    cascade: true,
     onDelete: 'CASCADE',
-    eager: true,
   })
   profilePhoto: ProfilePhoto;
 
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
-    eager: false,
     onDelete: 'CASCADE',
   })
   refreshTokens: RefreshToken[];
 
-  @OneToMany(() => Quest, (quest) => quest.user, { onDelete: 'CASCADE' })
+  @OneToMany(() => Quest, (quest) => quest.user, {
+    onDelete: 'CASCADE',
+  })
   quests: Quest[];
 
   static createLocal(email: string, password: string): User {
     const user = new User();
     user.email = email;
     user.password = password;
+    return user;
+  }
+
+  static create(email: string, password: string): User {
+    const user = new User();
+    user.email = email;
+    user.password = password;
+
     return user;
   }
 

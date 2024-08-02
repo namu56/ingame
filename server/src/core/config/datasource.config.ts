@@ -7,6 +7,8 @@ dotenv.config({
   path: process.env.NODE_ENV === 'production' ? '.production.env' : '.development.env',
 });
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const entityPath = path.join(__dirname, '../../entities/**/*.entity.{js,ts}');
 const migrationPath = path.join(__dirname, '../../migrations/*.{js,ts}');
 
@@ -18,12 +20,14 @@ export const dataSourceOptions: DataSourceOptions = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   entities: [entityPath],
-  synchronize: false,
+  synchronize: true,
   migrationsRun: false,
   namingStrategy: new SnakeNamingStrategy(),
   migrationsTableName: 'migrations',
   migrations: [migrationPath],
-  logging: process.env.NODE_ENV === 'production' ? ['error'] : true,
+  logging: isProduction ? ['error'] : true,
+  timezone: 'Z',
+  bigNumberStrings: false,
 };
 
 export const MysqlDataSource = new DataSource(dataSourceOptions);

@@ -1,9 +1,9 @@
-import { Difficulty, Hidden, Mode, Status } from '@common/types/quest/quest.type';
+import { Difficulty, Hidden, Mode } from '@common/types/quest/quest.type';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   IsArray,
-  IsDateString,
+  IsDate,
   IsEnum,
   IsNotEmpty,
   IsString,
@@ -11,7 +11,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateSideQuestRequest } from './create-side-quest.request';
-import { toUTCEndOfDay, toUTCStartOfDay } from '@common/utils/date.util';
+import { TransformDateToUTC } from '@core/decorators/transform-date-to-utc.decorator';
 
 export class CreateQuestRequest {
   @ApiProperty({
@@ -44,16 +44,6 @@ export class CreateQuestRequest {
   mode: Mode;
 
   @ApiProperty({
-    enum: Status,
-    example: 'onProgress',
-    description: '퀘스트 진행 상태',
-    required: true,
-  })
-  @IsEnum(Status)
-  @IsNotEmpty()
-  status: Status;
-
-  @ApiProperty({
     enum: Hidden,
     example: 'FALSE',
     description: '퀘스트 숨김 여부',
@@ -79,11 +69,9 @@ export class CreateQuestRequest {
     description: '퀘스트 시작일',
     required: true,
   })
-  @IsDateString()
+  @TransformDateToUTC({ option: 'start' })
   @IsNotEmpty()
-  @Transform((property) => {
-    return toUTCStartOfDay(property.value);
-  })
+  @IsDate()
   startDate: Date;
 
   @ApiProperty({
@@ -91,11 +79,10 @@ export class CreateQuestRequest {
     description: '퀘스트 종료일',
     required: true,
   })
-  @IsDateString()
   @IsNotEmpty()
-  @Transform((property) => {
-    return toUTCEndOfDay(property.value);
-  })
+  @TransformDateToUTC({ option: 'end' })
+  @IsNotEmpty()
+  @IsDate()
   endDate: Date;
 
   constructor() {}

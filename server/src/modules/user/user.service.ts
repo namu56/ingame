@@ -33,7 +33,7 @@ export class UserService implements IUserService {
     @Inject(USER_REPOSITORY_KEY) private userRepository: IUserRepository,
     @Inject(USER_INFO_REPOSITORY_KEY) private userInfoRepository: IUserInfoRepository,
     @Inject(PROFILE_PHOTO_REPOSITORY_KEY) private profilePhotoRepository: IProfilePhotoRepository,
-    private levelCalculatorService: LevelCalculatorService
+    private readonly levelCalculatorService: LevelCalculatorService
   ) {}
 
   @Transactional()
@@ -44,11 +44,24 @@ export class UserService implements IUserService {
       await this.isExistEmail(email);
       await this.isExistNickname(nickname);
 
-      const newUser = await this.createLocalUser(email, password);
-      await this.createUserInfo(newUser.id, nickname);
-      await this.createProfilePhoto(newUser.id);
+      const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
+      const hashedPassword = await encryptValue(password, saltRounds);
+
+      const newUser = User.createLocal(email, hashedPassword);
+      newUser.updateUserInfo(UserInfo.create(nickname));
+      newUser.updateProfilePhoto(ProfilePhoto.create());
+      // // const newUser = User.create(email, hashedPassword);
+      // const newUserInfo = UserInfo.create(nickname);
+      // const newProfilePhoto = ProfilePhoto.create();
+      // newUser.userInfo = newUserInfo;
+      // newUser.profilePhoto = newProfilePhoto;
+      await this.userRepository.save(newUser);
+
+      // const newUser = await this.createLocalUser(email, password);
+      // await this.createUserInfo(newUser.id, nickname);
+      // await this.createProfilePhoto(newUser.id);
     } catch (err) {
-      throw err;
+      throw new HttpException('회원가입에 실패하였습니다', HttpStatus.CONFLICT);
     }
   }
 
@@ -145,12 +158,12 @@ export class UserService implements IUserService {
   }
 
   private async createUserInfo(userId: number, nickname: string): Promise<void> {
-    const userInfo = UserInfo.create(userId, nickname);
+    const userInfo = UserInfo.create(nickname);
     await this.userInfoRepository.save(userInfo);
   }
 
   private async createProfilePhoto(userId: number): Promise<void> {
-    const profilePhoto = ProfilePhoto.create(userId);
+    const profilePhoto = ProfilePhoto.create();
     await this.profilePhotoRepository.save(profilePhoto);
   }
 

@@ -1,9 +1,9 @@
 import { Difficulty, Hidden } from '@common/types/quest/quest.type';
-import { toUTCEndOfDay, toUTCStartOfDay } from '@common/utils/date.util';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { UpdateSideQuestRequest } from './update-side-quest.request';
+import { TransformDateToUTC } from '@core/decorators/transform-date-to-utc.decorator';
 
 export class UpdateMainQuestRequest {
   @ApiProperty({
@@ -50,11 +50,9 @@ export class UpdateMainQuestRequest {
     description: '퀘스트 시작일',
     required: true,
   })
+  @TransformDateToUTC({ option: 'start' })
   @IsNotEmpty()
-  @IsDateString()
-  @Transform((property) => {
-    return toUTCStartOfDay(property.value);
-  })
+  @IsDate()
   startDate: Date;
 
   @ApiProperty({
@@ -62,11 +60,9 @@ export class UpdateMainQuestRequest {
     description: '퀘스트 종료일',
     required: true,
   })
+  @TransformDateToUTC({ option: 'end' })
   @IsNotEmpty()
-  @IsDateString()
-  @Transform((property) => {
-    return toUTCEndOfDay(property.value);
-  })
+  @IsDate()
   endDate: Date;
 
   constructor() {}
