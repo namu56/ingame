@@ -37,46 +37,36 @@ export class UserService implements IUserService {
   ) {}
 
   @Transactional()
-  async localSignUp(createLocalUserRequest: CreateLocalUserRequest): Promise<void> {
-    const { email, password, nickname } = createLocalUserRequest;
+  async localSignUp(request: CreateLocalUserRequest): Promise<void> {
+    const { email, password, nickname } = request;
+    const saltRounds = Number(this.configService.get('SALT_ROUNDS'));
 
+    await this.isExistEmail(email);
+    await this.isExistNickname(nickname);
     try {
-      await this.isExistEmail(email);
-      await this.isExistNickname(nickname);
-
-      const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
       const hashedPassword = await encryptValue(password, saltRounds);
-
       const newUser = User.createLocal(email, hashedPassword);
       newUser.updateUserInfo(UserInfo.create(nickname));
       newUser.updateProfilePhoto(ProfilePhoto.create());
-      // // const newUser = User.create(email, hashedPassword);
-      // const newUserInfo = UserInfo.create(nickname);
-      // const newProfilePhoto = ProfilePhoto.create();
-      // newUser.userInfo = newUserInfo;
-      // newUser.profilePhoto = newProfilePhoto;
-      await this.userRepository.save(newUser);
 
-      // const newUser = await this.createLocalUser(email, password);
-      // await this.createUserInfo(newUser.id, nickname);
-      // await this.createProfilePhoto(newUser.id);
-    } catch (err) {
+      await this.userRepository.save(newUser);
+    } catch (error) {
       throw new HttpException('회원가입에 실패하였습니다', HttpStatus.CONFLICT);
     }
   }
 
   @Transactional()
-  async socialSignUp(createSocialUserRequest: CreateSocialUserRequest): Promise<User> {
-    const { email, provider, providerId, nickname } = createSocialUserRequest;
+  async socialSignUp(request: CreateSocialUserRequest): Promise<User> {
+    const { email, provider, providerId, nickname } = request;
+    const uniqueNickname = await this.createUniqueNickname(nickname);
     try {
-      const uniqueNickname = await this.createUniqueNickname(nickname);
-      const newSnsUser = await this.createSocialUser(email, provider, providerId);
-      await this.createUserInfo(newSnsUser.id, uniqueNickname);
-      await this.createProfilePhoto(newSnsUser.id);
+      const newSnsUser = User.createSocial(email, provider, providerId);
+      newSnsUser.updateUserInfo(UserInfo.create(uniqueNickname));
+      newSnsUser.updateProfilePhoto(ProfilePhoto.create());
 
-      return newSnsUser;
-    } catch (err) {
-      throw err;
+      return await this.userRepository.save(newSnsUser);
+    } catch (error) {
+      throw new HttpException('회원가입에 실패하였습니다', HttpStatus.CONFLICT);
     }
   }
 
@@ -117,11 +107,8 @@ export class UserService implements IUserService {
     await this.userInfoRepository.save(userInfo);
   }
 
-  async updateProfilePhotoById(
-    userId: number,
-    updateProfilePhotoRequest: UpdateProfilePhotoRequest
-  ): Promise<void> {
-    const { profilePhotoUrl } = updateProfilePhotoRequest;
+  async updateProfilePhotoById(userId: number, request: UpdateProfilePhotoRequest): Promise<void> {
+    const { profilePhotoUrl } = request;
     const profilePhoto = await this.profilePhotoRepository.findOneByUserId(userId);
     if (!profilePhoto) {
       throw new HttpException('해당 유저 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
@@ -143,28 +130,6 @@ export class UserService implements IUserService {
     if (existingNickname) {
       throw new HttpException('닉네임이 이미 사용 중입니다', HttpStatus.CONFLICT);
     }
-  }
-
-  private async createLocalUser(email: string, password: string): Promise<User> {
-    const saltRounds = parseInt(this.configService.get<string>('SALT_ROUNDS'));
-    const hashedPassword = await encryptValue(password, saltRounds);
-    const user = User.createLocal(email, hashedPassword);
-    return await this.userRepository.save(user);
-  }
-
-  private async createSocialUser(email: string, provider: UserProvider, providerId: string) {
-    const newUser = User.createSocial(email, provider, providerId);
-    return this.userRepository.save(newUser);
-  }
-
-  private async createUserInfo(userId: number, nickname: string): Promise<void> {
-    const userInfo = UserInfo.create(nickname);
-    await this.userInfoRepository.save(userInfo);
-  }
-
-  private async createProfilePhoto(userId: number): Promise<void> {
-    const profilePhoto = ProfilePhoto.create();
-    await this.profilePhotoRepository.save(profilePhoto);
   }
 
   private async createUniqueNickname(nickname: string): Promise<string> {

@@ -69,6 +69,4 @@ export class SideQuestService {
       throw new HttpException('사이드 퀘스트 업데이트에 실패하였습니다', HttpStatus.CONFLICT);
     }
   }
-
-  async deleteSideQuests() {}
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../user/user.entity';
 import { SideQuest } from '../side-quest/side-quest.entity';
 import { Difficulty, Hidden, Mode, Status } from '../../common/types/quest/quest.type';
@@ -30,7 +30,7 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'timestamp' })
   endDate: Date;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.quests)
   user: User;
 
   @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest, {

@@ -48,10 +48,9 @@ export class UserController {
   @ApiCreatedResponse({ description: 'success' })
   @ApiConflictResponse({ description: '이미 존재하는 회원입니다.' })
   @ApiBody({ type: CreateLocalUserRequest })
-  @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.CREATED)
-  async signUp(@Body() createUserDto: CreateLocalUserRequest) {
-    await this.userService.localSignUp(createUserDto);
+  async signUp(@Body() request: CreateLocalUserRequest) {
+    await this.userService.localSignUp(request);
     return { message: 'success' };
   }
 
@@ -87,13 +86,12 @@ export class UserController {
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
   @ApiConflictResponse({ description: '닉네임이 이미 사용 중입니다' })
-  @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateUserInfo(
     @CurrentUser() user: AccessTokenPayload,
-    @Body() updateUserRequest: UpdateUserRequest
+    @Body() request: UpdateUserRequest
   ) {
-    await this.userService.updateUserInfoById(user.id, updateUserRequest);
+    await this.userService.updateUserInfoById(user.id, request);
   }
 
   @Patch('me/profile-photo')
@@ -103,13 +101,12 @@ export class UserController {
   @ApiNoContentResponse({ description: '프로필 사진 수정 성공' })
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
-  @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateProfilePhoto(
     @CurrentUser() user: AccessTokenPayload,
-    @Body() updateProfilePhotoRequest: UpdateProfilePhotoRequest
+    @Body() request: UpdateProfilePhotoRequest
   ) {
-    await this.userService.updateProfilePhotoById(user.id, updateProfilePhotoRequest);
+    await this.userService.updateProfilePhotoById(user.id, request);
   }
 
   @Get(':id')

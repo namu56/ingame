@@ -12,10 +12,15 @@ export class RefreshTokenRepository
   }
 
   findByUserId(userId: number, token: string): Promise<RefreshToken> {
-    return this.getRepository().findOne({ where: { userId, token } });
+    return this.getRepository().findOne({
+      where: { user: { id: userId }, token },
+      relations: ['user'],
+    });
   }
 
   async deleteByUserId(userId: number): Promise<void> {
-    await this.getRepository().delete({ userId });
+    await this.getRepository().delete({
+      user: { id: userId },
+    });
   }
 }
