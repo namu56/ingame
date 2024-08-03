@@ -9,7 +9,7 @@ export class UserRepository extends GenericTypeOrmRepository<User> implements IU
   }
 
   async findById(id: number): Promise<User> {
-    const findOption: FindOneOptions = { where: { id } };
+    const findOption: FindOneOptions = { where: { id }, relations: ['userInfo', 'profilePhoto'] };
     return this.getRepository().findOne(findOption);
   }
 

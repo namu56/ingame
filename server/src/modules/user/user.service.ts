@@ -25,6 +25,7 @@ import {
 } from 'src/common/requests/user';
 import { UserResponse } from 'src/common/responses/user';
 import { UserProvider } from 'src/common/types/user/user.type';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -76,25 +77,19 @@ export class UserService implements IUserService {
   }
 
   async deleteUserById(id: number): Promise<void> {
-    const findUserById = await this.userRepository.findById(id);
-    if (!findUserById) {
-      throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
-    }
-
+    await this.findById(id);
     await this.userRepository.delete(id);
   }
 
   async findUserById(id: number): Promise<UserResponse> {
-    const user = await this.userRepository.findById(id);
-    if (!user) {
-      throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
-    }
+    const user = await this.findById(id);
     const level = this.levelCalculatorService.findLevel(user.userInfo.point).level;
-    return new UserResponse(user, level);
+
+    return plainToInstance(UserResponse, { ...user, level });
   }
 
-  async updateUserInfoById(userId: number, updateUserRequest: UpdateUserRequest): Promise<void> {
-    const { nickname, intro } = updateUserRequest;
+  async updateUserInfoById(userId: number, request: UpdateUserRequest): Promise<void> {
+    const { nickname, intro } = request;
     const userInfo = await this.userInfoRepository.findByUserId(userId);
     if (!userInfo) {
       throw new HttpException('해당 유저 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
@@ -140,5 +135,13 @@ export class UserService implements IUserService {
       uniqueNickname = `${nickname}#${uniqueId}`;
     }
     return uniqueNickname;
+  }
+
+  private async findById(id: number): Promise<User> {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+    }
+    return user;
   }
 }

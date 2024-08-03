@@ -17,8 +17,7 @@ export class UpdateUserRequest {
     description: '0 ~ 50 이하 자기소개 글',
     required: false,
   })
-  @IsOptional()
   @IsString()
   @Length(0, 50)
-  intro?: string | null;
+  intro: string;
 }
