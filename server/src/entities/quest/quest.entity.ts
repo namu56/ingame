@@ -30,12 +30,13 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'timestamp' })
   endDate: Date;
 
-  @ManyToOne(() => User, (user) => user.quests)
+  @ManyToOne(() => User, (user) => user.quests, {
+    onDelete: 'CASCADE',
+  })
   user: User;
 
   @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest, {
     cascade: ['insert'],
-    onDelete: 'CASCADE',
   })
   sideQuests: SideQuest[];
 
