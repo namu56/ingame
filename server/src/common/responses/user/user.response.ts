@@ -1,21 +1,28 @@
-import { User } from '../../../entities/user/user.entity';
+import { Expose, Transform } from 'class-transformer';
 
 export class UserResponse {
+  @Expose()
   readonly id: number;
-  readonly email: string;
-  readonly nickname: string;
-  readonly intro: string | null;
-  readonly point: number;
-  readonly profilePhotoUrl: string | null;
-  readonly level: number;
 
-  constructor(user: User, level: number) {
-    this.id = user.id;
-    this.email = user.email;
-    this.nickname = user.userInfo.nickname;
-    this.intro = user.userInfo.intro;
-    this.point = user.userInfo.point;
-    this.profilePhotoUrl = user.profilePhoto.profilePhotoUrl;
-    this.level = level;
-  }
+  @Expose()
+  readonly email: string;
+
+  @Expose()
+  @Transform(({ obj }) => obj.userInfo.nickname)
+  readonly nickname: string;
+
+  @Expose()
+  @Transform(({ obj }) => obj.userInfo.intro)
+  readonly intro: string | null;
+
+  @Expose()
+  @Transform(({ obj }) => obj.userInfo.point)
+  readonly point: number;
+
+  @Expose()
+  @Transform(({ obj }) => obj.profilePhoto.profilePhotoUrl)
+  readonly profilePhotoUrl: string | null;
+
+  @Expose()
+  readonly level: number;
 }

@@ -21,35 +21,22 @@ export class User extends BaseTimeEntity {
   providerId: string | null;
 
   @OneToOne(() => UserInfo, (userInfo) => userInfo.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
+    cascade: ['insert'],
   })
   userInfo: UserInfo;
 
   @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
+    cascade: ['insert'],
   })
   profilePhoto: ProfilePhoto;
 
-  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
 
-  @OneToMany(() => Quest, (quest) => quest.user, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => Quest, (quest) => quest.user)
   quests: Quest[];
 
   static createLocal(email: string, password: string): User {
-    const user = new User();
-    user.email = email;
-    user.password = password;
-    return user;
-  }
-
-  static create(email: string, password: string): User {
     const user = new User();
     user.email = email;
     user.password = password;
@@ -63,5 +50,13 @@ export class User extends BaseTimeEntity {
     user.provider = provider;
     user.providerId = providerId;
     return user;
+  }
+
+  updateUserInfo(userInfo: UserInfo): void {
+    this.userInfo = userInfo;
+  }
+
+  updateProfilePhoto(profilePhoto: ProfilePhoto): void {
+    this.profilePhoto = profilePhoto;
   }
 }

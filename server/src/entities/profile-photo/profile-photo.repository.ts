@@ -12,6 +12,11 @@ export class ProfilePhotoRepository
   }
 
   async findOneByUserId(userId: number): Promise<ProfilePhoto> {
-    return this.getRepository().findOneBy({ userId });
+    return this.getRepository().findOne({
+      where: {
+        user: { id: userId },
+      },
+      relations: ['user'],
+    });
   }
 }

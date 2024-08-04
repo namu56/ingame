@@ -6,7 +6,6 @@ export class UpdateProfilePhotoRequest {
     description: '프로필 이미지 스트링 형태의 데이터',
     required: false,
   })
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
   profilePhotoUrl: string;
