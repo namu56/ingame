@@ -24,7 +24,6 @@ import {
   UpdateUserRequest,
 } from 'src/common/requests/user';
 import { UserResponse } from 'src/common/responses/user';
-import { UserProvider } from 'src/common/types/user/user.type';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()

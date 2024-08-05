@@ -6,7 +6,7 @@ import { User } from 'src/entities/user/user.entity';
 export const AUTH_SERVICE_KEY = 'authServiceKey';
 
 export interface IAuthService {
-  validateLocalUser(email: string, password: string): Promise<User | null>;
+  validateLocalUser(email: string, password: string): Promise<Omit<User, 'password'> | null>;
   validateSocialUser(createSocialUserRequest: CreateSocialUserRequest): Promise<User | null>;
   login(payload: AccessTokenPayload): Promise<AuthTokenResponse>;
   logout(userId: number): Promise<void>;
