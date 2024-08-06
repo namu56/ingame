@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
 import { IUserService, USER_SERVICE_KEY } from 'src/modules/user/interfaces/user-service.interface';
@@ -43,8 +43,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       const payload = new AccessTokenPayload(user.id, user.email);
 
       return payload;
-    } catch (err) {
-      throw err;
+    } catch (error) {
+      throw new UnauthorizedException('Google 계정을 통한 인증에 실패했습니다.');
     }
   }
 }

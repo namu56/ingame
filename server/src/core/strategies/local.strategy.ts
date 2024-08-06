@@ -15,7 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(email: string, password: string): Promise<AccessTokenPayload> {
     const user = await this.authService.validateLocalUser(email, password);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('로그인에 실패했습니다.');
     }
     const payload = new AccessTokenPayload(user.id, user.email);
     return payload;

@@ -58,14 +58,13 @@ export class AuthService implements IAuthService {
   }
 
   async refresh(refreshToken: string): Promise<AuthTokenResponse> {
+    const decodedToken = await this.tokenService.verifiedRefreshToken(refreshToken);
+    const user = await this.userService.findUserById(decodedToken.id);
     try {
-      const decodedToken = await this.tokenService.verifiedRefreshToken(refreshToken);
-      const user = await this.userService.findUserById(decodedToken.id);
-
       const payload = new AccessTokenPayload(user.id, user.email);
       return this.tokenService.refresh(refreshToken, payload);
-    } catch {
-      throw new UnauthorizedException();
+    } catch (error) {
+      throw new UnauthorizedException('토큰 재발급에 실패했습니다.');
     }
   }
 }
