@@ -8,12 +8,12 @@ import {
   UpdateMainQuestRequest,
   UpdateQuestStatusRequest,
 } from '@common/requests/quest';
-import { toUTCStartOfDay } from '@common/utils/date.util';
 import { MainQuestResponse } from '@common/responses/quest';
 import { SubQuestResponse } from '@common/responses/quest/sub-quest.response';
 import { plainToInstance } from 'class-transformer';
 import { UpdateSubQuestRequest } from '@common/requests/quest/update-sub-quest.request';
 import { SideQuestService } from '@modules/side-quest/side-quest.service';
+import { toStartUTC } from '@common/utils/date.util';
 
 @Injectable()
 export class QuestService {
@@ -55,7 +55,7 @@ export class QuestService {
   }
 
   async findMainQuests(userId: number, dateString: string): Promise<MainQuestResponse[]> {
-    const date = toUTCStartOfDay(dateString);
+    const date = toStartUTC(dateString);
     const quests = await this.questRepository.findMainQuests(userId, date);
     if (!quests) {
       throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
@@ -64,7 +64,7 @@ export class QuestService {
   }
 
   async findSubQuests(userId: number, dateString: string): Promise<SubQuestResponse[]> {
-    const date = toUTCStartOfDay(dateString);
+    const date = toStartUTC(dateString);
     const quests = await this.questRepository.findSubQuests(userId, date);
     if (!quests) {
       throw new HttpException('서브 퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);

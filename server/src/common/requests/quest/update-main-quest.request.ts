@@ -1,9 +1,9 @@
 import { Difficulty, Hidden } from '@common/types/quest/quest.type';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { UpdateSideQuestRequest } from './update-side-quest.request';
-import { TransformDateToUTC } from '@core/decorators/transform-date-to-utc.decorator';
+import { IsOnlyDate } from '@core/decorators/is-only-date.decorator';
 
 export class UpdateMainQuestRequest {
   @ApiProperty({
@@ -50,20 +50,18 @@ export class UpdateMainQuestRequest {
     description: '퀘스트 시작일',
     required: true,
   })
-  @TransformDateToUTC({ option: 'start' })
   @IsNotEmpty()
-  @IsDate()
-  startDate: Date;
+  @IsOnlyDate()
+  startDate: string;
 
   @ApiProperty({
     example: '2024-05-15',
     description: '퀘스트 종료일',
     required: true,
   })
-  @TransformDateToUTC({ option: 'end' })
   @IsNotEmpty()
-  @IsDate()
-  endDate: Date;
+  @IsOnlyDate()
+  endDate: string;
 
   constructor() {}
 }

@@ -3,6 +3,8 @@ import { User } from '../user/user.entity';
 import { SideQuest } from '../side-quest/side-quest.entity';
 import { Difficulty, Hidden, Mode, Status } from '../../common/types/quest/quest.type';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
+import { StartDateTransformer } from '@core/database/typeorm/transformer/start-date.transformer';
+import { EndDateTransformer } from '@core/database/typeorm/transformer/end-date.transformer';
 
 @Entity('quest')
 export class Quest extends BaseTimeEntity {
@@ -24,10 +26,10 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'enum', enum: Status, default: Status.ON_PROGRESS })
   status: Status;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', precision: 3, transformer: new StartDateTransformer() })
   startDate: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', precision: 3, transformer: new EndDateTransformer() })
   endDate: Date;
 
   @ManyToOne(() => User, (user) => user.quests, {
@@ -44,8 +46,8 @@ export class Quest extends BaseTimeEntity {
     userId: number,
     title: string,
     difficulty: Difficulty,
-    startDate: Date,
-    endDate: Date,
+    startDate: string,
+    endDate: string,
     hidden: Hidden
   ): Quest {
     const quest = new Quest();
@@ -53,8 +55,8 @@ export class Quest extends BaseTimeEntity {
     quest.title = title;
     quest.difficulty = difficulty;
     quest.mode = Mode.MAIN;
-    quest.startDate = startDate;
-    quest.endDate = endDate;
+    quest.startDate = quest.startDateTransformer.to(startDate);
+    quest.endDate = quest.endDateTransformer.to(endDate);
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
@@ -64,8 +66,8 @@ export class Quest extends BaseTimeEntity {
   static createSubQuest(
     userId: number,
     title: string,
-    startDate: Date,
-    endDate: Date,
+    startDate: string,
+    endDate: string,
     hidden: Hidden
   ): Quest {
     const quest = new Quest();
@@ -73,8 +75,8 @@ export class Quest extends BaseTimeEntity {
     quest.title = title;
     quest.difficulty = Difficulty.DEFAULT;
     quest.mode = Mode.SUB;
-    quest.startDate = startDate;
-    quest.endDate = endDate;
+    quest.startDate = quest.startDateTransformer.to(startDate);
+    quest.endDate = quest.endDateTransformer.to(endDate);
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
@@ -85,14 +87,14 @@ export class Quest extends BaseTimeEntity {
     title: string,
     difficulty: Difficulty,
     hidden: Hidden,
-    startDate: Date,
-    endDate: Date
+    startDate: string,
+    endDate: string
   ): void {
     this.title = title;
     this.difficulty = difficulty;
     this.hidden = hidden;
-    this.startDate = startDate;
-    this.endDate = endDate;
+    this.startDate = this.startDateTransformer.to(startDate);
+    this.endDate = this.endDateTransformer.to(endDate);
   }
 
   updateStatus(status: Status): void {
@@ -107,4 +109,7 @@ export class Quest extends BaseTimeEntity {
     this.title = title;
     this.hidden = hidden;
   }
+
+  private startDateTransformer = new StartDateTransformer();
+  private endDateTransformer = new EndDateTransformer();
 }
