@@ -12,7 +12,7 @@ export const DEFAULT_TIMEZONE = 'Asia/Seoul';
  * @param dateString 'YYYY-MM-DD' 형식의 날짜 문자열
  * @returns UTC 기준의 시작 시간
  */
-export const toUTCStartOfDay = (dateString: string): Date => {
+export const toStartUTC = (dateString: string): Date => {
   return dayjs.tz(dateString, DEFAULT_TIMEZONE).startOf('day').utc().toDate();
 };
 
@@ -21,8 +21,12 @@ export const toUTCStartOfDay = (dateString: string): Date => {
  * @param dateString 'YYYY-MM-DD' 형식의 날짜 문자열
  * @returns UTC 기준의 종료 시간
  */
-export const toUTCEndOfDay = (dateString: string): Date => {
+export const toEndUTC = (dateString: string): Date => {
   return dayjs.tz(dateString, DEFAULT_TIMEZONE).endOf('day').utc().toDate();
+};
+
+export const toDateString = (date: Date): string => {
+  return dayjs(date).tz(DEFAULT_TIMEZONE).format('YYYYMMDD');
 };
 
 export const getUTCMidnightFromKRTime = (): Date => {
