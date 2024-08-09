@@ -55,12 +55,16 @@ export class Quest extends BaseTimeEntity {
     quest.title = title;
     quest.difficulty = difficulty;
     quest.mode = Mode.MAIN;
-    quest.startDate = quest.startDateTransformer.to(startDate);
-    quest.endDate = quest.endDateTransformer.to(endDate);
+    quest.startDate = quest.setStartDate(startDate);
+    quest.endDate = quest.setEndDate(endDate);
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
     return quest;
+  }
+
+  createSideQuests(sideQuests: SideQuest[]): void {
+    this.sideQuests = sideQuests;
   }
 
   static createSubQuest(
@@ -75,8 +79,8 @@ export class Quest extends BaseTimeEntity {
     quest.title = title;
     quest.difficulty = Difficulty.DEFAULT;
     quest.mode = Mode.SUB;
-    quest.startDate = quest.startDateTransformer.to(startDate);
-    quest.endDate = quest.endDateTransformer.to(endDate);
+    quest.startDate = quest.setStartDate(startDate);
+    quest.endDate = quest.setEndDate(endDate);
     quest.hidden = hidden;
     quest.status = Status.ON_PROGRESS;
 
@@ -93,16 +97,12 @@ export class Quest extends BaseTimeEntity {
     this.title = title;
     this.difficulty = difficulty;
     this.hidden = hidden;
-    this.startDate = this.startDateTransformer.to(startDate);
-    this.endDate = this.endDateTransformer.to(endDate);
+    this.startDate = this.setStartDate(startDate);
+    this.endDate = this.setEndDate(endDate);
   }
 
   updateStatus(status: Status): void {
     this.status = status;
-  }
-
-  updateSideQuests(sideQuests: SideQuest[]): void {
-    this.sideQuests = sideQuests;
   }
 
   updateSubQuest(title: string, hidden: Hidden): void {
@@ -110,6 +110,11 @@ export class Quest extends BaseTimeEntity {
     this.hidden = hidden;
   }
 
-  private startDateTransformer = new StartDateTransformer();
-  private endDateTransformer = new EndDateTransformer();
+  private setStartDate(value: string): Date {
+    return new StartDateTransformer().to(value);
+  }
+
+  private setEndDate(value: string): Date {
+    return new EndDateTransformer().to(value);
+  }
 }

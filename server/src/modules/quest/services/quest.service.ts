@@ -30,7 +30,7 @@ export class QuestService {
 
       if (mode === Mode.MAIN) {
         const newSideQuests = await this.sideQuestService.createSideQuests(quest.id, sideQuests);
-        quest.updateSideQuests(newSideQuests);
+        quest.createSideQuests(newSideQuests);
       }
 
       await this.questRepository.save(quest);
