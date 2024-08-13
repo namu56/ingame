@@ -5,7 +5,7 @@ import { RankingModule } from './modules/ranking/ranking.module';
 import { QuestModule } from './modules/quest/quest.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
-import { AllExceptionFilter } from './core/filters/all-exception.filter';
+import { AllExceptionsFilter } from './core/filters/all-exceptions.filter';
 import { PointModule } from './modules/point/point.module';
 import { CoreModule } from './core/core.module';
 import { SideQuestModule } from '@modules/side-quest/side-quest.module';
@@ -28,7 +28,7 @@ import { SideQuestModule } from '@modules/side-quest/side-quest.module';
   providers: [
     {
       provide: APP_FILTER,
-      useClass: AllExceptionFilter,
+      useClass: AllExceptionsFilter,
     },
   ],
 })
