@@ -4,6 +4,7 @@ import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
 import { Injectable, LoggerService } from '@nestjs/common';
 import winstonCloudWatch from 'winston-cloudwatch';
 import { ConfigService } from '@nestjs/config';
+import { ExceptionResponse } from '@common/responses/exception/exception.response';
 
 @Injectable()
 export class WinstonLoggerService implements LoggerService {
@@ -62,18 +63,18 @@ export class WinstonLoggerService implements LoggerService {
   }
 
   log(message: string, context?: string) {
-    this.logger.info(message, { context });
+    this.logger.info({ message, context });
   }
 
-  error(message: string, trace: string, context?: string) {
-    this.logger.error(message, { trace, context });
+  error(error: ExceptionResponse, args?: object) {
+    this.logger.error({ error, args });
   }
 
-  warn(message: string, context?: string) {
-    this.logger.warn(message, { context });
+  warn(error: ExceptionResponse, args?: object) {
+    this.logger.warn({ error, args });
   }
 
   debug(message: string, context?: string) {
-    this.logger.debug(message, { context });
+    this.logger.debug({ message, context });
   }
 }

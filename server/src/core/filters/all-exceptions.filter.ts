@@ -1,11 +1,4 @@
-import {
-  ArgumentsHost,
-  BadRequestException,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { QueryFailedError } from 'typeorm';
 import { WinstonLoggerService } from '../logger/winston-logger.service';
@@ -77,9 +70,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
   private exceptionLogging(exceptionResponse: ExceptionResponse, args?: object): void {
     if (exceptionResponse.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.error(exceptionResponse.message, JSON.stringify(exceptionResponse));
+      this.logger.error(exceptionResponse, args);
     } else {
-      this.logger.warn(exceptionResponse.message, JSON.stringify(exceptionResponse));
+      this.logger.warn(exceptionResponse, {});
     }
   }
 }
