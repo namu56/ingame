@@ -1,4 +1,13 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Logger,
+  LoggerService,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { QueryFailedError } from 'typeorm';
 import { WinstonLoggerService } from '../logger/winston-logger.service';
@@ -8,7 +17,7 @@ import { ValidationException } from '@core/exceptions/validation.exception';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  constructor(private readonly logger: WinstonLoggerService) {}
+  constructor(@Inject(Logger) private readonly logger: LoggerService) {}
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
@@ -16,21 +25,20 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const statusCode = this.getHttpStatus(exception);
     const timestamp = getAsiaTime();
-    const message = this.getMessage(exception);
+    const message = this.getErrorMessage(exception);
     const detail = this.getDetail(exception);
-
-    let exceptionResponse: ExceptionResponse = {
-      statusCode,
-      timestamp,
-      path: req.url,
-      method: req.method,
-      message: message,
-      detail,
-    };
-
+    const stack = this.getStack(exception);
     const args = req.body;
 
-    this.exceptionLogging(exceptionResponse, args);
+    const exceptionResponse = new ExceptionResponse(
+      statusCode,
+      timestamp,
+      req.url,
+      req.method,
+      message
+    );
+
+    this.exceptionLogging(exceptionResponse, detail, args, stack);
 
     res.status(statusCode).json(exceptionResponse);
   }
@@ -45,19 +53,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
   }
 
-  private getMessage(exception: unknown): string {
+  private getErrorMessage(exception: unknown): string {
     return exception instanceof Error ? exception.message : 'UNKNOWN ERROR';
   }
 
   private getDetail(exception: unknown): string | Array<object> | object {
     let detail: string | Array<object> | object = '';
-    if (exception instanceof HttpException) {
-      detail = exception.getResponse;
-    }
-
-    if (exception instanceof QueryFailedError) {
-      detail = { query: exception.query, parameters: exception.parameters };
-    }
 
     if (exception instanceof ValidationException) {
       detail = exception.errors.map((error) => ({
@@ -68,11 +69,20 @@ export class AllExceptionsFilter implements ExceptionFilter {
     return detail;
   }
 
-  private exceptionLogging(exceptionResponse: ExceptionResponse, args?: object): void {
+  private getStack(exception: unknown): string | undefined {
+    return exception instanceof Error ? exception.stack : undefined;
+  }
+
+  private exceptionLogging(
+    exceptionResponse: ExceptionResponse,
+    detail: string | Array<object> | object,
+    args?: object,
+    stack?: string
+  ): void {
     if (exceptionResponse.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.error(exceptionResponse, args);
+      this.logger.error({ ...exceptionResponse, detail, args, stack });
     } else {
-      this.logger.warn(exceptionResponse, {});
+      this.logger.warn({ ...exceptionResponse, detail, stack });
     }
   }
 }
