@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { QueryFailedError } from 'typeorm';
-import { WinstonLoggerService } from '../logger/winston-logger.service';
 import { ExceptionResponse } from '@common/responses/exception/exception.response';
 import { getAsiaTime } from '@common/utils/date.util';
 import { ValidationException } from '@core/exceptions/validation.exception';
