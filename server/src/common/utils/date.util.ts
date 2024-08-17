@@ -33,3 +33,7 @@ export const getUTCMidnightFromKRTime = (): Date => {
   const koreanMidnight = dayjs().tz(DEFAULT_TIMEZONE).startOf('day');
   return koreanMidnight.utc().toDate();
 };
+
+export const getAsiaTime = (): Date => {
+  return dayjs().tz(DEFAULT_TIMEZONE).toDate();
+};

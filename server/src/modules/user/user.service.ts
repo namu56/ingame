@@ -70,8 +70,11 @@ export class UserService implements IUserService {
     }
   }
 
-  async findUserByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new HttpException('이메일이 존재하지 않습니다', HttpStatus.NOT_FOUND);
+    }
     return user;
   }
 

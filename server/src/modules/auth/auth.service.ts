@@ -27,6 +27,7 @@ export class AuthService implements IAuthService {
   async validateLocalUser(email: string, password: string): Promise<User | null> {
     const user = await this.userService.findUserByEmail(email);
     const isMatch = await compareValue(password, user.password);
+
     if (user && isMatch) {
       const { password, ...result } = user;
       return result as User;
