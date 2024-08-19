@@ -1,7 +1,8 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { TransactionManager } from './transaction-manager';
-import { TRANSACTION } from '@common/constants';
+import { ENTITY_MANAGER, TRANSACTION } from '@common/constants';
 import { createNamespace } from 'cls-hooked';
+import { DataSource } from 'typeorm';
 
 describe('Transaction Manager Test', () => {
   it('NameSpace가 없는 경우', () => {
@@ -19,5 +20,24 @@ describe('Transaction Manager Test', () => {
     expect(() => manager.getEntityManager()).toThrow(
       new InternalServerErrorException(`${TRANSACTION} is not active`)
     );
+  });
+
+  it('정상적으로 작동하는 경우', async () => {
+    const manager = new TransactionManager();
+    const namespace = createNamespace(TRANSACTION);
+
+    const datasource = await new DataSource({
+      type: 'sqlite',
+      database: ':memory:',
+    }).initialize();
+
+    const entityManager = datasource.createEntityManager();
+
+    await namespace.runAndReturn(async () => {
+      namespace.set(ENTITY_MANAGER, entityManager);
+      const getEntityManager = manager.getEntityManager();
+
+      expect(getEntityManager).toStrictEqual(entityManager);
+    });
   });
 });
