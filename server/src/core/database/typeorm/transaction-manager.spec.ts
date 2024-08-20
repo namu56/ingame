@@ -26,14 +26,14 @@ describe('Transaction Manager Test', () => {
     const manager = new TransactionManager();
     const namespace = createNamespace(TRANSACTION);
 
-    const datasource = await new DataSource({
+    const dataSource = await new DataSource({
       type: 'sqlite',
       database: ':memory:',
     }).initialize();
 
-    const entityManager = datasource.createEntityManager();
+    const entityManager = dataSource.createEntityManager();
 
-    await namespace.runAndReturn(async () => {
+    await namespace.runPromise(async () => {
       namespace.set(ENTITY_MANAGER, entityManager);
       const getEntityManager = manager.getEntityManager();
 
