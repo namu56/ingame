@@ -10,7 +10,7 @@ export class TransactionMiddleware implements NestMiddleware {
   use(_req: Request, _res: Response, next: NextFunction) {
     const namespace = getNamespace(TRANSACTION) ?? createNamespace(TRANSACTION);
 
-    return namespace.runAndReturn(async () => {
+    return namespace.runPromise(async () => {
       Promise.resolve()
         .then(() => this.setEntityManager())
         .then(next);
