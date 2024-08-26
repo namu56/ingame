@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./client/.env
+    depends_on:
+      - server
+    networks:
+      - ingame
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    env_file:
+      - ./server/.development.env
+    depends_on:
+      - db
+    networks:
+      - ingame
+
+  db:
+    image: mariadb:11.2.2
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ingame
+      MYSQL_USER: ingame_admin
+      MYSQL_PASSWORD: 4ingame1231!
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    networks:
+      - ingame
+
+volumes:
+  mariadb_data:
+
+networks:
+  ingame:
+    driver: bridge
