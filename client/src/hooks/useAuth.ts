@@ -1,7 +1,7 @@
 import { login, logout } from '@/api/auth.api';
 import { ROUTERS } from '@/constant/route';
 import { LoginProps } from '@/pages/Login';
-import { removeToken, setToken } from '@/utils/tokenUtils';
+import { getToken, removeToken, setToken } from '@/utils/tokenUtils';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useMessage } from './useMessage';
@@ -17,7 +17,7 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess(res) {
-      setToken(res);
+      setToken(res.accessToken);
       navigate(ROUTERS.MAIN);
     },
     onError(err) {

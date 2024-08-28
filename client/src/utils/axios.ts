@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { getToken, setToken } from './tokenUtils';
+import { getToken, removeToken, setToken } from './tokenUtils';
 import { SERVER_API_URL } from '../settings';
 import { refreshToken } from '@/api/auth.api';
 
@@ -15,7 +15,8 @@ const createClient = (config?: AxiosRequestConfig) => {
   });
 
   axiosInstance.interceptors.request.use((request) => {
-    request.headers.Authorization = `Bearer ${getToken() ? getToken() : ''}`;
+    const token = getToken();
+    request.headers.Authorization = `Bearer ${token ? token : ''}`;
     return request;
   });
 
@@ -26,10 +27,13 @@ const createClient = (config?: AxiosRequestConfig) => {
     async (error) => {
       const originRequest = error.config;
       const hasToken = getToken();
-      if (error.response.status === 401) {
+      originRequest.retryCount = originRequest.retryCount || 0;
+
+      if (error.response.status === 401 && originRequest.retryCount < 3) {
+        originRequest.retryCount += 1;
         if (hasToken) {
-          const refreshedToken = await refreshToken();
-          setToken(refreshedToken);
+          const token = await refreshToken();
+          setToken(token.accessToken);
           return axiosInstance.request(originRequest);
         }
       }
