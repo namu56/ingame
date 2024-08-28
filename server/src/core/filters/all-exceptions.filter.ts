@@ -4,9 +4,7 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  Inject,
   Logger,
-  LoggerService,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { QueryFailedError } from 'typeorm';
@@ -16,7 +14,7 @@ import { ValidationException } from '@core/exceptions/validation.exception';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  constructor(@Inject(Logger) private readonly logger: LoggerService) {}
+  constructor(private readonly logger: Logger) {}
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
