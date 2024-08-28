@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './App.css';
@@ -8,13 +7,14 @@ import { store } from './store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor } from './store/index';
+import { USE_MSW } from './settings';
 
 async function mountApp() {
-  if (process.env.NODE_ENV === 'development') {
+  if (USE_MSW === 'true') {
     const { worker } = require('./mocks/browser');
 
     await worker.start();
-  } else {
+  } else if (process.env.NODE_ENV === 'production') {
     console.log = function no_console() {};
     console.warn = function no_console() {};
     console.error = function () {};
