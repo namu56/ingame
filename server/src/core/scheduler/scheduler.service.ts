@@ -29,15 +29,15 @@ export class SchedulerService {
 
       for (const mainQuest of mainQuests) {
         const completedSideQuestsCount = mainQuest.sideQuests.filter(
-          (sideQuest) => sideQuest.status === Status.COMPLETED
+          (sideQuest) => sideQuest.status === Status.Completed
         ).length;
 
-        const newStatus = completedSideQuestsCount > 0 ? Status.COMPLETED : Status.FAIL;
+        const newStatus = completedSideQuestsCount > 0 ? Status.Completed : Status.Fail;
         mainQuest.updateStatus(newStatus);
 
         mainQuest.sideQuests
-          .filter((sideQuest) => sideQuest.status === Status.ON_PROGRESS)
-          .forEach((sideQuest) => sideQuest.updateStatus(Status.FAIL));
+          .filter((sideQuest) => sideQuest.status === Status.OnProgress)
+          .forEach((sideQuest) => sideQuest.updateStatus(Status.Fail));
 
         const request = UpdatePointRequest.create(mainQuest.id, newStatus);
         await this.pointService.updatePoint(mainQuest.userId, request);
@@ -58,7 +58,7 @@ export class SchedulerService {
       }
 
       for (const subQuest of subQuests) {
-        subQuest.updateStatus(Status.FAIL);
+        subQuest.updateStatus(Status.Fail);
         const request = UpdatePointRequest.create(subQuest.id, subQuest.status);
         await this.pointService.updatePoint(subQuest.userId, request);
       }

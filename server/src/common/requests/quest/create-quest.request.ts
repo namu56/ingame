@@ -50,7 +50,7 @@ export class CreateQuestRequest {
     description: '사이드 퀘스트의 내용들',
     required: false,
   })
-  @ValidateIf((quest) => quest.mode === Mode.MAIN)
+  @ValidateIf((quest) => quest.mode === Mode.Main)
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateSideQuestRequest)

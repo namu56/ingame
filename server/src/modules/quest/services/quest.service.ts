@@ -28,7 +28,7 @@ export class QuestService {
     try {
       const quest = await this.createQuest(userId, request);
 
-      if (mode === Mode.MAIN) {
+      if (mode === Mode.Main) {
         const newSideQuests = await this.sideQuestService.createSideQuests(quest.id, sideQuests);
         quest.createSideQuests(newSideQuests);
       }
@@ -86,7 +86,7 @@ export class QuestService {
   ): Promise<void> {
     const { title, difficulty, startDate, endDate, hidden, sideQuests } = request;
     const quest = await this.findById(userId, questId);
-    if (quest.mode !== Mode.MAIN) {
+    if (quest.mode !== Mode.Main) {
       throw new HttpException('메인 퀘스트가 아닙니다', HttpStatus.BAD_REQUEST);
     }
     try {
@@ -128,7 +128,7 @@ export class QuestService {
     const { title, difficulty, mode, hidden, startDate, endDate } = request;
 
     const quest =
-      mode === Mode.MAIN
+      mode === Mode.Main
         ? Quest.createMainQuest(userId, title, difficulty, startDate, endDate, hidden)
         : Quest.createSubQuest(userId, title, startDate, endDate, hidden);
 

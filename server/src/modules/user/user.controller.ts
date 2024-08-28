@@ -8,8 +8,6 @@ import {
   HttpCode,
   Patch,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
   Param,
   ParseIntPipe,
   Inject,

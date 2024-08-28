@@ -47,13 +47,13 @@ export class PointService implements IPointService {
 
   private getPointByDifficulty(difficulty: Difficulty): number {
     switch (difficulty) {
-      case Difficulty.DEFAULT:
+      case Difficulty.Default:
         return 2;
-      case Difficulty.EASY:
+      case Difficulty.Easy:
         return 3;
-      case Difficulty.NORMAL:
+      case Difficulty.Normal:
         return 4;
-      case Difficulty.HARD:
+      case Difficulty.Hard:
         return 5;
       default:
         throw new HttpException('Invalid difficulty', HttpStatus.UNPROCESSABLE_ENTITY);
@@ -62,16 +62,16 @@ export class PointService implements IPointService {
 
   private calculateTotalPoint(quest: Quest, status: Status, difficultyPoint: number): number {
     const completedSideQuestsCount = quest.sideQuests.filter(
-      (sideQuest) => sideQuest.status === Status.COMPLETED
+      (sideQuest) => sideQuest.status === Status.Completed
     ).length;
 
     const totalPoint =
-      quest.mode === Mode.MAIN ? completedSideQuestsCount * difficultyPoint : difficultyPoint;
+      quest.mode === Mode.Main ? completedSideQuestsCount * difficultyPoint : difficultyPoint;
 
     switch (status) {
-      case Status.COMPLETED:
+      case Status.Completed:
         return totalPoint;
-      case Status.ON_PROGRESS:
+      case Status.OnProgress:
         return -totalPoint;
       default:
         return -difficultyPoint;

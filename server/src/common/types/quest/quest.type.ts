@@ -1,31 +1,31 @@
 export const Difficulty = {
-  DEFAULT: 'default',
-  EASY: 'easy',
-  NORMAL: 'normal',
-  HARD: 'hard',
+  Default: 'DEFAULT',
+  Easy: 'EASY',
+  Normal: 'NORMAL',
+  Hard: 'HARD',
 } as const;
 export type Difficulty = (typeof Difficulty)[keyof typeof Difficulty];
 
 export const Mode = {
-  MAIN: 'main',
-  SUB: 'sub',
+  Main: 'MAIN',
+  Sub: 'SUB',
 } as const;
 export type Mode = (typeof Mode)[keyof typeof Mode];
 
 export const Hidden = {
-  TRUE: 'true',
-  FALSE: 'false',
+  True: 'TRUE',
+  False: 'FALSE',
 } as const;
 export type Hidden = (typeof Hidden)[keyof typeof Hidden];
 
 export const Status = {
-  COMPLETED: 'completed',
-  FAIL: 'fail',
-  ON_PROGRESS: 'onProgress',
+  Completed: 'COMPLETED',
+  Fail: 'FAIL',
+  OnProgress: 'ON_PROGRESS',
 } as const;
 export type Status = (typeof Status)[keyof typeof Status];
 
 export const ActiveStatus = {
-  COMPLETED: 'completed',
-  ON_PROGRESS: 'onProgress',
+  Completed: 'COMPLETED',
+  OnProgress: 'ON_PROGRESS',
 } as const;

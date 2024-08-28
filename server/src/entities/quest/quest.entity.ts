@@ -14,16 +14,16 @@ export class Quest extends BaseTimeEntity {
   @Column({ type: 'varchar', length: 50 })
   title: string;
 
-  @Column({ type: 'enum', enum: Difficulty, default: Difficulty.DEFAULT })
+  @Column({ type: 'enum', enum: Difficulty, default: Difficulty.Default })
   difficulty: Difficulty;
 
   @Column({ type: 'enum', enum: Mode })
   mode: Mode;
 
-  @Column({ type: 'enum', enum: Hidden, default: Hidden.FALSE })
+  @Column({ type: 'enum', enum: Hidden, default: Hidden.False })
   hidden: Hidden;
 
-  @Column({ type: 'enum', enum: Status, default: Status.ON_PROGRESS })
+  @Column({ type: 'enum', enum: Status, default: Status.OnProgress })
   status: Status;
 
   @Column({ type: 'timestamp', precision: 3, transformer: new StartDateTransformer() })
@@ -54,11 +54,11 @@ export class Quest extends BaseTimeEntity {
     quest.userId = userId;
     quest.title = title;
     quest.difficulty = difficulty;
-    quest.mode = Mode.MAIN;
+    quest.mode = Mode.Main;
     quest.startDate = quest.setStartDate(startDate);
     quest.endDate = quest.setEndDate(endDate);
     quest.hidden = hidden;
-    quest.status = Status.ON_PROGRESS;
+    quest.status = Status.OnProgress;
 
     return quest;
   }
@@ -77,12 +77,12 @@ export class Quest extends BaseTimeEntity {
     const quest = new Quest();
     quest.userId = userId;
     quest.title = title;
-    quest.difficulty = Difficulty.DEFAULT;
-    quest.mode = Mode.SUB;
+    quest.difficulty = Difficulty.Default;
+    quest.mode = Mode.Sub;
     quest.startDate = quest.setStartDate(startDate);
     quest.endDate = quest.setEndDate(endDate);
     quest.hidden = hidden;
-    quest.status = Status.ON_PROGRESS;
+    quest.status = Status.OnProgress;
 
     return quest;
   }
