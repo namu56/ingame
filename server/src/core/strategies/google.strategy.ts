@@ -32,7 +32,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     const { emails, id, displayName } = profile;
     const googleUser = new CreateSocialUserRequest(
       emails[0].value,
-      UserProvider.GOOGLE,
+      UserProvider.Google,
       id,
       displayName
     );

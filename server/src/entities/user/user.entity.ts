@@ -14,7 +14,7 @@ export class User extends BaseTimeEntity {
   @Column({ type: 'varchar', length: 100 })
   password: string | null;
 
-  @Column({ type: 'enum', nullable: true, enum: UserProvider, default: UserProvider.LOCAL })
+  @Column({ type: 'enum', nullable: true, enum: UserProvider, default: UserProvider.Local })
   provider: UserProvider;
 
   @Column({ type: 'varchar', length: 100, nullable: true })

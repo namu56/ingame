@@ -14,6 +14,7 @@ export class LoggerContextMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const { ip, method, originalUrl, headers } = req;
     const datetime = getAsiaTime();
+    console.log(datetime);
     const token = this.extractTokenFromHeader(headers);
     const payload = token ? this.jwtService.decode(token) : null;
     const userId = payload ? payload.id : 0;

@@ -11,7 +11,7 @@ export class SideQuest extends BaseTimeEntity {
   @Column({ type: 'varchar', length: 50 })
   content: string;
 
-  @Column({ type: 'enum', enum: Status, default: Status.ON_PROGRESS })
+  @Column({ type: 'enum', enum: Status, default: Status.OnProgress })
   status: Status;
 
   @ManyToOne(() => Quest, (quest) => quest.sideQuests, {
@@ -24,7 +24,7 @@ export class SideQuest extends BaseTimeEntity {
     const sideQuest = new SideQuest();
     sideQuest.questId = questId;
     sideQuest.content = content;
-    sideQuest.status = Status.ON_PROGRESS;
+    sideQuest.status = Status.OnProgress;
 
     return sideQuest;
   }

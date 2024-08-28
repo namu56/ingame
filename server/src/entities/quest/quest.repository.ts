@@ -23,7 +23,7 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
 
   async findExpiredMainQuests(date: Date): Promise<Quest[]> {
     const findOptions: FindManyOptions = {
-      where: { modde: Mode.MAIN, status: Status.ON_PROGRESS, endDate: LessThan(date) },
+      where: { modde: Mode.Main, status: Status.OnProgress, endDate: LessThan(date) },
       relations: ['sideQuests'],
     };
     return this.getRepository().find(findOptions);
@@ -31,32 +31,32 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
 
   async findExpiredSubQuests(date: Date): Promise<Quest[]> {
     const findOptions: FindManyOptions = {
-      where: { mode: Mode.SUB, status: Status.ON_PROGRESS, endDate: LessThan(date) },
+      where: { mode: Mode.Sub, status: Status.OnProgress, endDate: LessThan(date) },
     };
     return this.getRepository().find(findOptions);
   }
 
   async findMainQuests(userId: number, date: Date): Promise<Quest[]> {
-    return await this.baseSelectQueryBuilder(userId, Mode.MAIN)
+    return await this.baseSelectQueryBuilder(userId, Mode.Main)
       .andWhere('quest.startDate <=:date', { date })
       .andWhere('quest.endDate >= :date', { date })
       .getMany();
   }
 
   async findSubQuests(userId: number, date: Date): Promise<Quest[]> {
-    return await this.baseSelectQueryBuilder(userId, Mode.SUB)
+    return await this.baseSelectQueryBuilder(userId, Mode.Sub)
       .andWhere('quest.startDate =:date', { date })
       .getMany();
   }
 
   async findMainQuest(userId: number, questId: number): Promise<Quest | null> {
-    return await this.baseSelectQueryBuilder(userId, Mode.MAIN)
+    return await this.baseSelectQueryBuilder(userId, Mode.Main)
       .andWhere('quest.id=:id', { id: questId })
       .getOne();
   }
 
   async findSubQuest(userId: number, questId: number): Promise<Quest | null> {
-    return await this.baseSelectQueryBuilder(userId, Mode.SUB)
+    return await this.baseSelectQueryBuilder(userId, Mode.Sub)
       .andWhere('quest.id=:id', { id: questId })
       .getOne();
   }
@@ -68,7 +68,7 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
       .where('quest.userId = :userId', { userId })
       .andWhere('quest.mode= :mode', { mode });
 
-    if (mode === Mode.MAIN) query = query.leftJoinAndSelect('quest.sideQuests', 'sideQuest');
+    if (mode === Mode.Main) query = query.leftJoinAndSelect('quest.sideQuests', 'sideQuest');
 
     return query;
   }
