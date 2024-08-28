@@ -34,3 +34,4 @@ services:
 networks:
   ingame:
     external: true
+    name: ingame
