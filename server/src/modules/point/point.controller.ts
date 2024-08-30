@@ -27,19 +27,15 @@ import { UpdatePointRequest } from '@common/requests/point';
 export class PointController {
   constructor(@Inject(POINT_SERVICE_KEY) private readonly pointService: IPointService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Patch()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '포인트 추가 및 감소' })
   @ApiBearerAuth('accessToken')
   @ApiNoContentResponse()
   @ApiNotFoundResponse({ description: 'fail - User not found' })
   @ApiNotFoundResponse({ description: 'fail - Quest not found' })
-  @UsePipes(ValidationPipe)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePoint(
-    @CurrentUser() user: AccessTokenPayload,
-    @Body() updatePointRequest: UpdatePointRequest
-  ) {
-    await this.pointService.updatePoint(user.id, updatePointRequest);
+  async updatePoint(@CurrentUser() user: AccessTokenPayload, @Body() request: UpdatePointRequest) {
+    await this.pointService.updatePoint(user.id, request);
   }
 }

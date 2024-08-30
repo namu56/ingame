@@ -23,8 +23,7 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
 
   async findExpiredMainQuests(date: Date): Promise<Quest[]> {
     const findOptions: FindManyOptions = {
-      where: { modde: Mode.Main, status: Status.OnProgress, endDate: LessThan(date) },
-      relations: ['sideQuests'],
+      where: { mode: Mode.Main, status: Status.OnProgress, endDate: LessThan(date) },
     };
     return this.getRepository().find(findOptions);
   }
