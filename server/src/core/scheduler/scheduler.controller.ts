@@ -16,9 +16,4 @@ export class SchedulerController {
   async updateExpiredSubQuests() {
     await this.schedulerService.updateExpiredSubQuests();
   }
-
-  // @Cron(CronExpression.EVERY_30_SECONDS)
-  // serviceHealthCheck() {
-  //   this.schedulerService.serviceHealthCheck();
-  // }
 }

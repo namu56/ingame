@@ -13,7 +13,7 @@ import {
   ISideQuestRepository,
   SIDE_QUEST_REPOSITORY_KEY,
 } from '@entities/side-quest/side-quest-repository.interface';
-import { userInfo } from 'os';
+import { UserInfo } from '@entities/user-info/user-info.entity';
 
 @Injectable()
 export class PointService implements IPointService {
@@ -24,28 +24,12 @@ export class PointService implements IPointService {
   ) {}
 
   @Transactional()
-  async updatePoint(userId: number, request: UpdatePointRequest) {
+  async updatePointForQuest(userId: number, request: UpdatePointRequest) {
     const { questId, status } = request;
-
     const userInfo = await this.userInfoRepository.findByUserId(userId);
-    if (!userInfo) {
-      throw new HttpException('유저의 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
-    }
-
     const quest = await this.questRepository.findById(userId, questId);
-    if (!quest) {
-      throw new HttpException('퀘스트가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
-    }
-
     try {
-      const difficultyPoint = this.getPointByDifficulty(quest.difficulty);
-      const calculatedPoint = await this.calculatePoint(quest, status, difficultyPoint);
-
-      quest.updateStatus(status);
-      userInfo.updatePoint(Math.max(0, userInfo.point + calculatedPoint));
-
-      await this.questRepository.save(quest);
-      await this.userInfoRepository.save(userInfo);
+      await this.handlePointForQuest(userInfo, quest, status);
     } catch (error) {
       throw new HttpException('포인트 업데이트에 실패하였습니다', HttpStatus.CONFLICT);
     }
@@ -53,9 +37,16 @@ export class PointService implements IPointService {
 
   async updatePointForExpiredQuest(quest: Quest, status: Status): Promise<void> {
     const userInfo = await this.userInfoRepository.findByUserId(quest.userId);
-
     if (!userInfo) return;
 
+    await this.handlePointForQuest(userInfo, quest, status);
+  }
+
+  private async handlePointForQuest(
+    userInfo: UserInfo,
+    quest: Quest,
+    status: Status
+  ): Promise<void> {
     const difficultyPoint = this.getPointByDifficulty(quest.difficulty);
     const calculatedPoint = await this.calculatePoint(quest, status, difficultyPoint);
 
@@ -80,7 +71,6 @@ export class PointService implements IPointService {
         throw new HttpException('Invalid difficulty', HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
-
   private async calculatePoint(
     quest: Quest,
     status: Status,

@@ -36,6 +36,6 @@ export class PointController {
   @ApiNotFoundResponse({ description: 'fail - Quest not found' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePoint(@CurrentUser() user: AccessTokenPayload, @Body() request: UpdatePointRequest) {
-    await this.pointService.updatePoint(user.id, request);
+    await this.pointService.updatePointForQuest(user.id, request);
   }
 }

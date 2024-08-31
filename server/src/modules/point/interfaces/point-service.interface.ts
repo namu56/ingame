@@ -5,6 +5,6 @@ import { Quest } from '@entities/quest/quest.entity';
 export const POINT_SERVICE_KEY = 'pointServiceKey';
 
 export interface IPointService {
-  updatePoint(userId: number, updatePointRequest: UpdatePointRequest): Promise<void>;
+  updatePointForQuest(userId: number, updatePointRequest: UpdatePointRequest): Promise<void>;
   updatePointForExpiredQuest(quest: Quest, status: Status): Promise<void>;
 }
