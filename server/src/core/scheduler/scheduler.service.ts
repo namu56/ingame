@@ -20,6 +20,8 @@ import {
   SIDE_QUEST_REPOSITORY_KEY,
 } from '@entities/side-quest/side-quest-repository.interface';
 import { Transactional } from '@core/decorators/transactional.decorator';
+import { SideQuest } from '@entities/side-quest/side-quest.entity';
+import { Quest } from '@entities/quest/quest.entity';
 
 @Injectable()
 export class SchedulerService {
@@ -35,58 +37,68 @@ export class SchedulerService {
   @Transactional()
   async updateExpiredMainQuests() {
     try {
-      const date = getExpiredDate();
-      const mainQuests = await this.questRepository.findExpiredMainQuests(date);
+      const expiredDate = getExpiredDate();
+      const mainQuests = await this.questRepository.findExpiredMainQuests(expiredDate);
 
       if (mainQuests.length === 0) {
         this.logger.log('만료된 메인 퀘스트가 존재하지 않습니다');
         return;
       }
 
-      for (const mainQuest of mainQuests) {
-        const sideQuests = await this.sideQuestRepository.findByQuestId(mainQuest.id);
-
-        const completedSideQuestsCount = sideQuests.filter(
-          (sideQuest) => sideQuest.status === Status.Completed
-        ).length;
-
-        const newStatus = completedSideQuestsCount > 0 ? Status.Completed : Status.Fail;
-
-        if (sideQuests.length > 0) {
-          sideQuests
-            .filter((sideQuest) => sideQuest.status === Status.OnProgress)
-            .forEach((sideQuest) => sideQuest.updateStatus(Status.Fail));
-
-          await this.pointService.updatePointForExpiredQuest(mainQuest, newStatus);
-
-          for (const sideQuest of sideQuests) {
-            await this.sideQuestRepository.save(sideQuest);
-          }
-        } else {
-          await this.pointService.updatePointForExpiredQuest(mainQuest, newStatus);
-        }
-      }
+      await Promise.all(mainQuests.map((mainQuest) => this.processExpiredMainQuest(mainQuest)));
     } catch (error) {
       this.logger.warn({ message: '메인 퀘스트 스케쥴링에 실패하였습니다', stack: error.stack });
     }
   }
+
   @Namespace()
   @Transactional()
   async updateExpiredSubQuests() {
     try {
-      const date = getExpiredDate();
-      const subQuests = await this.questRepository.findExpiredSubQuests(date);
+      const expiredDate = getExpiredDate();
+      const subQuests = await this.questRepository.findExpiredSubQuests(expiredDate);
 
       if (subQuests.length === 0) {
         this.logger.log('만료된 서브 퀘스트가 존재하지 않습니다');
         return;
       }
 
-      for (const subQuest of subQuests) {
-        await this.pointService.updatePointForExpiredQuest(subQuest, Status.Fail);
-      }
+      await Promise.all(
+        subQuests.map((subQuest) =>
+          this.pointService.updatePointForExpiredQuest(subQuest, Status.Fail)
+        )
+      );
     } catch (error) {
       throw new HttpException('서브 퀘스트 스케쥴링에 실패하였습니다', HttpStatus.CONFLICT);
     }
+  }
+
+  private async processExpiredMainQuest(mainQuest: Quest) {
+    const sideQuests = await this.sideQuestRepository.findByQuestId(mainQuest.id);
+    const newStatus = this.newStatus(sideQuests);
+
+    await this.updateSideQuests(sideQuests);
+    await this.pointService.updatePointForExpiredQuest(mainQuest, newStatus);
+  }
+
+  private newStatus(sideQuests: SideQuest[]): Status {
+    const completedSideQuestsCount = sideQuests.filter(
+      (sideQuest) => sideQuest.status === Status.Completed
+    ).length;
+
+    return completedSideQuestsCount > 0 ? Status.Completed : Status.Fail;
+  }
+
+  private async updateSideQuests(sideQuests: SideQuest[]) {
+    const onProgressSideQuests = sideQuests.filter(
+      (sideQuest) => sideQuest.status === Status.OnProgress
+    );
+
+    await Promise.all(
+      onProgressSideQuests.map((sideQuest) => {
+        sideQuest.updateStatus(Status.Fail);
+        return this.sideQuestRepository.save(sideQuest);
+      })
+    );
   }
 }
