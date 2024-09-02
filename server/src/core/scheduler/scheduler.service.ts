@@ -1,69 +1,104 @@
-import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  LoggerService,
+} from '@nestjs/common';
 import { Status } from '../../common/types/quest/quest.type';
 import {
   IPointService,
   POINT_SERVICE_KEY,
 } from '@modules/point/interfaces/point-service.interface';
-import { UpdatePointRequest } from '@common/requests/point';
 import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
-import { getUTCMidnightFromKRTime } from '@common/utils/date.util';
+import { getExpiredDate } from '@common/utils/date.util';
+import { EntityManager } from 'typeorm';
+import { Namespace } from '@core/decorators/namespace.decorator';
+import {
+  ISideQuestRepository,
+  SIDE_QUEST_REPOSITORY_KEY,
+} from '@entities/side-quest/side-quest-repository.interface';
+import { Transactional } from '@core/decorators/transactional.decorator';
+import { SideQuest } from '@entities/side-quest/side-quest.entity';
+import { Quest } from '@entities/quest/quest.entity';
 
 @Injectable()
 export class SchedulerService {
-  private readonly logger = new Logger(SchedulerService.name);
-
   constructor(
+    @Inject(Logger) private readonly logger: LoggerService,
+    @Inject(EntityManager) private readonly entityManager: EntityManager,
     @Inject(QUEST_REPOSITORY_KEY) private readonly questRepository: IQuestRepository,
+    @Inject(SIDE_QUEST_REPOSITORY_KEY) private readonly sideQuestRepository: ISideQuestRepository,
     @Inject(POINT_SERVICE_KEY) private readonly pointService: IPointService
   ) {}
 
+  @Namespace()
+  @Transactional()
   async updateExpiredMainQuests() {
     try {
-      const utcMidnight = getUTCMidnightFromKRTime();
-      const mainQuests = await this.questRepository.findExpiredMainQuests(utcMidnight);
+      const expiredDate = getExpiredDate();
+      const mainQuests = await this.questRepository.findExpiredMainQuests(expiredDate);
 
-      if (!mainQuests || mainQuests.length === 0) {
-        this.logger.log('No expired main quests found');
+      if (mainQuests.length === 0) {
+        this.logger.log('만료된 메인 퀘스트가 존재하지 않습니다');
         return;
       }
 
-      for (const mainQuest of mainQuests) {
-        const completedSideQuestsCount = mainQuest.sideQuests.filter(
-          (sideQuest) => sideQuest.status === Status.Completed
-        ).length;
-
-        const newStatus = completedSideQuestsCount > 0 ? Status.Completed : Status.Fail;
-        mainQuest.updateStatus(newStatus);
-
-        mainQuest.sideQuests
-          .filter((sideQuest) => sideQuest.status === Status.OnProgress)
-          .forEach((sideQuest) => sideQuest.updateStatus(Status.Fail));
-
-        const request = UpdatePointRequest.create(mainQuest.id, newStatus);
-        await this.pointService.updatePoint(mainQuest.userId, request);
-      }
+      await Promise.all(mainQuests.map((mainQuest) => this.processExpiredMainQuest(mainQuest)));
     } catch (error) {
-      throw new HttpException('메인 퀘스트 스케쥴링에 실패하였습니다', HttpStatus.CONFLICT);
+      this.logger.warn({ message: '메인 퀘스트 스케쥴링에 실패하였습니다', stack: error.stack });
     }
   }
 
+  @Namespace()
+  @Transactional()
   async updateExpiredSubQuests() {
     try {
-      const utcMidnight = getUTCMidnightFromKRTime();
-      const subQuests = await this.questRepository.findExpiredSubQuests(utcMidnight);
+      const expiredDate = getExpiredDate();
+      const subQuests = await this.questRepository.findExpiredSubQuests(expiredDate);
 
-      if (!subQuests || subQuests.length === 0) {
-        this.logger.log('No expired sub quests found');
+      if (subQuests.length === 0) {
+        this.logger.log('만료된 서브 퀘스트가 존재하지 않습니다');
         return;
       }
 
-      for (const subQuest of subQuests) {
-        subQuest.updateStatus(Status.Fail);
-        const request = UpdatePointRequest.create(subQuest.id, subQuest.status);
-        await this.pointService.updatePoint(subQuest.userId, request);
-      }
+      await Promise.all(
+        subQuests.map((subQuest) =>
+          this.pointService.updatePointForExpiredQuest(subQuest, Status.Fail)
+        )
+      );
     } catch (error) {
-      throw new HttpException('서브 퀘스트 스케쥴링에 실패하였습니다', HttpStatus.CONFLICT);
+      this.logger.warn({ message: '서브 퀘스트 스케쥴링에 실패하였습니다', stack: error.stack });
     }
+  }
+
+  private async processExpiredMainQuest(mainQuest: Quest) {
+    const sideQuests = await this.sideQuestRepository.findByQuestId(mainQuest.id);
+    const newStatus = this.newStatus(sideQuests);
+
+    await this.updateSideQuests(sideQuests);
+    await this.pointService.updatePointForExpiredQuest(mainQuest, newStatus);
+  }
+
+  private newStatus(sideQuests: SideQuest[]): Status {
+    const completedSideQuestsCount = sideQuests.filter(
+      (sideQuest) => sideQuest.status === Status.Completed
+    ).length;
+
+    return completedSideQuestsCount > 0 ? Status.Completed : Status.Fail;
+  }
+
+  private async updateSideQuests(sideQuests: SideQuest[]) {
+    const onProgressSideQuests = sideQuests.filter(
+      (sideQuest) => sideQuest.status === Status.OnProgress
+    );
+
+    await Promise.all(
+      onProgressSideQuests.map((sideQuest) => {
+        sideQuest.updateStatus(Status.Fail);
+        return this.sideQuestRepository.save(sideQuest);
+      })
+    );
   }
 }

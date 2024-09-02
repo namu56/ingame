@@ -31,11 +31,12 @@ const modules = [
 ];
 const strategies = [JwtStrategy, LocalStrategy, GoogleStrategy];
 const filters: ClassProvider[] = [{ provide: APP_FILTER, useClass: AllExceptionsFilter }];
+const logger: ClassProvider = { provide: Logger, useClass: Logger };
 
 @Global()
 @Module({
   imports: [...modules],
-  providers: [Logger, ...strategies, ...filters],
+  providers: [logger, ...strategies, ...filters],
   exports: [...modules],
 })
 export class CoreModule implements NestModule {

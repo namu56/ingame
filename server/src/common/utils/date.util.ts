@@ -29,9 +29,8 @@ export const toDateString = (date: Date): string => {
   return dayjs(date).tz(DEFAULT_TIMEZONE).format('YYYYMMDD');
 };
 
-export const getUTCMidnightFromKRTime = (): Date => {
-  const koreanMidnight = dayjs().tz(DEFAULT_TIMEZONE).startOf('day');
-  return koreanMidnight.utc().toDate();
+export const getExpiredDate = (): Date => {
+  return dayjs().tz(DEFAULT_TIMEZONE).startOf('day').utc().toDate();
 };
 
 export const getAsiaTime = (): Date => {
