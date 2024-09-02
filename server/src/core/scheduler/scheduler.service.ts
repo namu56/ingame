@@ -69,7 +69,7 @@ export class SchedulerService {
         )
       );
     } catch (error) {
-      throw new HttpException('서브 퀘스트 스케쥴링에 실패하였습니다', HttpStatus.CONFLICT);
+      this.logger.warn({ message: '서브 퀘스트 스케쥴링에 실패하였습니다', stack: error.stack });
     }
   }
 
