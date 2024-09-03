@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { setupSwagger, winstonLogger } from './core/config';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { ValidationException } from '@core/exceptions/validation.exception';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,7 +15,13 @@ async function bootstrap() {
       excludeExtraneousValues: true,
     })
   );
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (errors) => new ValidationException(errors),
+      transform: true,
+    })
+  );
 
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get<string>('PORT'));

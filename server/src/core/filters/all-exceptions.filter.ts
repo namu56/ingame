@@ -1,5 +1,6 @@
 import {
   ArgumentsHost,
+  BadRequestException,
   Catch,
   ExceptionFilter,
   HttpException,
@@ -56,8 +57,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     return exception instanceof Error ? exception.message : 'UNKNOWN ERROR';
   }
 
-  private getDetail(exception: unknown): string | Array<object> | object {
-    let detail: string | Array<object> | object = '';
+  private getDetail(exception: unknown): string | Array<object> {
+    let detail: string | Array<object> = '';
 
     if (exception instanceof ValidationException) {
       detail = exception.errors.map((error) => ({
