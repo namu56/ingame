@@ -75,9 +75,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
   private exceptionLogging(
     exceptionResponse: ExceptionResponse,
-    detail: string | Array<object> | object,
-    args?: object,
-    stack?: string
+    detail: string | Array<object>,
+    stack: string,
+    args?: object
   ): void {
     if (exceptionResponse.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error({ ...exceptionResponse, detail, args, stack });
