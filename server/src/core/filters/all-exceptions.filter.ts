@@ -1,6 +1,5 @@
 import {
   ArgumentsHost,
-  BadRequestException,
   Catch,
   ExceptionFilter,
   HttpException,
@@ -38,7 +37,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message
     );
 
-    this.exceptionLogging(exceptionResponse, detail, args, stack);
+    this.exceptionLogging(exceptionResponse, detail, stack, args);
 
     res.status(statusCode).json(exceptionResponse);
   }
