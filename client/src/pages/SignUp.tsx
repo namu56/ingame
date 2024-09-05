@@ -32,7 +32,7 @@ const SignUp = () => {
 
   return (
     <SignUpStyle>
-      <Title text="InGame" />
+      <Title text="InGame" size="medium" />
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset>
           <div className="sendEmail">
