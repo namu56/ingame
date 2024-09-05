@@ -17,7 +17,7 @@ export const LayoutStyle = styled.div`
   padding: 1.5rem;
   justify-content: flex-start;
   align-items: center;
-  width: 480px;
+  width: 400px;
   height: 100vh;
   border: 1px solid ${({ theme }) => theme.color.grayNormal};
   border-radius: ${({ theme }) => theme.borderRadius.large};
