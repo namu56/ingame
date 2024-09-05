@@ -17,7 +17,11 @@ const NavigationText = ({ text, url }: NavigationTextProps) => {
 const NavigationTextStyle = styled.div`
   display: flex;
   justify-content: center;
+  font-size: ${({ theme }) => theme.font.xsmall};
   text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+  text-decoration: underline;
+  text-decoration-color: ${({ theme }) => theme.color.blue};
+  text-underline-offset: 3px;
 
   a {
     cursor: pointer;
@@ -26,6 +30,10 @@ const NavigationTextStyle = styled.div`
 
   a:visited {
     color: ${({ theme }) => theme.color.blue};
+  }
+
+  a:hover {
+    color: ${({ theme }) => theme.colorActive.blue};
   }
 `;
 

@@ -7,7 +7,7 @@ const color = {
   coralOpacity70: 'rgba(255, 114, 98, 0.7)',
   red: '#F24E1E',
   purple: '#A259FF',
-  blue: '#1ABCFE',
+  blue: '#6aa8ff',
   green: '#0ACF83',
   greenLight: '#D1eae7',
   greenLightActive: '#90c5bf;',
@@ -15,10 +15,12 @@ const color = {
   grayLight: '#FDFDFD',
   grayNormal: '#d4d4d4',
   grayDark: '#b0b0b0',
+  kakaoYellow: '#FAE300',
+  naverGreen: '#02C75A',
 };
 
 const colorActive = {
-  blue: '#28A3FC',
+  blue: '#4f97fd',
   purple: '#8127F2',
   coral: '#FF4F3B',
   green: '#00C078',
@@ -48,7 +50,7 @@ const buttonSize = {
   },
   medium: {
     fontSize: '1rem',
-    padding: '0.5rem 1rem',
+    padding: '0.75rem 1rem',
   },
   small: {
     fontSize: '0.75rem',
