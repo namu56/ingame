@@ -2,18 +2,20 @@ import styled from 'styled-components';
 
 interface TitleProps {
   text: string;
+  size: 'large' | 'medium' | 'small';
 }
 
-const Title = ({ text }: TitleProps) => {
+const Title = ({ text, size }: TitleProps) => {
   return (
-    <TitleStyle>
+    <TitleStyle size={size}>
       <h1>{text}</h1>
     </TitleStyle>
   );
 };
 
-const TitleStyle = styled.div`
-  font-size: ${({ theme }) => theme.font.xlarge};
+const TitleStyle = styled.div<Pick<TitleProps, 'size'>>`
+  font-size: ${({ theme, size }) => theme.font[size]};
+  color: ${({ theme }) => theme.color.blue};
   font-family: 'Pretendard700';
   display: flex;
   justify-content: center;
