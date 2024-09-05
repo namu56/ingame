@@ -20,6 +20,8 @@ declare module 'styled-components' {
       grayLight: string;
       grayNormal: string;
       grayDark: string;
+      kakaoYellow: string;
+      naverGreen: string;
     };
 
     colorActive: {
