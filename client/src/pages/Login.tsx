@@ -30,66 +30,68 @@ const Login = () => {
   };
 
   return (
-    <LoginStyle>
+    <>
       <Header title="InGame" />
-      <LocalLoginContainer>
-        <LoginHeader>
-          <Title text="로그인" size="large" />
-        </LoginHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <fieldset>
-            <InputBox
-              inputIconType="email"
-              inputType="email"
-              placeholder="이메일"
-              {...register('email', { required: true, maxLength: 50 })}
-            />
-            {errors.email && errors.email.type === 'required' && (
-              <p className="error-text">이메일을 입력해주세요</p>
-            )}
-            {errors.email && errors.email.type === 'maxLength' && (
-              <p className="error-text">이메일은 최대 50글자입니다</p>
-            )}
-          </fieldset>
-          <fieldset>
-            <InputBox
-              inputIconType="password"
-              inputType="password"
-              placeholder="비밀번호"
-              {...register('password', { required: true, maxLength: 30, minLength: 8 })}
-            />
-            {errors.password && errors.password.type === 'required' && (
-              <p className="error-text">비밀번호를 확인해주세요</p>
-            )}
-            {errors.password && errors.password.type === 'maxLength' && (
-              <p className="error-text">비밀번호는 최대 30자리입니다</p>
-            )}
-            {errors.password && errors.password.type === 'minLength' && (
-              <p className="error-text">비밀번호는 최소 8자리입니다</p>
-            )}
-          </fieldset>
-          <Button type="submit" size="medium" color="blue" children={'로그인'} />
-        </form>
-        <SignUpLink>
-          <span>계정이 없으신가요?</span>
-          <NavigationText text="가입하기" url={ROUTERS.AUTH.SIGNUP} />
-        </SignUpLink>
-      </LocalLoginContainer>
-      <SocialLoginContainer>
-        <SocialButton>
-          <img src={GoogleIcon} alt="Google" />
-          구글로 계속하기
-        </SocialButton>
-        <SocialButton>
-          <img src={KakaoIcon} alt="Kakao" />
-          카카오로 계속하기
-        </SocialButton>
-        <SocialButton>
-          <img src={NaverIcon} alt="Naver" />
-          네이버로 계속하기
-        </SocialButton>
-      </SocialLoginContainer>
-    </LoginStyle>
+      <LoginStyle>
+        <LocalLogin>
+          <LoginHeader>
+            <Title text="로그인" size="large" />
+          </LoginHeader>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <fieldset>
+              <InputBox
+                inputIconType="email"
+                inputType="email"
+                placeholder="이메일"
+                {...register('email', { required: true, maxLength: 50 })}
+              />
+              {errors.email && errors.email.type === 'required' && (
+                <p className="error-text">이메일을 입력해주세요</p>
+              )}
+              {errors.email && errors.email.type === 'maxLength' && (
+                <p className="error-text">이메일은 최대 50글자입니다</p>
+              )}
+            </fieldset>
+            <fieldset>
+              <InputBox
+                inputIconType="password"
+                inputType="password"
+                placeholder="비밀번호"
+                {...register('password', { required: true, maxLength: 30, minLength: 8 })}
+              />
+              {errors.password && errors.password.type === 'required' && (
+                <p className="error-text">비밀번호를 확인해주세요</p>
+              )}
+              {errors.password && errors.password.type === 'maxLength' && (
+                <p className="error-text">비밀번호는 최대 30자리입니다</p>
+              )}
+              {errors.password && errors.password.type === 'minLength' && (
+                <p className="error-text">비밀번호는 최소 8자리입니다</p>
+              )}
+            </fieldset>
+            <Button type="submit" size="medium" color="blue" children={'로그인'} />
+          </form>
+          <SignUpLink>
+            <span>계정이 없으신가요?</span>
+            <NavigationText text="가입하기" url={ROUTERS.AUTH.SIGNUP} />
+          </SignUpLink>
+        </LocalLogin>
+        <SocialLogin>
+          <SocialButton>
+            <img src={GoogleIcon} alt="Google" />
+            구글로 계속하기
+          </SocialButton>
+          <SocialButton>
+            <img src={KakaoIcon} alt="Kakao" />
+            카카오로 계속하기
+          </SocialButton>
+          <SocialButton>
+            <img src={NaverIcon} alt="Naver" />
+            네이버로 계속하기
+          </SocialButton>
+        </SocialLogin>
+      </LoginStyle>
+    </>
   );
 };
 
@@ -98,10 +100,12 @@ const LoginStyle = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100vh;
-  gap: 40px;
+  gap: 30px;
+  justify-content: center;
+  transform: translateY(-5%);
 `;
 
-const LocalLoginContainer = styled.div`
+const LocalLogin = styled.div`
   display: flex;
   flex-direction: column;
 
@@ -139,7 +143,7 @@ const SignUpLink = styled.div`
   color: ${({ theme }) => theme.color.grayDark};
 `;
 
-const SocialLoginContainer = styled.div`
+const SocialLogin = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
