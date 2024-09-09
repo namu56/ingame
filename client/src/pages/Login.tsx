@@ -35,7 +35,7 @@ const Login = () => {
       <LoginStyle>
         <LocalLogin>
           <LoginHeader>
-            <Title text="로그인" size="large" />
+            <Title text="로그인" size="large" color="blue" />
           </LoginHeader>
           <form onSubmit={handleSubmit(onSubmit)}>
             <fieldset>

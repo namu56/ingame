@@ -14,6 +14,7 @@ import { UserInfo } from '@/models/userInfo.model';
 import { useQuery } from '@tanstack/react-query';
 import { USER } from '@/constant/queryKey';
 import { getUserInfo } from '@/api/users.api';
+import Title from '@/components/common/Title';
 
 const Main = () => {
   const { quest, isSubLoading } = useSubQuest();
@@ -39,12 +40,19 @@ const Main = () => {
       <section className="questSection">
         <div className="questTitle">
           <BiNotepad />
-          <h2>Main Quest</h2>
+          <Title text="Main Quest" size="small" color="black" />
           <CreateQuestButton pageUrl="/createquest" />
         </div>
         <div>
           {mainQuest?.length ? (
-            mainQuest?.map((content) => <MainBox key={content.id} content={content} date={date} refetchMainBoxData={refetch} />)
+            mainQuest?.map((content) => (
+              <MainBox
+                key={content.id}
+                content={content}
+                date={date}
+                refetchMainBoxData={refetch}
+              />
+            ))
           ) : isMainLoading ? (
             <Loading />
           ) : (
@@ -55,7 +63,7 @@ const Main = () => {
       <section className="questSection">
         <div className="questTitle">
           <BiNotepad />
-          <h2>Sub Quest</h2>
+          <Title text="Sub Quest" size="small" color="black" />
           <CreateQuestButton modalName="subQuest" />
         </div>
         <div>

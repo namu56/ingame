@@ -35,7 +35,7 @@ const SignUp = () => {
     <>
       <Header title="InGame" />
       <SignUpStyle>
-        <Title text="회원가입" size="large" />
+        <Title text="회원가입" size="large" color="blue" />
         <form onSubmit={handleSubmit(onSubmit)}>
           <fieldset>
             <div className="sendEmail">
