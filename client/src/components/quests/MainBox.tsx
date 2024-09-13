@@ -11,8 +11,7 @@ import { useMainQuest } from '@/hooks/useMainQuest';
 import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
 import { BASE_KEY } from '@/constant/queryKey';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getFindOneMainQuest } from '@/api/quests.api';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface MainQuest extends Quest {
   sideQuests: SideContent[];
@@ -37,10 +36,11 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
   const [sideQuests, setSideQuests] = useState(mainContent.sideQuests);
   const fraction = `${sideQuests.filter((item: Quest) => item.status === 'COMPLETED').length} / ${mainContent.sideQuests.length}`;
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: [BASE_KEY.QUEST, content.id],
-    queryFn: () => getFindOneMainQuest(content.id),
-  });
+  // const { data, isLoading, error } = useQuery({
+  //   queryKey: [BASE_KEY.QUEST, content.id],
+  //   queryFn: () => getFindOneMainQuest(content.id),
+  // });
+  const { mainQuest } = useMainQuest(content.id);
 
   if (!mainContent) {
     return null; // mainContent가 없으면 렌더링하지 않음
@@ -62,8 +62,7 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
 
       showConfirm(message, () => {
         mainContent.status = newStatus;
-        modifyMainQuestStatus({ id: mainContent.id, status: mainContent.status })
-        .then(() => {
+        modifyMainQuestStatus({ id: mainContent.id, status: mainContent.status }).then(() => {
           refetchMainBoxData();
         });
       });
@@ -83,7 +82,7 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
   const handleNavigate = (event: React.MouseEvent) => {
     event.stopPropagation();
     if (mainContent.status === 'COMPLETED') return;
-    navigate(`/editquest/${mainContent.id}`, { state: { data: data, date } });
+    navigate(`/editquest/${mainContent.id}`, { state: { data: mainQuest, date } });
   };
 
   const handleToggleAccordion = (event: React.MouseEvent) => {
@@ -96,7 +95,7 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
     <>
       {mainContent ? (
         <MainBoxContainer>
-          <MainBoxStyle status={mainContent.status} onClick={handleChangeStatus}>
+          <MainBoxStyle $status={mainContent.status} onClick={handleChangeStatus}>
             <header className="aFContainer">
               <button className="aButton" onClick={handleToggleAccordion}>
                 {isAccordion ? <MdArrowDropUp size={30} /> : <MdArrowDropDown size={30} />}
@@ -171,13 +170,13 @@ const MainBoxContainer = styled.div`
   align-items: center;
 `;
 
-const MainBoxStyle = styled.div<{ status: QuestStatus }>`
+const MainBoxStyle = styled.div<{ $status: QuestStatus }>`
   width: 100%;
   height: 55px;
 
-  background: ${({ theme, status }) => theme.statusColor[status]};
-  color: ${({ theme, status }) => status !== 'ON_PROGRESS' && theme.color.grayDark};
-  text-decoration: ${({ status }) => status !== 'ON_PROGRESS' && 'line-through'};
+  background: ${({ theme, $status }) => theme.statusColor[$status]};
+  color: ${({ theme, $status }) => $status !== 'ON_PROGRESS' && theme.color.grayDark};
+  text-decoration: ${({ $status }) => $status !== 'ON_PROGRESS' && 'line-through'};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 

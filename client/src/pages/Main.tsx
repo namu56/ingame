@@ -18,7 +18,7 @@ import Title from '@/components/common/Title';
 
 const Main = () => {
   const { quest, isSubLoading } = useSubQuest();
-  const { mainQuest, isMainLoading, date } = useMainQuest();
+  const { mainQuests, isMainQuestsLoading, date } = useMainQuest();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   const { data: userInfoData, refetch } = useQuery<UserInfo>({
@@ -44,8 +44,8 @@ const Main = () => {
           <CreateQuestButton pageUrl="/createquest" />
         </div>
         <div>
-          {mainQuest?.length ? (
-            mainQuest?.map((content) => (
+          {mainQuests?.length ? (
+            mainQuests?.map((content) => (
               <MainBox
                 key={content.id}
                 content={content}
@@ -53,7 +53,7 @@ const Main = () => {
                 refetchMainBoxData={refetch}
               />
             ))
-          ) : isMainLoading ? (
+          ) : isMainQuestsLoading ? (
             <Loading />
           ) : (
             <p>등록된 메인 퀘스트가 없습니다</p>
