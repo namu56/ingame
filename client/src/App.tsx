@@ -1,4 +1,3 @@
-import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './styles/theme';
 import { GlobalStyle } from './styles/globalstyles';
@@ -8,7 +7,7 @@ import ReactQueryProvider from './provider/queryProvider';
 
 function App() {
   return (
-    <ReactQueryProvider>
+    <ReactQueryProvider showDevTools={process.env.NODE_ENV === 'development'}>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <RouterProvider router={router} />
