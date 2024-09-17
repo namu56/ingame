@@ -44,7 +44,7 @@ const SubBox = ({ content }: SubBoxProps) => {
   };
 
   return (
-    <SubBoxStyle status={content.status}>
+    <SubBoxStyle $status={content.status}>
       <div onClick={handleChangeStatue} className="clickDiv">
         <h2>{content.title}</h2>
         <button onClick={handleEdit} className="EditBtn">
@@ -63,13 +63,13 @@ const SubBox = ({ content }: SubBoxProps) => {
   );
 };
 
-const SubBoxStyle = styled.div<{ status: QuestStatus }>`
+const SubBoxStyle = styled.div<{ $status: QuestStatus }>`
   width: 100%;
   height: 50px;
 
-  background: ${({ theme, status }) => theme.statusColor[status]};
-  color: ${({ theme, status }) => status !== 'ON_PROGRESS' && theme.color.grayDark};
-  text-decoration: ${({ status }) => status !== 'ON_PROGRESS' && 'line-through'};
+  background: ${({ theme, $status }) => theme.statusColor[$status]};
+  color: ${({ theme, $status }) => $status !== 'ON_PROGRESS' && theme.color.grayDark};
+  text-decoration: ${({ $status }) => $status !== 'ON_PROGRESS' && 'line-through'};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 
