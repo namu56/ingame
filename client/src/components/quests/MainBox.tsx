@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useMainQuest } from '@/hooks/useMainQuest';
 import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
-import { BASE_KEY } from '@/constant/queryKey';
+import { BASE_KEY, QUEST } from '@/constant/queryKey';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface MainQuest extends Quest {
@@ -25,8 +25,8 @@ export interface MainBoxProps {
 
 const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
   const location = useLocation();
-  const updatedData = location.state?.updatedData;
-  const mainContent = updatedData || content;
+  const updatedData: MainQuest | undefined = location.state?.updatedData;
+  const mainContent: MainQuest = updatedData || content;
   const { modifyMainQuestStatus, patchSideMutation } = useMainQuest();
   const { showConfirm, showAlert } = useMessage();
   const navigate = useNavigate();
@@ -34,12 +34,8 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
   const [isAccordion, setisAccordion] = useState(false);
   const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
   const [sideQuests, setSideQuests] = useState(mainContent.sideQuests);
-  const fraction = `${sideQuests.filter((item: Quest) => item.status === 'COMPLETED').length} / ${mainContent.sideQuests.length}`;
+  const fraction = `${sideQuests.filter((item) => item.status === 'COMPLETED').length} / ${mainContent.sideQuests.length}`;
 
-  // const { data, isLoading, error } = useQuery({
-  //   queryKey: [BASE_KEY.QUEST, content.id],
-  //   queryFn: () => getFindOneMainQuest(content.id),
-  // });
   const { mainQuest } = useMainQuest(content.id);
 
   if (!mainContent) {
@@ -61,7 +57,7 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
       }
 
       showConfirm(message, () => {
-        mainContent.status = newStatus;
+        mainContent.status = newStatus as QuestStatus;
         modifyMainQuestStatus({ id: mainContent.id, status: mainContent.status }).then(() => {
           refetchMainBoxData();
         });
@@ -136,7 +132,7 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
                             handleCheckboxClick(index);
 
                             queryClient.setQueryData(
-                              [BASE_KEY.QUEST, mainContent.id],
+                              [...QUEST.GET_SIDEQUEST, mainContent.id],
                               (oldData: Quest) => {
                                 return {
                                   ...oldData,

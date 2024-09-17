@@ -36,7 +36,7 @@ const EditMainQuestQuest = () => {
   return (
     <>
       <CloseButton onClick={() => navigate('/')} />
-      <EditMainQuestQuestStyle>
+      <EditMainQuestStyle>
         <header>
           <p>메인 퀘스트 수정</p>
           <div className="lockIcons">
@@ -57,7 +57,7 @@ const EditMainQuestQuest = () => {
           />
           <QuestButtonContainer>
             <Button
-              type='button'
+              type="button"
               className={`easyButton ${isDifficulty === 'EASY' ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty('EASY')}
               children={'EASY'}
@@ -65,7 +65,7 @@ const EditMainQuestQuest = () => {
               color={'white'}
             />
             <Button
-              type='button'
+              type="button"
               className={`normalButton ${isDifficulty === 'NORMAL' ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty('NORMAL')}
               children={'NORMAL'}
@@ -73,7 +73,7 @@ const EditMainQuestQuest = () => {
               color={'white'}
             />
             <Button
-              type='button'
+              type="button"
               className={`hardButton ${isDifficulty === 'HARD' ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty('HARD')}
               children={'HARD'}
@@ -81,8 +81,7 @@ const EditMainQuestQuest = () => {
               color={'white'}
             />
           </QuestButtonContainer>
-          <div className="plusContainer">
-          </div>
+          <div className="plusContainer"></div>
           <InnerQuests>
             {content.sideQuests &&
               content.sideQuests.map((sideQuest: SideContent, index: number) => (
@@ -142,7 +141,7 @@ const EditMainQuestQuest = () => {
               color={'black'}
             />
             <Button
-              type='button'
+              type="button"
               className="closeButton"
               children={'삭제'}
               size={'medium'}
@@ -151,12 +150,12 @@ const EditMainQuestQuest = () => {
             />
           </div>
         </form>
-      </EditMainQuestQuestStyle>
+      </EditMainQuestStyle>
     </>
   );
 };
 
-const EditMainQuestQuestStyle = styled.div`
+const EditMainQuestStyle = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

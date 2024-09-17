@@ -112,12 +112,15 @@ export const useMainQuest = (questId?: number) => {
 export const useCreateMainQuestForm = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [isDifficulty, setIsDifficulty] = useState(0);
-  const [startDate, setStartDate] = useState('');
+  const [startDate, setStartDate] = useState(formattedDate(new Date()));
   const [endDate, setEndDate] = useState('');
   const [plusQuest, setPlusQuest] = useState(1);
   const [minusQuest, setMinusQuest] = useState(0);
-  const today = new Date().toISOString().substring(0, 10);
+  const today = formattedDate(new Date());
   const navigate = useNavigate();
+
+  console.log('plusQuest:', plusQuest);
+  console.log('minusQuest:', minusQuest);
 
   const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
 
