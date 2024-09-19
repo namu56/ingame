@@ -74,13 +74,17 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
 
   const handleToggleAccordion = (event: React.MouseEvent) => {
     event.stopPropagation();
-    if (content.status === 'COMPLETED') return;
     setIsAccordion((prevState) => !prevState);
   };
 
   const handleSideQuestStatusChange = (sideQuest: SideContent) => {
     if (date !== formattedDate(new Date())) {
       showAlert('당일 퀘스트만 변경 가능합니다');
+      return;
+    }
+
+    if (content.status === 'COMPLETED') {
+      showAlert('완료된 퀘스트의 사이드 퀘스트는 변경할 수 없습니다');
       return;
     }
 
@@ -133,6 +137,7 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
                   checked={sideQuest.status === 'COMPLETED'}
                   onClick={() => handleSideQuestStatusChange(sideQuest)}
                   content={sideQuest.content}
+                  disabled={content.status === 'COMPLETED'}
                 />
               ) : null
             )}
