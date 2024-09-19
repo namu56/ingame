@@ -8,9 +8,10 @@ import {
   modiQuestStatus,
   modiSideQuest,
 } from '@/api/quests.api';
-import { BASE_KEY, QUEST } from '@/constant/queryKey';
+import { QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
 import {
+  MainQuest,
   Quest,
   QuestDifficulty,
   QuestHiddenType,
@@ -74,8 +75,12 @@ export const useMainQuest = (questId?: number) => {
     },
   });
 
+  const modifyMainQuestStatus = (data: ModifyQuestStatusProps) => {
+    return modifyQuestStatusMutation.mutateAsync(data);
+  };
+
   const modifyQuestStatusMutation = useMutation({
-    mutationFn: modiQuestStatus,
+    mutationFn: (data: ModifyQuestStatusProps) => modiQuestStatus(data),
     onSuccess() {
       queryClient.invalidateQueries({
         queryKey: [...QUEST.GET_MAINQUEST, params.get(QUERYSTRING.DATE)],
@@ -84,26 +89,12 @@ export const useMainQuest = (questId?: number) => {
     onError(err) {},
   });
 
-  const modifyMainQuestStatus = (data: ModifyQuestStatusProps) => {
-    return modifyQuestStatusMutation.mutateAsync(data);
-  };
-
-  const patchSideMutation = useMutation({
-    mutationFn: ({ param, status }: { param: number; status: QuestStatus }) =>
-      modiSideQuest(param, status),
-    onSuccess(res) {},
-    onError(err) {
-      navigate('/error');
-    },
-  });
-
   return {
     mainQuests,
     isMainQuestsLoading,
     mainQuest,
     isMainQuestLoading,
     modifyMainQuestStatus,
-    patchSideMutation,
     deleteMainQuestsMutation,
     date,
   };
@@ -163,7 +154,7 @@ export const useCreateMainQuestForm = () => {
   };
 };
 
-export const useEditMainQuestForm = (content: Quest, date: string) => {
+export const useEditMainQuestForm = (content: MainQuest, date: string) => {
   const [startDate, setStartDate] = useState(content.startDate);
   const [endDate, setEndDate] = useState(content.endDate);
   const [title, setTitle] = useState(content.title);
@@ -207,7 +198,9 @@ export const useEditMainQuestForm = (content: Quest, date: string) => {
             ...newData,
           })
         );
-        queryClient.invalidateQueries({ queryKey: [...QUEST.GET_MAINQUEST, date], exact: true });
+        queryClient.invalidateQueries({
+          queryKey: [...QUEST.GET_MAINQUEST, date],
+        });
         navigate('/', { state: { updatedData: newData } });
       },
     });
@@ -240,7 +233,7 @@ export const useConfirmDelete = (content: Quest) => {
     const message = '정말 삭제하시겠습니까?';
     showConfirm(message, () => {
       if (content && content.id !== undefined) {
-        deleteMainQuestsMutation.mutate(content.id);
+        deleteMainQuestsMutation.mutateAsync(content.id);
       }
     });
   };

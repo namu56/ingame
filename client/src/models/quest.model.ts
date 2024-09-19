@@ -3,13 +3,16 @@ export interface Quest {
   title: string;
   difficulty: QuestDifficulty;
   mode: QuestMode;
-  sideQuests: SideContent[];
   startDate: string;
   endDate: string;
   hidden: QuestHiddenType;
   status: QuestStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface MainQuest extends Quest {
+  sideQuests: SideContent[];
 }
 
 export interface SideContent {

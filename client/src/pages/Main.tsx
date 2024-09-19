@@ -17,7 +17,7 @@ import { getUserInfo } from '@/api/users.api';
 import Title from '@/components/common/Title';
 
 const Main = () => {
-  const { quest, isSubLoading } = useSubQuest();
+  const { subQuests, isSubLoading } = useSubQuest();
   const { mainQuests, isMainQuestsLoading, date } = useMainQuest();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
@@ -67,8 +67,8 @@ const Main = () => {
           <CreateQuestButton modalName="subQuest" />
         </div>
         <div>
-          {quest?.length ? (
-            quest.map((content) => <SubBox key={content.id} content={content} />)
+          {subQuests?.length ? (
+            subQuests.map((content) => <SubBox key={content.id} content={content} />)
           ) : isSubLoading ? (
             <Loading />
           ) : (
