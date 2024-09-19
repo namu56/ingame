@@ -38,9 +38,16 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
     if (date === formattedDate(new Date())) {
       let message = '';
       let newStatus = '';
-      if (content.status === 'ON_PROGRESS') {
+      const completedSideQuests = sideQuests.filter(
+        (sideQuest) => sideQuest.status === 'COMPLETED'
+      ).length;
+
+      if (content.status === 'ON_PROGRESS' && completedSideQuests > 0) {
         message = '퀘스트를 완료하시겠습니까?';
         newStatus = 'COMPLETED';
+      } else if (content.status === 'ON_PROGRESS' && completedSideQuests === 0) {
+        showAlert('최소 1개 이상의 사이드 퀘스트를 완료해야 합니다.');
+        return;
       } else if (content.status === 'COMPLETED') {
         message = '퀘스트를 진행중으로 변경하시겠습니까?';
         newStatus = 'ON_PROGRESS';
