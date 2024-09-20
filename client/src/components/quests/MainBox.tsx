@@ -7,7 +7,6 @@ import SideBox from './SideBox';
 import { MainQuest, QuestStatus, SideContent } from '@/models/quest.model';
 import { useNavigate } from 'react-router-dom';
 import { useMainQuest } from '@/hooks/useMainQuest';
-import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
 import { useSideQuest } from '@/hooks/useSideQuest';
 
@@ -35,35 +34,32 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
   }
 
   const handleChangeStatus = () => {
-    if (date === formattedDate(new Date())) {
-      let message = '';
-      let newStatus = '';
-      const completedSideQuests = sideQuests.filter(
-        (sideQuest) => sideQuest.status === 'COMPLETED'
-      ).length;
+    let message = '';
+    let newStatus = '';
+    const completedSideQuests = sideQuests.filter(
+      (sideQuest) => sideQuest.status === 'COMPLETED'
+    ).length;
 
-      if (content.status === 'ON_PROGRESS' && completedSideQuests > 0) {
-        message = '퀘스트를 완료하시겠습니까?';
-        newStatus = 'COMPLETED';
-      } else if (content.status === 'ON_PROGRESS' && completedSideQuests === 0) {
-        showAlert('최소 1개 이상의 사이드 퀘스트를 완료해야 합니다.');
-        return;
-      } else if (content.status === 'COMPLETED') {
-        message = '퀘스트를 진행중으로 변경하시겠습니까?';
-        newStatus = 'ON_PROGRESS';
-      } else {
-        return;
-      }
-
-      showConfirm(message, () => {
-        content.status = newStatus as QuestStatus;
-        modifyMainQuestStatus({ id: content.id, status: content.status }).then(() => {
-          refetchMainBoxData();
-        });
-      });
+    if (content.status === 'ON_PROGRESS' && completedSideQuests === 0) {
+      showAlert('최소 1개 이상의 사이드 퀘스트를 완료해야 합니다.');
+      return;
+    } else if (content.status === 'ON_PROGRESS' && completedSideQuests > 0) {
+      message = '퀘스트를 완료하시겠습니까?';
+      newStatus = 'COMPLETED';
+    } else if (content.status === 'COMPLETED') {
+      message = '퀘스트를 진행중으로 변경하시겠습니까?';
+      newStatus = 'ON_PROGRESS';
     } else {
-      showAlert('당일 퀘스트만 변경 가능합니다');
+      showAlert('실패한 퀘스트를 수정할 수 없습니다.');
+      return;
     }
+
+    showConfirm(message, () => {
+      content.status = newStatus as QuestStatus;
+      modifyMainQuestStatus({ id: content.id, status: content.status }).then(() => {
+        refetchMainBoxData();
+      });
+    });
   };
 
   const handleNavigate = (event: React.MouseEvent) => {
@@ -78,13 +74,8 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
   };
 
   const handleSideQuestStatusChange = (sideQuest: SideContent) => {
-    if (date !== formattedDate(new Date())) {
-      showAlert('당일 퀘스트만 변경 가능합니다');
-      return;
-    }
-
-    if (content.status === 'COMPLETED') {
-      showAlert('완료된 퀘스트의 사이드 퀘스트는 변경할 수 없습니다');
+    if (content.status === 'COMPLETED' || content.status === 'FAIL') {
+      showAlert('퀘스트를 변경할 수 없습니다');
       return;
     }
 

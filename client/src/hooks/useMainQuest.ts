@@ -6,7 +6,6 @@ import {
   getMainQuest,
   modiMainQuest,
   modiQuestStatus,
-  modiSideQuest,
 } from '@/api/quests.api';
 import { QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
@@ -16,7 +15,6 @@ import {
   QuestDifficulty,
   QuestHiddenType,
   QuestMode,
-  QuestStatus,
   SideContent,
 } from '@/models/quest.model';
 import { formattedDate } from '@/utils/formatter';
@@ -26,11 +24,7 @@ import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMessage } from '@/hooks/useMessage';
 
-export interface EditMainQuestQuestProps extends Quest {
-  sideQuests: SideContent[];
-}
-
-export interface CreateMainQuestProps extends Quest {
+export interface CreateMainQuestProps {
   title: string;
   difficulty: QuestDifficulty;
   mode: QuestMode;
@@ -165,7 +159,7 @@ export const useEditMainQuestForm = (content: MainQuest, date: string) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
+  const { register, control, handleSubmit } = useForm<MainQuest>();
 
   const editQuestMutation = useMutation({
     mutationFn: (variable: Quest) => {
