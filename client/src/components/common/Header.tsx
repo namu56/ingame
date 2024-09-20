@@ -10,7 +10,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
   return (
     <HeaderStyle>
       <LogoImage src={Logo} alt="InGame Logo" />
-      <Title text={title} size="medium" />
+      <Title text={title} size="medium" color="blue" />
     </HeaderStyle>
   );
 };

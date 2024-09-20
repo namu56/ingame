@@ -1,3 +1,5 @@
+import { QuestMode } from '@/models/quest.model';
+
 export const BASE_KEY = {
   USER: 'USER',
   QUEST: 'QUEST',
@@ -9,8 +11,8 @@ export const USER = {
 };
 
 export const QUEST = {
-  GET_SUBQUEST: [BASE_KEY.QUEST],
-  GET_MAINQUEST: [BASE_KEY.QUEST],
+  GET_SUBQUEST: [BASE_KEY.QUEST, 'SUB'],
+  GET_MAINQUEST: [BASE_KEY.QUEST, 'MAIN'],
 };
 
 export const RANK = {

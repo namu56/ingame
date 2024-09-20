@@ -22,7 +22,7 @@ const ChangeProfileImageModal = ({ handleModal, currentProfile }: ChangeProfileI
       <CloseBtnWrapperStyle>
         <CloseButton onClick={() => handleModal(false)} />
       </CloseBtnWrapperStyle>
-      <Title text="프로필 이미지 변경" size="medium"></Title>
+      <Title text="프로필 이미지 변경" size="medium" color="black"></Title>
       <ProfileImageListStyle>
         <ImageBadge
           imgSrc={defaultProfile}

@@ -48,7 +48,7 @@ const CreateMainQuest = () => {
           <QuestInputBox placeholder="퀘스트 제목" {...register('title')} />
           <QuestButtonContainer>
             <Button
-              type='button'
+              type="button"
               className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(0)}
               children={'EASY'}
@@ -56,7 +56,7 @@ const CreateMainQuest = () => {
               color={'white'}
             />
             <Button
-              type='button'
+              type="button"
               className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(1)}
               children={'NORMAL'}
@@ -64,7 +64,7 @@ const CreateMainQuest = () => {
               color={'white'}
             />
             <Button
-              type='button'
+              type="button"
               className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(2)}
               children={'HARD'}
@@ -114,6 +114,7 @@ const CreateMainQuest = () => {
             <input
               className="endDate"
               type="date"
+              value={endDate || ''}
               {...register('endDate', {
                 required: true,
                 onChange: (e) => setEndDate(e.target.value),

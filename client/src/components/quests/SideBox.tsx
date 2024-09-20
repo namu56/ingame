@@ -5,20 +5,23 @@ interface SideBoxProps {
   checked: boolean;
   onClick: () => void;
   content: string;
+  disabled: boolean;
 }
 
-const SideBox: React.FC<SideBoxProps> = ({ isAccordion, checked, onClick, content }) => {
+const SideBox: React.FC<SideBoxProps> = ({ isAccordion, checked, onClick, content, disabled }) => {
   return (
-    <SideBoxStyle className={`sideBox ${isAccordion ? 'show' : 'hide'}`}>
-      <label className='cBox'>
-        <input type='checkbox' checked={checked} onChange={onClick} />
-      </label>
-      <h2 className='sTitle'>{content}</h2>
+    <SideBoxStyle
+      className={`sideBox ${isAccordion ? 'show' : 'hide'}`}
+      onClick={onClick}
+      $disabled={disabled}
+    >
+      <input type="checkbox" checked={checked} readOnly disabled={disabled} />
+      <h2 className="sTitle">{content}</h2>
     </SideBoxStyle>
   );
 };
 
-const SideBoxStyle = styled.div`
+const SideBoxStyle = styled.div<{ $disabled: boolean }>`
   position: relative;
 
   display: flex;
@@ -31,7 +34,9 @@ const SideBoxStyle = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   gap: 20px;
 
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
   transform: translateY(-100%);
   max-height: 0;
   overflow: hidden;
@@ -43,8 +48,11 @@ const SideBoxStyle = styled.div`
     opacity: 1;
   }
 
+  cursor: ${({ $disabled }) => ($disabled ? 'default' : 'pointer')};
+  opacity: ${({ $disabled }) => ($disabled ? 0.7 : 1)};
+
   .cBox {
-    cursor: pointer;
+    cursor: ${({ $disabled }) => ($disabled ? 'default' : 'pointer')};
   }
 `;
 

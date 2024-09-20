@@ -2,19 +2,19 @@ import {
   ModifyQuestStatusProps,
   createMainQuest,
   deleteMainQuest,
+  getFindOneMainQuest,
   getMainQuest,
   modiMainQuest,
   modiQuestStatus,
-  modiSideQuest,
 } from '@/api/quests.api';
-import { BASE_KEY, QUEST } from '@/constant/queryKey';
+import { QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
 import {
+  MainQuest,
   Quest,
   QuestDifficulty,
   QuestHiddenType,
   QuestMode,
-  QuestStatus,
   SideContent,
 } from '@/models/quest.model';
 import { formattedDate } from '@/utils/formatter';
@@ -24,11 +24,7 @@ import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMessage } from '@/hooks/useMessage';
 
-export interface EditMainQuestQuestProps extends Quest {
-  sideQuests: SideContent[];
-}
-
-export interface CreateMainQuestProps extends Quest {
+export interface CreateMainQuestProps {
   title: string;
   difficulty: QuestDifficulty;
   mode: QuestMode;
@@ -38,26 +34,34 @@ export interface CreateMainQuestProps extends Quest {
   hidden: QuestHiddenType;
 }
 
-export const useMainQuest = () => {
+export const useMainQuest = (questId?: number) => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
   const date = params.get(QUERYSTRING.DATE) || formattedDate(new Date());
 
-  const {
-    data: mainQuest,
-    isLoading: isMainLoading,
-    error,
-  } = useQuery({
-    queryKey: [BASE_KEY.QUEST, date],
+  const { data: mainQuests, isLoading: isMainQuestsLoading } = useQuery({
+    queryKey: [...QUEST.GET_MAINQUEST, date],
     queryFn: () => getMainQuest({ date }),
   });
 
-  const DeleteMainQuestsMutation = useMutation({
+  const { data: mainQuest, isLoading: isMainQuestLoading } = useQuery({
+    queryKey: [...QUEST.GET_MAINQUEST, questId],
+    queryFn: () => getFindOneMainQuest(questId!),
+    enabled: !!questId,
+  });
+
+  const deleteMainQuestsMutation = useMutation({
     mutationFn: (id: number) => deleteMainQuest(id),
-    onSuccess() {
+    onSuccess: async (_, deletedId) => {
+      queryClient.removeQueries({
+        queryKey: [...QUEST.GET_MAINQUEST, deletedId],
+        exact: true,
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [...QUEST.GET_MAINQUEST, date],
+      });
       navigate('/');
     },
     onError(err) {
@@ -65,8 +69,12 @@ export const useMainQuest = () => {
     },
   });
 
+  const modifyMainQuestStatus = (data: ModifyQuestStatusProps) => {
+    return modifyQuestStatusMutation.mutateAsync(data);
+  };
+
   const modifyQuestStatusMutation = useMutation({
-    mutationFn: modiQuestStatus,
+    mutationFn: (data: ModifyQuestStatusProps) => modiQuestStatus(data),
     onSuccess() {
       queryClient.invalidateQueries({
         queryKey: [...QUEST.GET_MAINQUEST, params.get(QUERYSTRING.DATE)],
@@ -75,26 +83,13 @@ export const useMainQuest = () => {
     onError(err) {},
   });
 
-  const modifyMainQuestStatus = (data: ModifyQuestStatusProps) => {
-    return modifyQuestStatusMutation.mutateAsync(data);
-  };
-
-  const patchSideMutation = useMutation({
-    mutationFn: ({ param, status }: { param: number; status: QuestStatus }) => modiSideQuest(param, status),
-    onSuccess(res) {
-      
-    },
-    onError(err) {
-      navigate('/error');
-    },
-});
-
   return {
+    mainQuests,
+    isMainQuestsLoading,
     mainQuest,
-    isMainLoading,
+    isMainQuestLoading,
     modifyMainQuestStatus,
-    patchSideMutation,
-    DeleteMainQuestsMutation,
+    deleteMainQuestsMutation,
     date,
   };
 };
@@ -102,13 +97,12 @@ export const useMainQuest = () => {
 export const useCreateMainQuestForm = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [isDifficulty, setIsDifficulty] = useState(0);
-  const [startDate, setStartDate] = useState('');
+  const [startDate, setStartDate] = useState(formattedDate(new Date()));
   const [endDate, setEndDate] = useState('');
   const [plusQuest, setPlusQuest] = useState(1);
   const [minusQuest, setMinusQuest] = useState(0);
-  const today = new Date().toISOString().substring(0, 10);
+  const today = formattedDate(new Date());
   const navigate = useNavigate();
-
   const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
 
   const onSubmit = handleSubmit((data) => {
@@ -118,13 +112,13 @@ export const useCreateMainQuestForm = () => {
         isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : ('HARD' as QuestDifficulty);
       const mode = 'MAIN' as QuestMode;
       const newData = { ...data, hidden, difficulty: difficulty, mode: mode };
-      CreateQuestMutation.mutate(newData);
+      createMainQuestMutation.mutate(newData);
     } else {
       alert('사이드 퀘스트를 추가해주세요.');
     }
   });
 
-  const CreateQuestMutation = useMutation({
+  const createMainQuestMutation = useMutation({
     mutationFn: createMainQuest,
     onSuccess(res) {
       navigate('/');
@@ -154,20 +148,20 @@ export const useCreateMainQuestForm = () => {
   };
 };
 
-export const useEditMainQuestForm = (content: Quest, date: string) => {
+export const useEditMainQuestForm = (content: MainQuest, date: string) => {
   const [startDate, setStartDate] = useState(content.startDate);
   const [endDate, setEndDate] = useState(content.endDate);
   const [title, setTitle] = useState(content.title);
   const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
   const [sideQuests, setSideQuests] = useState<SideContent[]>(content.sideQuests);
   const [isPrivate, setIsPrivate] = useState(content.hidden === 'TRUE');
-  
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
+  const { register, control, handleSubmit } = useForm<MainQuest>();
 
-  const EditQuestMutation = useMutation({
+  const editQuestMutation = useMutation({
     mutationFn: (variable: Quest) => {
       const { id, ...rest } = variable;
       return modiMainQuest(id, rest);
@@ -189,13 +183,18 @@ export const useEditMainQuestForm = (content: Quest, date: string) => {
     const { id, ...rest } = data;
     const newData = { id, ...rest, hidden, sideQuests: updatedSideQuests };
 
-    EditQuestMutation.mutate(newData, {
+    editQuestMutation.mutate(newData, {
       onSuccess: () => {
-        queryClient.setQueryData([BASE_KEY.QUEST, content.id], (oldData: Quest | undefined) => ({
-          ...oldData,
-          ...newData,
-        }));
-        queryClient.invalidateQueries({ queryKey: [BASE_KEY.QUEST, date], exact: true });
+        queryClient.setQueryData(
+          [...QUEST.GET_MAINQUEST, content.id],
+          (oldData: Quest | undefined) => ({
+            ...oldData,
+            ...newData,
+          })
+        );
+        queryClient.invalidateQueries({
+          queryKey: [...QUEST.GET_MAINQUEST, date],
+        });
         navigate('/', { state: { updatedData: newData } });
       },
     });
@@ -222,13 +221,13 @@ export const useEditMainQuestForm = (content: Quest, date: string) => {
 
 export const useConfirmDelete = (content: Quest) => {
   const { showConfirm } = useMessage();
-  const { DeleteMainQuestsMutation } = useMainQuest();
+  const { deleteMainQuestsMutation } = useMainQuest();
 
   const handleDeleteBtn = () => {
     const message = '정말 삭제하시겠습니까?';
     showConfirm(message, () => {
       if (content && content.id !== undefined) {
-        DeleteMainQuestsMutation.mutate(content.id);
+        deleteMainQuestsMutation.mutateAsync(content.id);
       }
     });
   };

@@ -2,21 +2,13 @@ import styled from 'styled-components';
 import { BsThreeDots } from 'react-icons/bs';
 import { MdArrowDropDown } from 'react-icons/md';
 import { MdArrowDropUp } from 'react-icons/md';
-import { useState } from 'react';
-import { sideQuestList } from '@/shared/dummy';
+import React, { useState, useEffect } from 'react';
 import SideBox from './SideBox';
-import { Quest, QuestStatus, SideContent } from '@/models/quest.model';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { MainQuest, QuestStatus, SideContent } from '@/models/quest.model';
+import { useNavigate } from 'react-router-dom';
 import { useMainQuest } from '@/hooks/useMainQuest';
-import { formattedDate } from '@/utils/formatter';
 import { useMessage } from '@/hooks/useMessage';
-import { BASE_KEY } from '@/constant/queryKey';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getFindOneMainQuest } from '@/api/quests.api';
-
-interface MainQuest extends Quest {
-  sideQuests: SideContent[];
-}
+import { useSideQuest } from '@/hooks/useSideQuest';
 
 export interface MainBoxProps {
   content: MainQuest;
@@ -25,85 +17,102 @@ export interface MainBoxProps {
 }
 
 const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
-  const location = useLocation();
-  const updatedData = location.state?.updatedData;
-  const mainContent = updatedData || content;
-  const { modifyMainQuestStatus, patchSideMutation } = useMainQuest();
+  const [sideQuests, setSideQuests] = useState(content.sideQuests);
+  const [isAccordion, setIsAccordion] = useState(false);
+  const { patchSideMutation } = useSideQuest();
+  const { modifyMainQuestStatus } = useMainQuest();
   const { showConfirm, showAlert } = useMessage();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [isAccordion, setisAccordion] = useState(false);
-  const [checked, setChecked] = useState(Array(sideQuestList.length).fill(false));
-  const [sideQuests, setSideQuests] = useState(mainContent.sideQuests);
-  const fraction = `${sideQuests.filter((item: Quest) => item.status === 'COMPLETED').length} / ${mainContent.sideQuests.length}`;
+  const fraction = `${sideQuests.filter((sideQuest) => sideQuest.status === 'COMPLETED').length} / ${sideQuests.length}`;
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: [BASE_KEY.QUEST, content.id],
-    queryFn: () => getFindOneMainQuest(content.id),
-  });
+  useEffect(() => {
+    setSideQuests(content.sideQuests);
+  }, [content.sideQuests]);
 
-  if (!mainContent) {
-    return null; // mainContent가 없으면 렌더링하지 않음
+  if (!content) {
+    return null; // content가 없으면 렌더링하지 않음
   }
 
   const handleChangeStatus = () => {
-    if (date === formattedDate(new Date())) {
-      let message = '';
-      let newStatus = '';
-      if (mainContent.status === 'ON_PROGRESS') {
-        message = '퀘스트를 완료하시겠습니까?';
-        newStatus = 'COMPLETED';
-      } else if (mainContent.status === 'COMPLETED') {
-        message = '퀘스트를 진행중으로 변경하시겠습니까?';
-        newStatus = 'ON_PROGRESS';
-      } else {
-        return;
-      }
+    let message = '';
+    let newStatus = '';
+    const completedSideQuests = sideQuests.filter(
+      (sideQuest) => sideQuest.status === 'COMPLETED'
+    ).length;
 
-      showConfirm(message, () => {
-        mainContent.status = newStatus;
-        modifyMainQuestStatus({ id: mainContent.id, status: mainContent.status })
-        .then(() => {
-          refetchMainBoxData();
-        });
-      });
+    if (content.status === 'ON_PROGRESS' && completedSideQuests === 0) {
+      showAlert('최소 1개 이상의 사이드 퀘스트를 완료해야 합니다.');
+      return;
+    } else if (content.status === 'ON_PROGRESS' && completedSideQuests > 0) {
+      message = '퀘스트를 완료하시겠습니까?';
+      newStatus = 'COMPLETED';
+    } else if (content.status === 'COMPLETED') {
+      message = '퀘스트를 진행중으로 변경하시겠습니까?';
+      newStatus = 'ON_PROGRESS';
     } else {
-      showAlert('당일 퀘스트만 변경 가능합니다');
+      showAlert('실패한 퀘스트를 수정할 수 없습니다.');
+      return;
     }
-  };
 
-  const handleCheckboxClick = (index: number) => {
-    setChecked((prevState) => {
-      const newState = [...prevState];
-      newState[index] = !newState[index];
-      return newState;
+    showConfirm(message, () => {
+      content.status = newStatus as QuestStatus;
+      modifyMainQuestStatus({ id: content.id, status: content.status }).then(() => {
+        refetchMainBoxData();
+      });
     });
   };
 
   const handleNavigate = (event: React.MouseEvent) => {
     event.stopPropagation();
-    if (mainContent.status === 'COMPLETED') return;
-    navigate(`/editquest/${mainContent.id}`, { state: { data: data, date } });
+    if (content.status === 'COMPLETED') return;
+    navigate(`/editquest/${content.id}`, { state: { data: content, date } });
   };
 
   const handleToggleAccordion = (event: React.MouseEvent) => {
     event.stopPropagation();
-    if (mainContent.status === 'COMPLETED') return;
-    setisAccordion((prevState) => !prevState);
+    setIsAccordion((prevState) => !prevState);
+  };
+
+  const handleSideQuestStatusChange = (sideQuest: SideContent) => {
+    if (content.status === 'COMPLETED' || content.status === 'FAIL') {
+      showAlert('퀘스트를 변경할 수 없습니다');
+      return;
+    }
+
+    if (sideQuest.id !== undefined) {
+      const newStatus = sideQuest.status === 'COMPLETED' ? 'ON_PROGRESS' : 'COMPLETED';
+
+      patchSideMutation.mutate(
+        {
+          questId: content.id,
+          sideQuestId: sideQuest.id,
+          status: newStatus,
+        },
+        {
+          onSuccess: () => {
+            setSideQuests((prev) =>
+              prev.map((target) =>
+                target.id === sideQuest.id ? { ...target, status: newStatus } : target
+              )
+            );
+          },
+        }
+      );
+    }
   };
 
   return (
     <>
-      {mainContent ? (
+      {content ? (
         <MainBoxContainer>
-          <MainBoxStyle status={mainContent.status} onClick={handleChangeStatus}>
+          <MainBoxStyle $status={content.status} onClick={handleChangeStatus}>
             <header className="aFContainer">
               <button className="aButton" onClick={handleToggleAccordion}>
                 {isAccordion ? <MdArrowDropUp size={30} /> : <MdArrowDropDown size={30} />}
               </button>
               <p className="fDisplay">{fraction}</p>
             </header>
-            <h1 className="title">{mainContent.title}</h1>
+            <h1 className="title">{content.title}</h1>
             <div className="eButtonConatiner">
               <button className="eButton" onClick={handleNavigate}>
                 <BsThreeDots />
@@ -111,48 +120,15 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
             </div>
           </MainBoxStyle>
           <SideBoxContainer>
-            {mainContent.sideQuests.map((quest: SideContent, index: number) =>
-              quest.content ? (
+            {sideQuests.map((sideQuest: SideContent) =>
+              sideQuest.content ? (
                 <SideBox
-                  key={index}
+                  key={sideQuest.id}
                   isAccordion={isAccordion}
-                  checked={sideQuests[index]?.status === 'COMPLETED'}
-                  onClick={() => {
-                    if (quest.id !== undefined && sideQuests[index]?.status) {
-                      const questStatus = sideQuests[index].status || 'ON_PROGRESS';
-                      const newStatus = questStatus === 'COMPLETED' ? 'ON_PROGRESS' : 'COMPLETED';
-
-                      patchSideMutation.mutate(
-                        { param: quest.id, status: newStatus },
-                        {
-                          onSuccess: () => {
-                            setSideQuests((prev: SideContent[]) => {
-                              const newState = [...prev];
-                              newState[index] = {
-                                ...newState[index],
-                                status: newStatus,
-                              };
-                              return newState;
-                            });
-                            handleCheckboxClick(index);
-
-                            queryClient.setQueryData(
-                              [BASE_KEY.QUEST, mainContent.id],
-                              (oldData: Quest) => {
-                                return {
-                                  ...oldData,
-                                  sideQuests: oldData.sideQuests.map((item, i) =>
-                                    i === index ? { ...item, status: newStatus } : item
-                                  ),
-                                };
-                              }
-                            );
-                          },
-                        }
-                      );
-                    }
-                  }}
-                  content={quest.content}
+                  checked={sideQuest.status === 'COMPLETED'}
+                  onClick={() => handleSideQuestStatusChange(sideQuest)}
+                  content={sideQuest.content}
+                  disabled={content.status === 'COMPLETED'}
                 />
               ) : null
             )}
@@ -171,13 +147,13 @@ const MainBoxContainer = styled.div`
   align-items: center;
 `;
 
-const MainBoxStyle = styled.div<{ status: QuestStatus }>`
+const MainBoxStyle = styled.div<{ $status: QuestStatus }>`
   width: 100%;
   height: 55px;
 
-  background: ${({ theme, status }) => theme.statusColor[status]};
-  color: ${({ theme, status }) => status !== 'ON_PROGRESS' && theme.color.grayDark};
-  text-decoration: ${({ status }) => status !== 'ON_PROGRESS' && 'line-through'};
+  background: ${({ theme, $status }) => theme.statusColor[$status]};
+  color: ${({ theme, $status }) => $status !== 'ON_PROGRESS' && theme.color.grayDark};
+  text-decoration: ${({ $status }) => $status !== 'ON_PROGRESS' && 'line-through'};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 

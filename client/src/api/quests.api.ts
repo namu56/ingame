@@ -1,7 +1,7 @@
 import { CreateSubQuestProps } from '@/components/modals/CreateSubQuestModal';
 import { SubQuestModifyProps } from '@/components/modals/SubQuestModal';
 import { API_END_POINT } from '@/constant/api';
-import { Quest, SubQuest, QuestStatus } from '@/models/quest.model';
+import { Quest, SubQuest, QuestStatus, MainQuest } from '@/models/quest.model';
 
 import { httpClient } from '@/utils/axios';
 
@@ -32,17 +32,19 @@ export const deleteMainQuest = async (id: number) => {
 };
 
 export const getMainQuest = async (param: GetSubQuestParam) => {
-  const response = await httpClient.get<Quest[]>(API_END_POINT.MAIN_QUEST, { params: param });
+  const response = await httpClient.get<MainQuest[]>(API_END_POINT.MAIN_QUEST, { params: param });
   return response.data;
 };
 
 export const getFindOneMainQuest = async (id: number) => {
-  const response = await httpClient.get<Quest>(API_END_POINT.MAIN_QUEST + `/${id}`);
+  const response = await httpClient.get<MainQuest>(API_END_POINT.MAIN_QUEST + `/${id}`);
   return response.data;
 };
 
-export const modiSideQuest = async (param: number, status: QuestStatus) => {
-  const response = await httpClient.patch(API_END_POINT.SIDE_QUEST + `/${param}`, { status });
+export const modiSideQuest = async (questId: number, sideQuestId: number, status: QuestStatus) => {
+  const response = await httpClient.patch(`${API_END_POINT.SIDE_QUEST(questId)}/${sideQuestId}`, {
+    status,
+  });
   return response.data;
 };
 
