@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { QuestStatus, SubQuest } from '@/models/quest.model';
 import { useSubQuest } from '@/hooks/useSubQuest';
 import { useMessage } from '@/hooks/useMessage';
-import { formattedDate } from '@/utils/formatter';
 import { BsThreeDots } from 'react-icons/bs';
 import SubQuestModal from '../modals/SubQuestModal';
 import { useState } from 'react';
@@ -17,25 +16,22 @@ const SubBox = ({ content }: SubBoxProps) => {
   const [open, setOpen] = useState(false);
 
   const handleChangeStatue = () => {
-    if (date === formattedDate(new Date())) {
-      let message = '';
-      let status = content.status;
-      if (content.status === 'ON_PROGRESS') {
-        message = '퀘스트를 완료하시겠습니까?';
-        status = 'COMPLETED';
-      } else if (content.status === 'COMPLETED') {
-        message = '퀘스트를 진행중으로 변경하시겠습니까?';
-        status = 'ON_PROGRESS';
-      } else {
-        return;
-      }
-
-      showConfirm(message, () => {
-        modifySubQuestStatus({ id: content.id, status: status });
-      });
+    let message = '';
+    let status = content.status;
+    if (content.status === 'ON_PROGRESS') {
+      message = '퀘스트를 완료하시겠습니까?';
+      status = 'COMPLETED';
+    } else if (content.status === 'COMPLETED') {
+      message = '퀘스트를 진행중으로 변경하시겠습니까?';
+      status = 'ON_PROGRESS';
     } else {
-      showAlert('당일 퀘스트만 변경 가능합니다');
+      showAlert('실패한 퀘스트를 수정할 수 없습니다');
+      return;
     }
+
+    showConfirm(message, () => {
+      modifySubQuestStatus({ id: content.id, status: status });
+    });
   };
 
   const handleEdit = (event: React.MouseEvent) => {
