@@ -26,12 +26,17 @@ const EditMainQuestQuest = () => {
     isDifficulty,
     setIsDifficulty,
     sideQuests,
-    setSideQuests,
     isPrivate,
     setIsPrivate,
+    addSideQuest,
+    removeSideQuest,
+    updateSideQuest,
+    deletedSideQuests,
   } = useEditMainQuestForm(content, date);
 
   const { handleDeleteBtn } = useConfirmDelete(content);
+
+  const MAX_SIDE_QUESTS = 5;
 
   return (
     <>
@@ -83,33 +88,33 @@ const EditMainQuestQuest = () => {
           </QuestButtonContainer>
           <div className="plusContainer"></div>
           <InnerQuests>
-            {content.sideQuests &&
-              content.sideQuests.map((sideQuest: SideContent, index: number) => (
-                <SideBoxContainer key={index}>
-                  <input
-                    className="checkBoxInput"
-                    type="checkbox"
-                    checked={sideQuest.status === 'COMPLETED' ? true : false}
-                    {...register(`sideQuests.${index}.status`)}
-                    onChange={(e) => {
-                      const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
-                      const newSideQuests = [...(sideQuests || [])];
-                      newSideQuests[index].status = newStatus;
-                      setSideQuests(newSideQuests);
-                    }}
-                  />
-                  <QuestInputBox
-                    value={sideQuest.content}
-                    {...register(`sideQuests.${index}.content`)}
-                    onChange={(e) => {
-                      const newContent = e.target.value;
-                      const newSideQuests = [...(sideQuests || [])];
-                      newSideQuests[index].content = newContent;
-                      setSideQuests(newSideQuests);
-                    }}
-                  />
-                </SideBoxContainer>
-              ))}
+            {sideQuests.map((sideQuest: SideContent & { isNew?: boolean }, index: number) => (
+              <SideBoxContainer key={index} $isDeleted={deletedSideQuests.includes(index)}>
+                <QuestInputBox
+                  value={sideQuest.content}
+                  onChange={(e) => updateSideQuest(index, e.target.value)}
+                  disabled={deletedSideQuests.includes(index)}
+                />
+                <DeleteButton
+                  type="button"
+                  onClick={() => removeSideQuest(index)}
+                  children={
+                    !sideQuest.isNew && deletedSideQuests.includes(index) ? '되돌리기' : '삭제'
+                  }
+                  size="small"
+                  color={!sideQuest.isNew && deletedSideQuests.includes(index) ? 'grayDark' : 'red'}
+                />
+              </SideBoxContainer>
+            ))}
+            {sideQuests.length < MAX_SIDE_QUESTS && (
+              <Button
+                type="button"
+                onClick={addSideQuest}
+                children="사이드 퀘스트 추가"
+                size="medium"
+                color="blue"
+              />
+            )}
           </InnerQuests>
           <h3 className="period">기간</h3>
           <div className="dateContainer">
@@ -135,17 +140,17 @@ const EditMainQuestQuest = () => {
           <div className="modifiyAndClose">
             <Button
               className="modifiyButton"
-              type={'submit'}
-              children={'수정'}
-              size={'medium'}
-              color={'black'}
+              type="submit"
+              children="수정"
+              size="medium"
+              color="black"
             />
             <Button
               type="button"
               className="closeButton"
-              children={'삭제'}
-              size={'medium'}
-              color={'black'}
+              children="삭제"
+              size="medium"
+              color="black"
               onClick={handleDeleteBtn}
             />
           </div>
@@ -227,7 +232,7 @@ const EditMainQuestStyle = styled.div`
       background-color: ${({ theme }) => theme.color.green};
     }
     .closeButton {
-      background-color: ${({ theme }) => theme.color.grayNormal};
+      background-color: ${({ theme }) => theme.color.red};
     }
   }
 `;
@@ -277,17 +282,18 @@ const InnerQuests = styled.div`
   gap: 0.5rem;
 `;
 
-const SideBoxContainer = styled.div`
+const SideBoxContainer = styled.div<{ $isDeleted: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  opacity: ${({ $isDeleted }) => ($isDeleted ? 0.5 : 1)};
+`;
 
-  .checkBoxInput {
-    display: flex;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-  }
+const DeleteButton = styled(Button)`
+  min-width: 80px; // 튼의 최소 너비 설정
+  height: 36px; // QuestInputBox의 높이와 맞춤
+  padding: 0 10px;
+  font-size: 0.8rem;
 `;
 
 export default EditMainQuestQuest;

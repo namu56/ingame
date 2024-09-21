@@ -153,16 +153,18 @@ export const useEditMainQuestForm = (content: MainQuest, date: string) => {
   const [endDate, setEndDate] = useState(content.endDate);
   const [title, setTitle] = useState(content.title);
   const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
-  const [sideQuests, setSideQuests] = useState<SideContent[]>(content.sideQuests);
+  const [sideQuests, setSideQuests] = useState<(SideContent & { isNew?: boolean })[]>(
+    content.sideQuests.map((sideQuest) => ({ ...sideQuest, isNew: false }))
+  );
   const [isPrivate, setIsPrivate] = useState(content.hidden === 'TRUE');
-
+  const [deletedSideQuests, setDeletedSideQuests] = useState<number[]>([]);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
+  const MAX_SIDE_QUESTS = 5;
   const { register, control, handleSubmit } = useForm<MainQuest>();
 
   const editQuestMutation = useMutation({
-    mutationFn: (variable: Quest) => {
+    mutationFn: (variable: MainQuest) => {
       const { id, ...rest } = variable;
       return modiMainQuest(id, rest);
     },
@@ -174,24 +176,50 @@ export const useEditMainQuestForm = (content: MainQuest, date: string) => {
     },
   });
 
+  const addSideQuest = () => {
+    if (sideQuests.length < MAX_SIDE_QUESTS) {
+      setSideQuests([...sideQuests, { content: '', isNew: true }]);
+    }
+  };
+
+  const removeSideQuest = (index: number) => {
+    if (sideQuests[index].isNew) {
+      setSideQuests(sideQuests.filter((_, i) => i !== index));
+    } else {
+      toggleSideQuestDeletion(index);
+    }
+  };
+
+  const toggleSideQuestDeletion = (index: number) => {
+    if (!sideQuests[index].isNew) {
+      setDeletedSideQuests((prev) =>
+        prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+      );
+    }
+  };
+
+  const updateSideQuest = (index: number, newContent: string) => {
+    setSideQuests((prevSideQuests) => {
+      const updatedSideQuests = [...prevSideQuests];
+      updatedSideQuests[index] = { ...updatedSideQuests[index], content: newContent };
+      return updatedSideQuests;
+    });
+  };
+
   const onSubmit = handleSubmit((data) => {
     const hidden: QuestHiddenType = isPrivate ? 'TRUE' : 'FALSE';
-    const updatedSideQuests = (sideQuests || []).map((sideQuest) => ({
-      ...sideQuest,
-      status: sideQuest.status,
-    }));
+    const updatedSideQuests: SideContent[] = sideQuests
+      .filter((_, index) => !deletedSideQuests.includes(index))
+      .map(({ isNew, ...sideQuest }) => ({
+        ...sideQuest,
+        content: sideQuest.content,
+        id: sideQuest.id,
+      }));
     const { id, ...rest } = data;
     const newData = { id, ...rest, hidden, sideQuests: updatedSideQuests };
 
     editQuestMutation.mutate(newData, {
       onSuccess: () => {
-        queryClient.setQueryData(
-          [...QUEST.GET_MAINQUEST, content.id],
-          (oldData: Quest | undefined) => ({
-            ...oldData,
-            ...newData,
-          })
-        );
         queryClient.invalidateQueries({
           queryKey: [...QUEST.GET_MAINQUEST, date],
         });
@@ -216,6 +244,11 @@ export const useEditMainQuestForm = (content: MainQuest, date: string) => {
     setSideQuests,
     isPrivate,
     setIsPrivate,
+    addSideQuest,
+    removeSideQuest,
+    updateSideQuest,
+    deletedSideQuests,
+    toggleSideQuestDeletion,
   };
 };
 
