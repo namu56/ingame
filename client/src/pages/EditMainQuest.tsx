@@ -28,7 +28,7 @@ interface LocationState {
   date: string;
 }
 
-const EditMainQuestQuest = () => {
+const EditMainQuest = () => {
   const { state } = useLocation();
   const { data: content, date } = state as LocationState;
   const navigate = useNavigate();
@@ -349,4 +349,4 @@ const DeleteButton = styled(Button)`
   font-size: 0.8rem;
 `;
 
-export default EditMainQuestQuest;
+export default EditMainQuest;
