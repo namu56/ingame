@@ -84,7 +84,11 @@ const EditMainQuest = () => {
   };
 
   const handleFormSubmit = (data: UpdateMainQuestProps) => {
-    onSubmit(data, sideQuests, date);
+    const newData = {
+      ...data,
+      sideQuests,
+    };
+    onSubmit(newData, date);
   };
 
   return (

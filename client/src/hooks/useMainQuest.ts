@@ -20,11 +20,9 @@ import {
 import { formattedDate } from '@/utils/formatter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMessage } from '@/hooks/useMessage';
-import { MAX_SIDE_QUESTS } from '@/constant/quest';
-import { UpdateMainQuestProps, UpdateSideQuestProps } from '@/pages/EditMainQuest';
+import { UpdateMainQuestProps } from '@/pages/EditMainQuest';
 
 export interface CreateMainQuestProps {
   title: string;
@@ -163,25 +161,16 @@ export const useEditMainQuestForm = (content: MainQuest, date: string) => {
     },
   });
 
-  const onSubmit = (
-    data: UpdateMainQuestProps,
-    sideQuests: UpdateSideQuestProps[],
-    date: string
-  ) => {
+  const onSubmit = (data: UpdateMainQuestProps, date: string) => {
     const hidden: QuestHiddenType = isPrivate ? 'TRUE' : 'FALSE';
-    const updatedSideQuests = sideQuests.map((sideQuest) => ({
-      ...sideQuest,
-      content: sideQuest.content,
-      id: sideQuest.id,
-    }));
-    const newData: UpdateMainQuestProps = { ...data, hidden, sideQuests: updatedSideQuests };
+    const newData: UpdateMainQuestProps = { ...data, hidden };
 
     editQuestMutation.mutate(newData, {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: [...QUEST.GET_MAINQUEST, date],
         });
-        navigate('/', { state: { updatedData: newData } });
+        navigate('/');
       },
     });
   };
