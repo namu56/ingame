@@ -1,31 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class UserInfoWithRankDto {
-  @ApiProperty({
-    example: 1,
-    description: 'id',
-    required: true,
-  })
-  id: number;
+  @Expose()
+  readonly id: number;
 
-  @ApiProperty({
-    example: 'test',
-    description: '닉네임',
-    required: true,
-  })
-  nickname: string;
+  @Expose()
+  readonly nickname: string;
 
-  @ApiProperty({
-    example: 0,
-    description: '포인트 점수',
-    required: true,
-  })
-  point: number;
+  @Expose()
+  readonly point: number;
 
-  @ApiProperty({
-    example: 1,
-    description: '순위',
-    required: true,
-  })
-  rank: number;
+  @Expose()
+  readonly rank: number;
 }

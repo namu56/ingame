@@ -9,6 +9,7 @@ import { RankingDto } from '@common/dto/ranking';
 import { PaginationRequest } from '@common/requests/pagination';
 import { PaginationResponse } from '@common/responses/pagination';
 import { RankingResponse } from '@common/responses/ranking';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class RankingService implements IRankingService {
@@ -16,6 +17,7 @@ export class RankingService implements IRankingService {
     @Inject(USER_INFO_REPOSITORY_KEY) private readonly userInfoRepository: IUserInfoRepository,
     private levelCalculatorService: LevelCalculatorService
   ) {}
+
   async getRankingByPage(paginationRequest: PaginationRequest): Promise<RankingResponse> {
     const { page, limit } = paginationRequest;
     const offset = (page - 1) * limit;
@@ -23,12 +25,16 @@ export class RankingService implements IRankingService {
     const userInfos = await this.userInfoRepository.getRanking(offset, limit);
     const total = await this.userInfoRepository.getTotalCount();
 
-    const pagination = new PaginationResponse(Math.ceil(total / limit), page + 1);
+    const totalPage = Math.ceil(total / limit);
+    const nextPage = page + 1;
+
+    const pagination = plainToInstance(PaginationResponse, { totalPage, nextPage });
+
     const rankings = userInfos.map((userInfo) => {
       const level = this.levelCalculatorService.findLevel(userInfo.point).level;
-      return new RankingDto(userInfo, level);
+      return plainToInstance(RankingDto, { ...userInfo, level });
     });
 
-    return new RankingResponse(rankings, pagination);
+    return plainToInstance(RankingResponse, { rankings, pagination });
   }
 }
