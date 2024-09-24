@@ -1,14 +1,9 @@
 import { API_END_POINT } from '@/constant/api';
-import { Pagination, RankingItem } from '@/models/ranking.model';
+import { RankingResponse } from '@/models/ranking.model';
 import { httpClient } from '@/utils/axios';
 
-interface GetRankingParams { 
+interface GetRankingParams {
   totalPage: number;
-}
-export interface RankingResponse {
-  ranking: any;
-  data: RankingItem[];
-  pagination: Pagination;
 }
 
 export const getRanking = async ({ totalPage }: GetRankingParams): Promise<RankingResponse> => {
