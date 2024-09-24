@@ -5,15 +5,21 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 interface LoginProviderProps {
   children: React.ReactNode;
+  isPrivate: boolean;
 }
 
-const LoginProvider = ({ children }: LoginProviderProps) => {
+const LoginProvider = ({ children, isPrivate }: LoginProviderProps) => {
   const navigate = useNavigate();
   const isLogin = useSelector(isLoggedIn);
   const location = useLocation();
 
   useEffect(() => {
-    if (!isLogin && location.pathname !== '/signup') {
+    if (
+      isPrivate &&
+      !isLogin &&
+      location.pathname !== '/signup' &&
+      location.pathname !== '/login'
+    ) {
       navigate('/login');
     }
   }, [isLogin, location.pathname, navigate]);

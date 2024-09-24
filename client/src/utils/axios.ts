@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { getToken, removeToken, setToken } from './tokenUtils';
+import { getToken, setToken } from './tokenUtils';
 import { SERVER_API_URL } from '../settings';
 import { refreshToken } from '@/api/auth.api';
 
@@ -16,7 +16,8 @@ const createClient = (config?: AxiosRequestConfig) => {
 
   axiosInstance.interceptors.request.use((request) => {
     const token = getToken();
-    request.headers.Authorization = `Bearer ${token ? token : ''}`;
+
+    if (token) request.headers.Authorization = `Bearer ${token}`;
     return request;
   });
 
@@ -26,20 +27,18 @@ const createClient = (config?: AxiosRequestConfig) => {
     },
     async (error) => {
       const originRequest = error.config;
-      const hasToken = getToken();
-      originRequest.retryCount = originRequest.retryCount || 0;
 
-      if (error.response.status === 401 && originRequest.retryCount < 3) {
-        originRequest.retryCount += 1;
-        if (hasToken) {
-          const token = await refreshToken();
-          setToken(token.accessToken);
-          return axiosInstance.request(originRequest);
-        }
+      if (error.response.status === 401) {
+        const token = await refreshToken();
+        setToken(token.accessToken);
+        originRequest.headers.Authorization = `Bearer ${token.accessToken}`;
+        return;
       }
+
       if (process.env.NODE_ENV === 'production') {
         console.clear();
       }
+
       return Promise.reject(error);
     }
   );
