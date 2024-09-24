@@ -1,17 +1,18 @@
-import { UserInfoWithRankDto } from '../user-info';
+import { Expose } from 'class-transformer';
 
 export class RankingDto {
+  @Expose()
   readonly id: number;
-  readonly nickname: string;
-  readonly point: number;
-  readonly rank: number;
-  readonly level: number;
 
-  constructor(userInfo: UserInfoWithRankDto, level: number) {
-    this.id = userInfo.id;
-    this.nickname = userInfo.nickname;
-    this.point = userInfo.point;
-    this.rank = userInfo.rank;
-    this.level = level;
-  }
+  @Expose()
+  readonly nickname: string;
+
+  @Expose()
+  readonly point: number;
+
+  @Expose()
+  readonly rank: number;
+
+  @Expose()
+  readonly level: number;
 }

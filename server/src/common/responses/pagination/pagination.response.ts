@@ -1,6 +1,9 @@
+import { Expose } from 'class-transformer';
+
 export class PaginationResponse {
-  constructor(
-    readonly totalPage: number,
-    readonly nextPage: number
-  ) {}
+  @Expose()
+  readonly totalPage: number;
+
+  @Expose()
+  readonly nextPage: number;
 }

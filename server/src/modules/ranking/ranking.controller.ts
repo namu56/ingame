@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  Query,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Inject, Query } from '@nestjs/common';
 import {
   ApiInternalServerErrorResponse,
   ApiOkResponse,
@@ -28,8 +19,7 @@ export class RankingController {
   @ApiOkResponse({ type: RankingResponse, isArray: true })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ValidationPipe({ transform: true }))
-  findRankingByPage(@Query() paginationRequest: PaginationRequest): Promise<RankingResponse> {
-    return this.rankingService.getRankingByPage(paginationRequest);
+  findRankingByPage(@Query() request: PaginationRequest): Promise<RankingResponse> {
+    return this.rankingService.getRankingByPage(request);
   }
 }
