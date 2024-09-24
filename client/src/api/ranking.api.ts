@@ -2,12 +2,11 @@ import { API_END_POINT } from '@/constant/api';
 import { Pagination, RankingItem } from '@/models/ranking.model';
 import { httpClient } from '@/utils/axios';
 
-interface GetRankingParams { 
+interface GetRankingParams {
   totalPage: number;
 }
 export interface RankingResponse {
-  ranking: any;
-  data: RankingItem[];
+  rankings: RankingItem[];
   pagination: Pagination;
 }
 

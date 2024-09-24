@@ -2,11 +2,6 @@ import styled from 'styled-components';
 import RankingCard from './RankingCard';
 import { useRank } from '@/hooks/useRank';
 import { useEffect, useRef } from 'react';
-import { RankingItem } from '@/models/ranking.model';
-
-interface RankingCardProps {
-  item: RankingItem;
-}
 
 const RankingCardList = () => {
   const { rankingData, fetchNextPage, hasNextPage } = useRank();
@@ -22,8 +17,8 @@ const RankingCardList = () => {
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: "0px",
-      threshold: 1.0
+      rootMargin: '0px',
+      threshold: 1.0,
     };
     const observer = new IntersectionObserver(handleObserver, options);
     if (loader.current) {
@@ -33,22 +28,25 @@ const RankingCardList = () => {
       if (loader.current) {
         observer.unobserve(loader.current);
       }
-    }
+    };
   }, [fetchNextPage, hasNextPage]);
 
   return (
     <>
       <RankingCardListStyle>
-      {rankingData && rankingData.flatMap((response) => response.ranking).map((rankingItem) => (
-        <RankingCard
-          id={rankingItem.id}
-          nickname={rankingItem.nickname}
-          point={rankingItem.point}
-          rank={rankingItem.rank}
-          level={rankingItem.level}
-          key={rankingItem.id}
-        />
-      ))}
+        {rankingData &&
+          rankingData
+            .flatMap((response) => response.rankings)
+            .map((rankingItem) => (
+              <RankingCard
+                id={rankingItem.id}
+                nickname={rankingItem.nickname}
+                point={rankingItem.point}
+                rank={rankingItem.rank}
+                level={rankingItem.level}
+                key={rankingItem.id}
+              />
+            ))}
         <div ref={loader} />
       </RankingCardListStyle>
     </>
