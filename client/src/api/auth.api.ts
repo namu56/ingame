@@ -17,6 +17,7 @@ export const logout = async (): Promise<void> => {
 };
 
 export const refreshToken = async (): Promise<Token> => {
+  console.log('Refreshing token at:', new Date().toISOString());
   const response = await httpClient.post(API_END_POINT.REFRESH_TOKEN);
   return response.data;
 };

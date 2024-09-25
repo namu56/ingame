@@ -6,7 +6,7 @@ import { UpdateMainQuestProps } from '@/pages/EditMainQuest';
 
 import { httpClient } from '@/utils/axios';
 
-interface GetSubQuestParam {
+interface GetQuestParam {
   date: string;
 }
 export interface ModifyQuestStatusProps {
@@ -31,7 +31,7 @@ export const deleteMainQuest = async (id: number) => {
   return response.data;
 };
 
-export const getMainQuest = async (param: GetSubQuestParam) => {
+export const getMainQuest = async (param: GetQuestParam) => {
   const response = await httpClient.get<MainQuest[]>(API_END_POINT.MAIN_QUEST, { params: param });
   return response.data;
 };
@@ -48,7 +48,7 @@ export const modiSideQuest = async (questId: number, sideQuestId: number, status
   return response.data;
 };
 
-export const getSubQuest = async (param: GetSubQuestParam) => {
+export const getSubQuest = async (param: GetQuestParam) => {
   const response = await httpClient.get<SubQuest[]>(API_END_POINT.SUB_QUEST, { params: param });
   return response.data;
 };
