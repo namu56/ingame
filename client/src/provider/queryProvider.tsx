@@ -7,6 +7,8 @@ interface ReactQueryProviderProps {
   showDevTools?: boolean;
 }
 
+export let queryClient: QueryClient;
+
 const ReactQueryProvider = ({ showDevTools, children }: ReactQueryProviderProps) => {
   const [client] = useState(
     new QueryClient({
@@ -18,8 +20,11 @@ const ReactQueryProvider = ({ showDevTools, children }: ReactQueryProviderProps)
           retry: false,
         },
       },
-    }),
+    })
   );
+
+  queryClient = client;
+
   return (
     <QueryClientProvider client={client}>
       {showDevTools && <ReactQueryDevtools buttonPosition="bottom-left" />}
