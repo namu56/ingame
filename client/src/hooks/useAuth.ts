@@ -1,7 +1,7 @@
 import { login, logout } from '@/api/auth.api';
 import { ROUTERS } from '@/constant/route';
 import { LoginProps } from '@/pages/Login';
-import { getToken, removeToken, setToken } from '@/utils/tokenUtils';
+import { removeToken, setToken } from '@/utils/tokenUtils';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useMessage } from './useMessage';

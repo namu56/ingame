@@ -1,7 +1,20 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { getToken, setToken } from './tokenUtils';
+import axios, { AxiosRequestConfig, CreateAxiosDefaults } from 'axios';
+import { getToken, removeToken, setToken } from './tokenUtils';
 import { SERVER_API_URL } from '../settings';
-import { refreshToken } from '@/api/auth.api';
+import { logout, refreshToken } from '@/api/auth.api';
+import { API_END_POINT } from '@/constant/api';
+
+let isTokenRefreshing = false;
+let refreshSubscribers: ((accessToken: string) => void)[] = [];
+
+const onTokenRefreshed = (accessToken: string) => {
+  refreshSubscribers.forEach((callback) => callback(accessToken));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback: (accessToken: string) => void) => {
+  refreshSubscribers.push(callback);
+};
 
 const createClient = (config?: AxiosRequestConfig) => {
   const axiosInstance = axios.create({
@@ -26,13 +39,41 @@ const createClient = (config?: AxiosRequestConfig) => {
       return response;
     },
     async (error) => {
-      const originRequest = error.config;
+      const originalRequest = error.config;
+      if (originalRequest.url === API_END_POINT.REFRESH_TOKEN) return Promise.reject(error);
 
-      if (error.response.status === 401) {
-        const token = await refreshToken();
-        setToken(token.accessToken);
-        originRequest.headers.Authorization = `Bearer ${token.accessToken}`;
-        return;
+      if (error.response?.status === 401) {
+        if (!isTokenRefreshing) {
+          isTokenRefreshing = true;
+          try {
+            const { accessToken } = await refreshToken();
+
+            setToken(accessToken);
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            onTokenRefreshed(accessToken);
+
+            isTokenRefreshing = false;
+
+            return axiosInstance(originalRequest);
+          } catch (error) {
+            isTokenRefreshing = false;
+            refreshSubscribers = [];
+
+            removeToken();
+            await logout();
+
+            return Promise.reject(error);
+          }
+        }
+
+        const retryOriginalRequest = new Promise((resolve) => {
+          addRefreshSubscriber((accessToken) => {
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            resolve(axiosInstance(originalRequest));
+          });
+        });
+
+        return retryOriginalRequest;
       }
 
       if (process.env.NODE_ENV === 'production') {
