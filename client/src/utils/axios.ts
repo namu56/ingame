@@ -55,7 +55,7 @@ const createClient = (config?: AxiosRequestConfig) => {
             isTokenRefreshing = false;
 
             return axiosInstance(originalRequest);
-          } catch (e) {
+          } catch (error) {
             isTokenRefreshing = false;
             refreshSubscribers = [];
 
