@@ -1,7 +1,8 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, CreateAxiosDefaults } from 'axios';
 import { getToken, removeToken, setToken } from './tokenUtils';
 import { SERVER_API_URL } from '../settings';
 import { logout, refreshToken } from '@/api/auth.api';
+import { API_END_POINT } from '@/constant/api';
 
 let isTokenRefreshing = false;
 let refreshSubscribers: ((accessToken: string) => void)[] = [];
@@ -22,7 +23,7 @@ const createClient = (config?: AxiosRequestConfig) => {
       'Content-Type': 'application/json',
     },
     withCredentials: true,
-    // timeout: 5000,
+    timeout: 5000,
     ...config,
   });
 
@@ -39,17 +40,30 @@ const createClient = (config?: AxiosRequestConfig) => {
     },
     async (error) => {
       const originalRequest = error.config;
+      if (originalRequest.url === API_END_POINT.REFRESH_TOKEN) return Promise.reject(error);
 
       if (error.response?.status === 401) {
         if (!isTokenRefreshing) {
           isTokenRefreshing = true;
+          try {
+            const { accessToken } = await refreshToken();
 
-          const { accessToken } = await refreshToken();
-          setToken(accessToken);
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          onTokenRefreshed(accessToken);
-          isTokenRefreshing = false;
-          return axiosInstance(originalRequest);
+            setToken(accessToken);
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            onTokenRefreshed(accessToken);
+
+            isTokenRefreshing = false;
+
+            return axiosInstance(originalRequest);
+          } catch (e) {
+            isTokenRefreshing = false;
+            refreshSubscribers = [];
+
+            removeToken();
+            await logout();
+
+            return Promise.reject(error);
+          }
         }
 
         const retryOriginalRequest = new Promise((resolve) => {
