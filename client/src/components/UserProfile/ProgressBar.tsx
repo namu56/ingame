@@ -2,16 +2,14 @@ import styled from 'styled-components';
 import { Progress } from 'antd';
 
 interface ProgressBarProps {
-  point: number;
+  levelProgress: number;
 }
 
-const calcProgressPercent = (point: number) => Math.floor(((point % 1024) / 1024) * 100);
-
-const ProgressBar = ({ point }: ProgressBarProps) => {
+const ProgressBar = ({ levelProgress }: ProgressBarProps) => {
   return (
     <ProgressBarStyle>
       <Progress
-        percent={calcProgressPercent(point)}
+        percent={levelProgress}
         size={['100%', 25]}
         strokeColor="#0ACF83"
         trailColor="#E2F8F1"
