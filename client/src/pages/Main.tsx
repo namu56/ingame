@@ -17,6 +17,8 @@ const Main = () => {
   const { mainQuests, isMainQuestsLoading, date } = useMainQuest();
   const { userInfo, refetch } = useUserInfo();
 
+  console.log(userInfo);
+
   return (
     <MainStyle>
       <Dropdown />
@@ -31,12 +33,7 @@ const Main = () => {
         <div>
           {mainQuests?.length ? (
             mainQuests?.map((content) => (
-              <MainBox
-                key={content.id}
-                content={content}
-                date={date}
-                refetchMainBoxData={refetch}
-              />
+              <MainBox key={content.id} content={content} date={date} refetchUserInfo={refetch} />
             ))
           ) : isMainQuestsLoading ? (
             <Loading />
@@ -53,7 +50,9 @@ const Main = () => {
         </div>
         <div>
           {subQuests?.length ? (
-            subQuests.map((content) => <SubBox key={content.id} content={content} />)
+            subQuests.map((content) => (
+              <SubBox key={content.id} content={content} refetchUserInfo={refetch} />
+            ))
           ) : isSubLoading ? (
             <Loading />
           ) : (

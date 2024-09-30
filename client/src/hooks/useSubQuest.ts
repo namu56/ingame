@@ -43,7 +43,7 @@ export const useSubQuest = () => {
   });
 
   const modifySubQuestStatus = (data: ModifyQuestStatusProps) => {
-    modifyQuestStatusMutation.mutate(data);
+    return modifyQuestStatusMutation.mutateAsync(data);
   };
 
   const modifyQuestStatusMutation = useMutation({
