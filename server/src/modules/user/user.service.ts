@@ -86,8 +86,9 @@ export class UserService implements IUserService {
   async findUserById(id: number): Promise<UserResponse> {
     const user = await this.findById(id);
     const level = this.levelCalculatorService.findLevel(user.userInfo.point).level;
+    const levelProgress = this.levelCalculatorService.calculateLevelProgress(user.userInfo.point);
 
-    return plainToInstance(UserResponse, { ...user, level });
+    return plainToInstance(UserResponse, { ...user, level, levelProgress });
   }
 
   async updateUserInfoById(userId: number, request: UpdateUserRequest): Promise<void> {

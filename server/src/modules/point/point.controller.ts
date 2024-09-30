@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Inject,
-  Patch,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Inject, Patch, UseGuards } from '@nestjs/common';
 import { AccessTokenPayload } from '../auth/auth.interface';
 import { CurrentUser } from 'src/core/decorators/current-user.decorator';
 import {

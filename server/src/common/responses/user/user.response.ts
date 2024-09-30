@@ -25,4 +25,7 @@ export class UserResponse {
 
   @Expose()
   readonly level: number;
+
+  @Expose()
+  readonly levelProgress: number;
 }
