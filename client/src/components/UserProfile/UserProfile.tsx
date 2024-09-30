@@ -10,7 +10,6 @@ interface UserProfileProps {
 }
 
 const UserProfile = ({ userInfo }: UserProfileProps) => {
-
   return (
     <UserProfileStyle>
       {userInfo && (
@@ -24,7 +23,7 @@ const UserProfile = ({ userInfo }: UserProfileProps) => {
               <EditProfileButton nickname={userInfo.nickname} intro={userInfo.intro} />
             </div>
             <div className="progress__bar">
-              <ProgressBar point={userInfo.point} />
+              <ProgressBar levelProgress={userInfo.levelProgress} />
             </div>
             <span className="introduction">{userInfo.intro}</span>
           </UserDetailInfoStyle>

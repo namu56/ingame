@@ -77,7 +77,7 @@ export const useMainQuest = (questId?: number) => {
     mutationFn: (data: ModifyQuestStatusProps) => modiQuestStatus(data),
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [...QUEST.GET_MAINQUEST, params.get(QUERYSTRING.DATE)],
+        queryKey: [...QUEST.GET_MAINQUEST, date],
       });
     },
     onError(err) {},

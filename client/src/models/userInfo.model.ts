@@ -6,4 +6,5 @@ export interface UserInfo {
   profilePhoto: string;
   point: number;
   level: number;
+  levelProgress: number;
 }

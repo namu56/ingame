@@ -8,29 +8,32 @@ import { useState } from 'react';
 
 interface SubBoxProps {
   content: SubQuest;
+  refetchUserInfo: () => void;
 }
 
-const SubBox = ({ content }: SubBoxProps) => {
-  const { modifySubQuestStatus, date } = useSubQuest();
+const SubBox = ({ content, refetchUserInfo }: SubBoxProps) => {
+  const { modifySubQuestStatus } = useSubQuest();
   const { showConfirm, showAlert } = useMessage();
   const [open, setOpen] = useState(false);
 
-  const handleChangeStatue = () => {
+  const handleChangeStatus = () => {
     let message = '';
-    let status = content.status;
+    let newStatus: QuestStatus;
     if (content.status === 'ON_PROGRESS') {
       message = '퀘스트를 완료하시겠습니까?';
-      status = 'COMPLETED';
+      newStatus = 'COMPLETED';
     } else if (content.status === 'COMPLETED') {
       message = '퀘스트를 진행중으로 변경하시겠습니까?';
-      status = 'ON_PROGRESS';
+      newStatus = 'ON_PROGRESS';
     } else {
       showAlert('실패한 퀘스트를 수정할 수 없습니다');
       return;
     }
 
     showConfirm(message, () => {
-      modifySubQuestStatus({ id: content.id, status: status });
+      modifySubQuestStatus({ id: content.id, status: newStatus }).then(() => {
+        refetchUserInfo();
+      });
     });
   };
 
@@ -41,7 +44,7 @@ const SubBox = ({ content }: SubBoxProps) => {
 
   return (
     <SubBoxStyle $status={content.status}>
-      <div onClick={handleChangeStatue} className="clickDiv">
+      <div onClick={handleChangeStatus} className="clickDiv">
         <h2>{content.title}</h2>
         <button onClick={handleEdit} className="EditBtn">
           <BsThreeDots />

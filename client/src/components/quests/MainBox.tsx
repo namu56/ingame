@@ -13,10 +13,10 @@ import { useSideQuest } from '@/hooks/useSideQuest';
 export interface MainBoxProps {
   content: MainQuest;
   date: string;
-  refetchMainBoxData: () => void;
+  refetchUserInfo: () => void;
 }
 
-const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
+const MainBox = ({ content, date, refetchUserInfo }: MainBoxProps) => {
   const [sideQuests, setSideQuests] = useState(content.sideQuests);
   const [isAccordion, setIsAccordion] = useState(false);
   const { patchSideMutation } = useSideQuest();
@@ -35,7 +35,7 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
 
   const handleChangeStatus = () => {
     let message = '';
-    let newStatus = '';
+    let newStatus: QuestStatus;
     const completedSideQuests = sideQuests.filter(
       (sideQuest) => sideQuest.status === 'COMPLETED'
     ).length;
@@ -55,9 +55,8 @@ const MainBox = ({ content, date, refetchMainBoxData }: MainBoxProps) => {
     }
 
     showConfirm(message, () => {
-      content.status = newStatus as QuestStatus;
-      modifyMainQuestStatus({ id: content.id, status: content.status }).then(() => {
-        refetchMainBoxData();
+      modifyMainQuestStatus({ id: content.id, status: newStatus }).then(() => {
+        refetchUserInfo();
       });
     });
   };

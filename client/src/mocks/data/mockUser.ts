@@ -8,4 +8,5 @@ export const mockUserInfo: UserInfo = {
   profilePhoto: 'lion',
   point: 3000,
   level: 5,
+  levelProgress: 50,
 };
