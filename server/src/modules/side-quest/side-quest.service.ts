@@ -36,20 +36,24 @@ export class SideQuestService {
     sideQuestRequests: UpdateSideQuestRequest[]
   ): Promise<void> {
     const sideQuests = await this.findSideQuests(questId);
-    const deleteSideQuestIds = sideQuests
-      .filter((sideQuest) => !sideQuestRequests.some((request) => request.id === sideQuest.id))
-      .map((sideQuest) => sideQuest.id);
+    const deleteSideQuestIds = new Set(sideQuests.map((sideQuest) => sideQuest.id));
 
     for (const request of sideQuestRequests) {
-      const target = sideQuests.find((sideQuest) => sideQuest.id === request.id);
-      if (target) {
-        await target.updateContent(request.content);
-        await this.sideQuestRepository.save(target);
+      if (request.id) {
+        const target = sideQuests.find((sideQuest) => sideQuest.id === request.id);
+        if (target) {
+          deleteSideQuestIds.delete(request.id);
+          await target.updateContent(request.content);
+          await this.sideQuestRepository.save(target);
+        }
+      } else {
+        const newSideQuest = SideQuest.create(questId, request.content);
+        await this.sideQuestRepository.save(newSideQuest);
       }
     }
 
-    if (deleteSideQuestIds.length > 0) {
-      await this.sideQuestRepository.delete(deleteSideQuestIds);
+    if (deleteSideQuestIds.size > 0) {
+      await this.sideQuestRepository.delete(Array.from(deleteSideQuestIds));
     }
   }
 

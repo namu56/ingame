@@ -17,11 +17,12 @@ export class CreateQuestRequest {
 
   @ApiProperty({
     enum: Difficulty,
-    example: 'normal',
+    example: 'NORMAL',
     description: '퀘스트 난이도',
-    required: true,
+    required: false,
   })
   @IsEnum(Difficulty)
+  @ValidateIf((quest) => quest.mode === Mode.Main)
   @IsNotEmpty()
   difficulty: Difficulty;
 

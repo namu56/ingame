@@ -37,7 +37,7 @@ export class UpdateMainQuestRequest {
 
   @ApiProperty({
     type: [UpdateSideQuestRequest],
-    description: '사이드 퀘스트의 내용들',
+    description: '사이드 퀘스트의 내용들 (새로운 사이드 퀘스트는 id 없이 content만 포함)',
     required: false,
   })
   @IsNotEmpty()
