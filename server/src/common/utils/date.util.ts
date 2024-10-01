@@ -26,7 +26,7 @@ export const toEndUTC = (dateString: string): Date => {
 };
 
 export const toDateString = (date: Date): string => {
-  return dayjs(date).tz(DEFAULT_TIMEZONE).format('YYYYMMDD');
+  return dayjs(date).tz(DEFAULT_TIMEZONE).format('YYYY-MM-DD');
 };
 
 export const getExpiredDate = (): Date => {
