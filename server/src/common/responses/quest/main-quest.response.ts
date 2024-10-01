@@ -1,6 +1,5 @@
-import { Difficulty, Hidden, Status } from '@common/types/quest/quest.type';
+import { Difficulty, Hidden, Mode, Status } from '@common/types/quest/quest.type';
 import { Expose, Type } from 'class-transformer';
-import { Mode } from 'fs';
 import { SideQuestResponse } from './side-quest.response';
 
 export class MainQuestResponse {
@@ -27,10 +26,10 @@ export class MainQuestResponse {
   sideQuests: SideQuestResponse[];
 
   @Expose()
-  startDate: Date;
+  startDate: string;
 
   @Expose()
-  endDate: Date;
+  endDate: string;
 
   @Expose()
   createdAt: Date;
