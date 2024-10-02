@@ -57,8 +57,8 @@ export class TokenService implements ITokenService {
     return token;
   }
 
-  async deleteToken(userId: number): Promise<void> {
-    this.refreshTokenRepository.deleteByUserId(userId);
+  async deleteToken(refreshToken: string): Promise<void> {
+    this.refreshTokenRepository.deleteByToken(refreshToken);
   }
 
   async refresh(refreshToken: string, payload: AccessTokenPayload): Promise<AuthTokenResponse> {

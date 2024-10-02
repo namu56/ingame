@@ -8,7 +8,7 @@ export interface ITokenService {
   createAccessToken(payload: AccessTokenPayload): Promise<string>;
   createRefreshToken(userId: number): Promise<string>;
   updateRefreshToken(userId: number, refreshToken: RefreshToken): Promise<string>;
-  deleteToken(userId: number): Promise<void>;
+  deleteToken(refreshToken: string): Promise<void>;
   refresh(refreshToken: string, payload: AccessTokenPayload): Promise<AuthTokenResponse>;
   verifiedRefreshToken(refreshToken: string): Promise<RefreshTokenPayload>;
 }

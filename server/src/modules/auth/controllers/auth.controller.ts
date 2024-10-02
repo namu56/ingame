@@ -21,7 +21,6 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LocalAuthGuard } from '../../../core/guards/local-auth.guard';
-import { JwtAuthGuard } from '../../../core/guards/jwt-auth.guard';
 import { AuthTokenInterceptor } from 'src/core/interceptors/auth-token.interceptor';
 import { AccessTokenPayload } from 'src/common/dto/token';
 import { AuthTokenResponse } from 'src/common/responses/token';
@@ -45,14 +44,14 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '로그아웃' })
   @ApiBearerAuth('accessToken')
   @ApiOkResponse({ description: '로그아웃 성공 시 쿠키의 토큰 삭제' })
   @ApiUnauthorizedResponse({ description: 'Unauthenticated' })
   @ApiForbiddenResponse({ description: 'fail - Invaild token' })
-  async logout(@CurrentUser() user: AccessTokenPayload, @Res() res: Response): Promise<void> {
-    await this.authService.logout(user.id);
+  async logout(@Req() req: Request, @Res() res: Response) {
+    const refreshToken: string = req.cookies.refreshToken;
+    await this.authService.logout(refreshToken);
     res.clearCookie('refreshToken');
     res.sendStatus(HttpStatus.NO_CONTENT);
   }
