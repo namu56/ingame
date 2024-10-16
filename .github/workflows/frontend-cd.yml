@@ -1,144 +1,144 @@
-name: frontend CD
+# name: frontend CD
 
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'client/**'
+# on:
+#   push:
+#     branches: [main]
+#     paths:
+#       - 'client/**'
 
-env:
-  IMAGE: ingame-fe
-  REPO: ${{ secrets.REPO }}
-  K8S_CONFIG_PATH: k8s/ingame-fe
-  K8S_NAMESPACE: ingame
-  CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-  TAG: ${{ github.sha }}
+# env:
+#   IMAGE: ingame-fe
+#   REPO: ${{ secrets.REPO }}
+#   K8S_CONFIG_PATH: k8s/ingame-fe
+#   K8S_NAMESPACE: ingame
+#   CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+#   TAG: ${{ github.sha }}
 
-jobs:
-  build:
-    name: Build and Push to ECR
-    runs-on: self-hosted
-    defaults:
-      run:
-        working-directory: ./client
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+# jobs:
+#   build:
+#     name: Build and Push to ECR
+#     runs-on: self-hosted
+#     defaults:
+#       run:
+#         working-directory: ./client
+#     steps:
+#       - name: Check out code
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '18'
 
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: client/node_modules
-          key: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('client/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-
+#       - name: Cache node modules
+#         id: cache-node-modules
+#         uses: actions/cache@v3
+#         env:
+#           cache-name: cache-node-modules
+#         with:
+#           path: client/node_modules
+#           key: |
+#             ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('client/package-lock.json') }}
+#           restore-keys: |
+#             ${{ runner.os }}-build-${{ env.cache-name }}-
+#             ${{ runner.os }}-
 
-      - name: Install Dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
-        run: npm ci
+#       - name: Install Dependencies
+#         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+#         run: npm ci
 
-      - name: Run build
-        run: npm run build
-        env:
-          CI: false
+#       - name: Run build
+#         run: npm run build
+#         env:
+#           CI: false
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ap-northeast-2
 
-      - name: ECR login
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+#       - name: ECR login
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Docker build
-        run: |
-          docker build --platform linux/amd64 -t ${{ env.IMAGE }} .
+#       - name: Docker build
+#         run: |
+#           docker build --platform linux/amd64 -t ${{ env.IMAGE }} .
 
-      - name: ECR push
-        run: |
-          aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.REPO }}
-          docker tag ${{ env.IMAGE }} ${{ secrets.REPO }}/${{ env.IMAGE }}:${{ env.TAG }}
-          docker push ${{ secrets.REPO }}/${{ env.IMAGE }}:${{ env.TAG }}
+#       - name: ECR push
+#         run: |
+#           aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.REPO }}
+#           docker tag ${{ env.IMAGE }} ${{ secrets.REPO }}/${{ env.IMAGE }}:${{ env.TAG }}
+#           docker push ${{ secrets.REPO }}/${{ env.IMAGE }}:${{ env.TAG }}
 
-  deploy:
-    name: Deploy to Minikube
-    needs: build
-    runs-on: self-hosted
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
+#   deploy:
+#     name: Deploy to Minikube
+#     needs: build
+#     runs-on: self-hosted
+#     steps:
+#       - name: Check out code
+#         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ap-northeast-2
 
-      - name: ECR login
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+#       - name: ECR login
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Setup Kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > $HOME/.kube/config
-          kubectl config use-context ingame
+#       - name: Setup Kubeconfig
+#         run: |
+#           mkdir -p $HOME/.kube
+#           echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > $HOME/.kube/config
+#           kubectl config use-context ingame
 
-      - name: Check if secret exists
-        id: secret-exist
-        run: |
-          if kubectl get secret aws-ecr-cred --namespace ${{ env.K8S_NAMESPACE }}; then
-            echo "secret_exist=true" >> $GITHUB_ENV
-          else
-            echo "secret_exist=false" >> $GITHUB_ENV
-          fi
+#       - name: Check if secret exists
+#         id: secret-exist
+#         run: |
+#           if kubectl get secret aws-ecr-cred --namespace ${{ env.K8S_NAMESPACE }}; then
+#             echo "secret_exist=true" >> $GITHUB_ENV
+#           else
+#             echo "secret_exist=false" >> $GITHUB_ENV
+#           fi
 
-      - name: Create or update Kubernetes secrets for ECR
-        run: |
-          TOKEN=$(aws ecr get-authorization-token --region ap-northeast-2 --output text --query "authorizationData[].authorizationToken" | base64 --decode | cut -d: -f2)
-          if [ "${{ env.secret_exist }}" == "false" ]; then
-            echo "Creating secret..."
-            kubectl create secret docker-registry aws-ecr-cred \
-              --docker-server=${{ secrets.REPO }} \
-              --docker-username=AWS \
-              --docker-password="${TOKEN}" \
-              --namespace ${{ env.K8S_NAMESPACE }}
-          else
-            echo "Updating secret..."
-              ENCODED_JSON=$(echo -n '{"auths":{"'${{ secrets.REPO }}'":{"username":"AWS","password":"'"${TOKEN}"'"}}}' | base64 | tr -d '\n')
-              kubectl patch secret aws-ecr-cred \
-              --namespace ${{ env.K8S_NAMESPACE }} \
-              --type='strategic' \
-              --patch="{\"data\":{\".dockerconfigjson\":\"${ENCODED_JSON}\"}}"
-          fi
+#       - name: Create or update Kubernetes secrets for ECR
+#         run: |
+#           TOKEN=$(aws ecr get-authorization-token --region ap-northeast-2 --output text --query "authorizationData[].authorizationToken" | base64 --decode | cut -d: -f2)
+#           if [ "${{ env.secret_exist }}" == "false" ]; then
+#             echo "Creating secret..."
+#             kubectl create secret docker-registry aws-ecr-cred \
+#               --docker-server=${{ secrets.REPO }} \
+#               --docker-username=AWS \
+#               --docker-password="${TOKEN}" \
+#               --namespace ${{ env.K8S_NAMESPACE }}
+#           else
+#             echo "Updating secret..."
+#               ENCODED_JSON=$(echo -n '{"auths":{"'${{ secrets.REPO }}'":{"username":"AWS","password":"'"${TOKEN}"'"}}}' | base64 | tr -d '\n')
+#               kubectl patch secret aws-ecr-cred \
+#               --namespace ${{ env.K8S_NAMESPACE }} \
+#               --type='strategic' \
+#               --patch="{\"data\":{\".dockerconfigjson\":\"${ENCODED_JSON}\"}}"
+#           fi
 
-      - name: Render Deployment YAML
-        run: |
-          envsubst < k8s/ingame-fe.tmpl > k8s/ingame-fe.yaml
-        env:
-          IMAGE: ${{ env.IMAGE }}
-          REPO: ${{ secrets.REPO }}
-          CORS_ORIGIN: ${{ env.CORS_ORIGIN }}
-          NODE_ENV: ${{ secrets.NODE_ENV }}
-          TAG: ${{ github.sha }}
+#       - name: Render Deployment YAML
+#         run: |
+#           envsubst < k8s/ingame-fe.tmpl > k8s/ingame-fe.yaml
+#         env:
+#           IMAGE: ${{ env.IMAGE }}
+#           REPO: ${{ secrets.REPO }}
+#           CORS_ORIGIN: ${{ env.CORS_ORIGIN }}
+#           NODE_ENV: ${{ secrets.NODE_ENV }}
+#           TAG: ${{ github.sha }}
 
-      - name: Deploy Application
-        run: |
-          kubectl apply -f ${{ env.K8S_CONFIG_PATH }}.yaml
-          kubectl rollout status deployment/ingame-fe -n ${{ env.K8S_NAMESPACE }}
+#       - name: Deploy Application
+#         run: |
+#           kubectl apply -f ${{ env.K8S_CONFIG_PATH }}.yaml
+#           kubectl rollout status deployment/ingame-fe -n ${{ env.K8S_NAMESPACE }}

@@ -1,4 +1,4 @@
-import React, { useState, ForwardedRef } from 'react';
+import React, { ForwardedRef } from 'react';
 import styled from 'styled-components';
 
 interface ProfileIntroInputBoxProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -12,7 +12,6 @@ const ProfileIntroInputBox = React.forwardRef(
     { placeholder, inputCount, onChange, ...props }: ProfileIntroInputBoxProps,
     ref: ForwardedRef<HTMLTextAreaElement>
   ) => {
-
     return (
       <ProfileIntroInputBoxLayoutStyle>
         <ProfileIntroInputBoxStyle
@@ -22,7 +21,7 @@ const ProfileIntroInputBox = React.forwardRef(
           maxLength={50}
           onChange={onChange}
         />
-        <p className='textLength'>
+        <p className="textLength">
           <span>{inputCount}</span>
           <span> / 50 자</span>
         </p>

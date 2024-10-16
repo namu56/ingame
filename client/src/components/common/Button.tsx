@@ -1,4 +1,3 @@
-import { theme } from '@/styles/theme';
 import { Buttonsize, styled } from 'styled-components';
 
 interface BottonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

@@ -12,8 +12,8 @@ import { useState } from 'react';
 import { USER } from '@/constant/queryKey';
 
 interface ProfileModifyProps {
-  nickname: string,
-  intro: string | null,
+  nickname: string;
+  intro: string | null;
 }
 
 interface ProfileProps {
@@ -22,26 +22,27 @@ interface ProfileProps {
   OriginIntro: string | null;
 }
 
-
 const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) => {
   const [nickname, setNickname] = useState(OriginNickname);
   const [intro, setIntro] = useState(OriginIntro);
-  const [inputCount, setInputCount] = useState<number>(OriginIntro === null ? 0 : OriginIntro.length);
-  const [profileIntro, setprofileIntro] = useState(intro);
+  const [inputCount, setInputCount] = useState<number>(
+    OriginIntro === null ? 0 : OriginIntro.length
+  );
+  const [, setprofileIntro] = useState(intro);
   const queryClient = useQueryClient();
 
   const { register, handleSubmit } = useForm<ProfileModifyProps>();
 
   const onSubmit = (data: ProfileModifyProps) => {
     ProfileMutation.mutate(data);
-  }
+  };
 
   const ProfileMutation = useMutation({
     mutationFn: patchUserProfile,
     onSuccess(res) {
       queryClient.invalidateQueries({
-        queryKey: [...USER.GET_USERINFO]
-      })
+        queryKey: [...USER.GET_USERINFO],
+      });
       onClose();
     },
     onError(err) {
@@ -58,23 +59,29 @@ const ProfileModal = ({ onClose, OriginNickname, OriginIntro }: ProfileProps) =>
             <FaUser size={24} />
             <p className="title">닉네임변경</p>
           </div>
-          <QuestInputBox 
-            placeholder={nickname} 
-            value={nickname}           
-            {...register('nickname', {required: true, maxLength: 20})} 
+          <QuestInputBox
+            placeholder={nickname}
+            value={nickname}
+            {...register('nickname', { required: true, maxLength: 20 })}
             onChange={(e) => setNickname(e.target.value)}
-             />
+          />
         </BoxStyle>
         <BoxStyle>
           <div className="box__title">
             <FaUserPen size={24} />
             <p className="title">자기소개 변경</p>
           </div>
-          <ProfileIntroInputBox placeholder={intro === null ? '' : intro} value={intro === null ? '' : intro} inputCount={inputCount} {...register('intro')} onChange={(e) => {
-            setIntro(e.target.value);
-            setInputCount(e.target.value.length);
-            setprofileIntro(e.target.value);
-          }} />
+          <ProfileIntroInputBox
+            placeholder={intro === null ? '' : intro}
+            value={intro === null ? '' : intro}
+            inputCount={inputCount}
+            {...register('intro')}
+            onChange={(e) => {
+              setIntro(e.target.value);
+              setInputCount(e.target.value.length);
+              setprofileIntro(e.target.value);
+            }}
+          />
         </BoxStyle>
         <ButtonContainerStyle>
           <Button size="medium" color="green" children={'수정하기'} />
