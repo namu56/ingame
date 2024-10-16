@@ -11,8 +11,8 @@ export const USER = {
 };
 
 export const QUEST = {
-  GET_SUBQUEST: [BASE_KEY.QUEST, 'SUB'],
-  GET_MAINQUEST: [BASE_KEY.QUEST, 'MAIN'],
+  GET_SUBQUEST: [BASE_KEY.QUEST, 'SUB' as QuestMode],
+  GET_MAINQUEST: [BASE_KEY.QUEST, 'MAIN' as QuestMode],
 };
 
 export const RANK = {
