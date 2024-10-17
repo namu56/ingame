@@ -1,7 +1,7 @@
 {
   "containerDefinitions": [
     {
-      "name": "${ECS_CONTAINER_NAME}",
+      "name": "ingame-client-container",
       "cpu": 0,
       "portMappings": [
         {
