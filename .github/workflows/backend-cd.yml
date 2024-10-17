@@ -2,7 +2,7 @@ name: Backend CD
 
 on:
   push:
-    branches: [dev]
+    branches: [main]
     paths:
       - 'server/**'
 
