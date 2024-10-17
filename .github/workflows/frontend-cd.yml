@@ -14,7 +14,7 @@ env:
   ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
   ECS_CLIENT_SERVICE: ${{ secrets.ECS_CLIENT_SERVICE }}
   ECS_TASK_DEFINITION: task_definition.json
-  ECS_CONTAINER_NAME: ${{ secrets.ECS_CONTAINER_NAME }}
+  ECS_CONTAINER_NAME: ${{ secrets.ECS_INGAME_CLIENT_CONTAINER_NAME }}
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   INGAME_CLIENT_SECRETS: ${{ secrets.INGAME_CLIENT_SECRETS }}
 permissions:
@@ -42,7 +42,7 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: ~/.npm
+          path: client/node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('client/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -84,6 +84,7 @@ jobs:
 
       - name: Replace placeholders in task definition
         run: |
+          sed -i 's/${ECS_CONTAINER_NAME}/${{ env.ECS_CONTAINER_NAME }}/g' ${{ env.ECS_TASK_DEFINITION }}
           sed -i 's/${AWS_REGION}/${{ env.AWS_REGION }}/g' ${{ env.ECS_TASK_DEFINITION }}
           sed -i 's/${AWS_ACCOUNT_ID}/${{ env.AWS_ACCOUNT_ID }}/g' ${{ env.ECS_TASK_DEFINITION }}
           sed -i 's/${INGAME_CLIENT_SECRETS}/${{ env.INGAME_CLIENT_SECRETS }}/g' ${{ env.ECS_TASK_DEFINITION }}
