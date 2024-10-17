@@ -1,38 +1,34 @@
 # Development
-FROM node:18-alpine As development
+FROM --platform=linux/amd64 node:18-alpine AS development
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node package*.json ./
+COPY package*.json ./
 RUN npm ci
-COPY --chown=node:node . .
-
-USER node
+COPY . .
 
 # Production Build
-FROM node:18-alpine As build
+FROM --platform=linux/amd64 node:18-alpine AS build
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node package*.json ./
-COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node . .
+COPY package*.json ./
+COPY --from=development /usr/src/app/node_modules ./node_modules
+COPY . .
 
 RUN npm run build
 
-ENV NODE_ENV production
-
 RUN npm ci --only=production && npm cache clean --force
 
-USER node
-
 # Production
-FROM node:18-alpine As production
+FROM --platform=linux/amd64 node:18-alpine AS production
+
+ENV NODE_ENV production
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist ./dist
 
 EXPOSE 8080
 
