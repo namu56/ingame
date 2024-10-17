@@ -8,27 +8,24 @@ import {
 } from '@/api/quests.api';
 import { CreateSubQuestProps } from '@/components/modals/CreateSubQuestModal';
 import { SubQuestModifyProps } from '@/components/modals/SubQuestModal';
-import { BASE_KEY, QUEST } from '@/constant/queryKey';
+import { QUEST } from '@/constant/queryKey';
 import { QUERYSTRING } from '@/constant/queryString';
 import { formattedDate } from '@/utils/formatter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useMessage } from './useMessage';
 
 export const useSubQuest = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-
   const { showConfirm } = useMessage();
-
   const queryClient = useQueryClient();
+  const date = params.get(QUERYSTRING.DATE) || formattedDate(new Date());
+  const navigate = useNavigate();
 
-  const { data: subQuestList, isLoading: isSubLoading } = useQuery({
-    queryKey: [QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
-    queryFn: () =>
-      getSubQuest({
-        date: params.get(QUERYSTRING.DATE) || formattedDate(new Date()),
-      }),
+  const { data: subQuests, isLoading: isSubLoading } = useQuery({
+    queryKey: [...QUEST.GET_SUBQUEST, date],
+    queryFn: () => getSubQuest({ date }),
   });
 
   const modifySubQuest = async (data: SubQuestModifyProps) => {
@@ -36,24 +33,24 @@ export const useSubQuest = () => {
   };
 
   const modifySubQuestMutation = useMutation({
-    mutationFn: modiSubQuest,
+    mutationFn: (data: SubQuestModifyProps) => modiSubQuest(data),
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
+        queryKey: [...QUEST.GET_SUBQUEST, date],
       });
     },
     onError(err) {},
   });
 
   const modifySubQuestStatus = (data: ModifyQuestStatusProps) => {
-    modifyQuestStatusMutation.mutate(data);
+    return modifyQuestStatusMutation.mutateAsync(data);
   };
 
   const modifyQuestStatusMutation = useMutation({
-    mutationFn: modiQuestStatus,
+    mutationFn: (data: ModifyQuestStatusProps) => modiQuestStatus(data),
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
+        queryKey: [...QUEST.GET_SUBQUEST, date],
       });
     },
     onError(err) {},
@@ -64,13 +61,15 @@ export const useSubQuest = () => {
   };
 
   const createSubQuestMutation = useMutation({
-    mutationFn: addSubQuest,
+    mutationFn: (data: CreateSubQuestProps) => addSubQuest(data),
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
+        queryKey: [...QUEST.GET_SUBQUEST, date],
       });
     },
-    onError(err) {},
+    onError(err) {
+      navigate('/error');
+    },
   });
 
   const deleteSubQuest = async (id: number) => {
@@ -80,18 +79,16 @@ export const useSubQuest = () => {
   };
 
   const deleteSubQuestMutation = useMutation({
-    mutationFn: delSubQuest,
+    mutationFn: (id: number) => delSubQuest(id),
     onSuccess() {
       queryClient.invalidateQueries({
-        queryKey: [QUEST.GET_SUBQUEST, params.get(QUERYSTRING.DATE)],
+        queryKey: [...QUEST.GET_SUBQUEST, date],
       });
     },
   });
 
-  const date = params.get(QUERYSTRING.DATE) || formattedDate(new Date());
-
   return {
-    quest: subQuestList,
+    subQuests,
     isSubLoading,
     modifySubQuest,
     modifySubQuestStatus,

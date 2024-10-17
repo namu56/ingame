@@ -14,32 +14,39 @@ import LoginProvider from '@/provider/loginProvider';
 type Route = {
   path: Routers;
   element: React.ReactNode;
+  isPrivate: boolean;
 };
 
 const routeList: Route[] = [
   {
     path: ROUTERS.MAIN,
     element: <Main />,
+    isPrivate: true,
   },
   {
     path: ROUTERS.AUTH.LOGIN,
     element: <Login />,
+    isPrivate: false,
   },
   {
     path: ROUTERS.AUTH.SIGNUP,
     element: <SignUp />,
-  },
-  {
-    path: ROUTERS.RANK,
-    element: <Ranking />,
+    isPrivate: false,
   },
   {
     path: ROUTERS.CREATEQUEST,
     element: <CreateMainQuest />,
+    isPrivate: true,
   },
   {
     path: ROUTERS.EDITQUEST,
     element: <EditMainQuest />,
+    isPrivate: true,
+  },
+  {
+    path: ROUTERS.RANK,
+    element: <Ranking />,
+    isPrivate: false,
   },
 ];
 
@@ -47,6 +54,7 @@ if (process.env.NODE_ENV === 'development') {
   routeList.push({
     path: ROUTERS.TEST,
     element: <Test />,
+    isPrivate: false,
   });
 }
 
@@ -55,7 +63,7 @@ export const router = createBrowserRouter(
     return {
       ...item,
       element: (
-        <LoginProvider>
+        <LoginProvider isPrivate={item.isPrivate}>
           <Layout>{item.element}</Layout>
         </LoginProvider>
       ),

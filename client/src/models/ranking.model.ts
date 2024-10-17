@@ -12,6 +12,6 @@ export interface Pagination {
 }
 
 export interface RankingResponse {
-  ranking: RankingItem[];
+  rankings: RankingItem[];
   pagination: Pagination;
 }

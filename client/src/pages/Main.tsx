@@ -1,35 +1,41 @@
-import Dropdown from '@/components/Dropdown';
+import Dropdown from '@/components/common/Dropdown';
 import styled from 'styled-components';
 import UserProfile from '@/components/UserProfile/UserProfile';
-import SubBox from '@/components/SubBox';
-import WeekCalendar from '@/components/WeekCalendar';
+import SubBox from '@/components/quests/SubBox';
+import WeekCalendar from '@/components/common/WeekCalendar';
 import { useSubQuest } from '@/hooks/useSubQuest';
-import Loading from '@/components/Loading';
-import CreateSubQuestButton from '@/components/CreateSubQuestButton';
+import Loading from '@/components/common/Loading';
+import MainBox from '@/components/quests/MainBox';
 import { BiNotepad } from 'react-icons/bi';
-import CreateMainQuestButton from '@/components/CreateMainQuestButton';
 import { useMainQuest } from '@/hooks/useMainQuest';
-import MainBox from '@/components/MainBox';
+import CreateQuestButton from '@/components/CreateQuestButton';
+import Title from '@/components/common/Title';
+import { useUserInfo } from '@/hooks/useUserInfo';
 
 const Main = () => {
-  const { quest, isSubLoading } = useSubQuest();
-  const { mainQuest, isMainLoading, date } = useMainQuest();
+  const { subQuests, isSubLoading } = useSubQuest();
+  const { mainQuests, isMainQuestsLoading, date } = useMainQuest();
+  const { userInfo, refetch } = useUserInfo();
+
+  console.log(userInfo);
 
   return (
     <MainStyle>
       <Dropdown />
       <WeekCalendar />
-      <UserProfile />
+      <UserProfile userInfo={userInfo!} />
       <section className="questSection">
         <div className="questTitle">
           <BiNotepad />
-          <h2>Main Quest</h2>
-          <CreateMainQuestButton />
+          <Title text="Main Quest" size="small" color="black" />
+          <CreateQuestButton pageUrl="/createquest" />
         </div>
         <div>
-          {mainQuest?.length ? (
-            mainQuest?.map((content) => <MainBox key={content.id} content={content} date={date} />)
-          ) : isMainLoading ? (
+          {mainQuests?.length ? (
+            mainQuests?.map((content) => (
+              <MainBox key={content.id} content={content} date={date} refetchUserInfo={refetch} />
+            ))
+          ) : isMainQuestsLoading ? (
             <Loading />
           ) : (
             <p>등록된 메인 퀘스트가 없습니다</p>
@@ -39,12 +45,14 @@ const Main = () => {
       <section className="questSection">
         <div className="questTitle">
           <BiNotepad />
-          <h2>Sub Quest</h2>
-          <CreateSubQuestButton />
+          <Title text="Sub Quest" size="small" color="black" />
+          <CreateQuestButton modalName="subQuest" />
         </div>
         <div>
-          {quest?.length ? (
-            quest.map((content) => <SubBox key={content.id} content={content} />)
+          {subQuests?.length ? (
+            subQuests.map((content) => (
+              <SubBox key={content.id} content={content} refetchUserInfo={refetch} />
+            ))
           ) : isSubLoading ? (
             <Loading />
           ) : (

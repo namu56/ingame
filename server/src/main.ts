@@ -1,13 +1,30 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import * as cookieParser from 'cookie-parser';
-import { setupSwagger } from './common/config/swagger.config';
-import { WinstonLoggerService } from './common/logger/winston-logger.service';
+import cookieParser from 'cookie-parser';
+import { setupSwagger, winstonLogger } from './core/config';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { ValidationException } from '@core/exceptions/validation.exception';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.get(WinstonLoggerService);
+  const app = await NestFactory.create(AppModule, {
+    logger: winstonLogger,
+  });
+
+  app.setGlobalPrefix('api');
+
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(app.get(Reflector), {
+      excludeExtraneousValues: true,
+    })
+  );
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (errors) => new ValidationException(errors),
+      transform: true,
+    })
+  );
 
   const configService = app.get(ConfigService);
   const port = parseInt(configService.get<string>('PORT'));

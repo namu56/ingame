@@ -20,7 +20,7 @@ export const API_END_POINT = {
   // EDIT_MAIN_QUEST
   MAIN_QUEST: '/quests/main',
   // SIDE_QUEST
-  SIDE_QUEST: '/quests/side',
+  SIDE_QUEST: (questId: number) => `/quests/${questId}/side`,
   //POINT
   POINT: '/point',
 };

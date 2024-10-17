@@ -1,39 +1,78 @@
 import styled from 'styled-components';
 import { CiLock } from 'react-icons/ci';
 import { CiUnlock } from 'react-icons/ci';
-import { FiPlusCircle } from 'react-icons/fi';
-import { FiMinusCircle } from 'react-icons/fi';
-import Button from '@/components/Button';
-import QuestInputBox from '@/components/QuestInputBox';
+import Button from '@/components/common/Button';
+import QuestInputBox from '@/components/quests/QuestInputBox';
 import { media } from '@/styles/theme';
+import CloseButton from '@/components/common/CloseButton';
+import { useNavigate } from 'react-router-dom';
+import { useCreateMainQuestForm } from '@/hooks/useMainQuest';
 import { useState } from 'react';
-import CloseButton from '@/components/CloseButton';
-import { CreateMainQuestProps, useMainQuest } from '@/hooks/useMainQuest';
+import { MAX_SIDE_QUESTS, MIN_SIDE_QUESTS } from '@/constant/quest';
 import { QuestDifficulty, QuestHiddenType, QuestMode } from '@/models/quest.model';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+
+export interface CreateMainQuestProps {
+  title: string;
+  difficulty: QuestDifficulty;
+  mode: QuestMode;
+  sideQuests: CreateSideQuestProps[];
+  startDate: string;
+  endDate: string;
+  hidden: QuestHiddenType;
+}
+
+interface CreateSideQuestProps {
+  content: string;
+}
 
 const CreateMainQuest = () => {
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [isDifficulty, setIsDifficulty] = useState(0);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [plusQuest, setPlusQuest] = useState(1);
-  const [minusQuest, setMinusQuest] = useState(0);
-  const today = new Date().toISOString().substring(0, 10);
+  const {
+    isPrivate,
+    setIsPrivate,
+    isDifficulty,
+    setIsDifficulty,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    today,
+    onSubmit,
+  } = useCreateMainQuestForm();
   const navigate = useNavigate();
-  const { CreateQuestMutation } = useMainQuest();
+  const [sideQuests, setSideQuests] = useState<CreateSideQuestProps[]>([{ content: '' }]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateMainQuestProps>();
 
-  const { register, control, handleSubmit } = useForm<CreateMainQuestProps>();
+  const addSideQuest = () => {
+    if (sideQuests.length < MAX_SIDE_QUESTS) {
+      setSideQuests([...sideQuests, { content: '' }]);
+    }
+  };
 
-  const onSubmit = handleSubmit((data) => {
-    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const difficulty =
-      isDifficulty === 0 ? 'EASY' : isDifficulty === 1 ? 'NORMAL' : ('HARD' as QuestDifficulty);
-    const mode = 'MAIN' as QuestMode;
-    const newData = { ...data, hidden, difficulty: difficulty, mode: mode };
-    CreateQuestMutation.mutate(newData);
-  });
+  const updateSideQuest = (index: number, content: string) => {
+    const updatedSideQuests = [...sideQuests];
+    updatedSideQuests[index].content = content;
+    setSideQuests(updatedSideQuests);
+  };
+
+  const removeSideQuest = (index: number) => {
+    if (sideQuests.length > MIN_SIDE_QUESTS) {
+      const updatedSideQuests = sideQuests.filter((_, i) => i !== index);
+      setSideQuests(updatedSideQuests);
+    }
+  };
+
+  const handleFormSubmit = (data: CreateMainQuestProps) => {
+    const newData = {
+      ...data,
+      sideQuests,
+    };
+    onSubmit(newData);
+  };
 
   return (
     <>
@@ -49,11 +88,12 @@ const CreateMainQuest = () => {
             )}
           </div>
         </header>
-        <form onSubmit={onSubmit}>
-          <QuestInputBox placeholder="퀘스트 제목" {...register('title')} />
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
+          <QuestInputBox placeholder="퀘스트 제목" {...register('title', { required: true })} />
+          {errors.title && <p className="error-text">퀘스트 제목을 입력하세요</p>}
           <QuestButtonContainer>
             <Button
-              type='button'
+              type="button"
               className={`easyButton ${isDifficulty === 0 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(0)}
               children={'EASY'}
@@ -61,7 +101,7 @@ const CreateMainQuest = () => {
               color={'white'}
             />
             <Button
-              type='button'
+              type="button"
               className={`normalButton ${isDifficulty === 1 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(1)}
               children={'NORMAL'}
@@ -69,7 +109,7 @@ const CreateMainQuest = () => {
               color={'white'}
             />
             <Button
-              type='button'
+              type="button"
               className={`hardButton ${isDifficulty === 2 ? 'isActive' : ''}`}
               onClick={() => setIsDifficulty(2)}
               children={'HARD'}
@@ -77,33 +117,30 @@ const CreateMainQuest = () => {
               color={'white'}
             />
           </QuestButtonContainer>
-          <div className="plusContainer">
-            <h1>퀘스트 추가</h1>
-            <FiPlusCircle
-              onClick={() => {
-                if (plusQuest - minusQuest < 5) {
-                  setPlusQuest(plusQuest + 1);
-                }
-              }}
-            />
-            <FiMinusCircle
-              onClick={() => {
-                if (minusQuest < plusQuest && plusQuest - minusQuest !== 1) {
-                  setMinusQuest(minusQuest + 1);
-                }
-              }}
-            />
-          </div>
           <InnerQuests>
-            {Array(plusQuest - minusQuest)
-              .fill(0)
-              .map((_, index) => (
+            {sideQuests.map((sideQuest, index) => (
+              <SideQuestContainer key={index}>
                 <QuestInputBox
-                  key={index}
-                  placeholder="퀘스트 제목"
-                  {...register(`sideQuests.${index}.content` as const)}
+                  value={sideQuest.content}
+                  onChange={(e) => updateSideQuest(index, e.target.value)}
+                  placeholder="퀘스트 내용을 입력하세요"
                 />
-              ))}
+                <DeleteButton
+                  type="button"
+                  size="small"
+                  color="red"
+                  onClick={() => removeSideQuest(index)}
+                  children="삭제"
+                />
+              </SideQuestContainer>
+            ))}
+            <Button
+              type="button"
+              onClick={addSideQuest}
+              children="퀘스트 추가"
+              size="medium"
+              color="blue"
+            />
           </InnerQuests>
           <h3 className="period">기간</h3>
           <div className="dateContainer">
@@ -119,12 +156,14 @@ const CreateMainQuest = () => {
             <input
               className="endDate"
               type="date"
+              value={endDate || ''}
               {...register('endDate', {
                 required: true,
                 onChange: (e) => setEndDate(e.target.value),
               })}
             />
           </div>
+          {(errors.startDate || errors.endDate) && <p className="error-text">기간을 입력하세요</p>}
           <div className="modifiyAndClose">
             <Button type={'submit'} children={'추가하기'} size={'medium'} color={''} />
           </div>
@@ -165,6 +204,12 @@ const CreateMainQuestStyle = styled.div`
     width: 80%;
     ${media.mobile} {
       width: 100%;
+    }
+
+    .error-text {
+      color: ${({ theme }) => theme.color.red};
+      margin-top: 5px;
+      font-size: 13px;
     }
   }
 
@@ -248,6 +293,19 @@ const InnerQuests = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+`;
+
+const SideQuestContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const DeleteButton = styled(Button)`
+  min-width: 50px;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 0.8rem;
 `;
 
 export default CreateMainQuest;

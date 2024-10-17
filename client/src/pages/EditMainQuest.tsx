@@ -1,80 +1,100 @@
 import styled from 'styled-components';
 import { CiLock } from 'react-icons/ci';
 import { CiUnlock } from 'react-icons/ci';
-import Button from '@/components/Button';
-import QuestInputBox from '@/components/QuestInputBox';
+import Button from '@/components/common/Button';
+import QuestInputBox from '@/components/quests/QuestInputBox';
 import { media } from '@/styles/theme';
-import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Quest, QuestHiddenType, SideContent } from '@/models/quest.model';
-import CloseButton from '@/components/CloseButton';
+import { MainQuest, SideContent } from '@/models/quest.model';
+import CloseButton from '@/components/common/CloseButton';
+import { useConfirmDelete, useEditMainQuestForm } from '@/hooks/useMainQuest';
+import { MAX_SIDE_QUESTS, MIN_SIDE_QUESTS, QUEST_DIFFICULTY } from '@/constant/quest';
 import { useForm } from 'react-hook-form';
-import { EditMainQuestQuestProps, useMainQuest } from '@/hooks/useMainQuest';
-import { useMessage } from '@/hooks/useMessage';
-import { InvalidateQueryFilters, useQueryClient } from '@tanstack/react-query';
-import { BASE_KEY } from '@/constant/queryKey';
+import { CreateMainQuestProps } from './CreateMainQuest';
+import { useState } from 'react';
 
-const EditMainQuestQuest = () => {
+export interface UpdateMainQuestProps extends Omit<CreateMainQuestProps, 'sideQuests'> {
+  id: number;
+  sideQuests: UpdateSideQuestProps[];
+}
+
+export interface UpdateSideQuestProps {
+  id?: number;
+  content: string;
+}
+
+interface LocationState {
+  data: MainQuest;
+  date: string;
+}
+
+const EditMainQuest = () => {
   const { state } = useLocation();
-  const { data: content, date } = state;
-  
-  const [startDate, setStartDate] = useState(content.startDate);
-  const [endDate, setEndDate] = useState(content.endDate);
-  const [title, setTitle] = useState(content.title);
-  const [isDifficulty, setIsDifficulty] = useState(content.difficulty);
-  const [sideQuests, setSideQuests] = useState(content.sideQuests);
-  const [isPrivate, setIsPrivate] = useState(content.hidden === 'TRUE' ? true : false);
-  const { EditQuestMutation, DeleteMainQuestsMutation } = useMainQuest();
-  const { showConfirm } = useMessage();
+  const { data: content, date } = state as LocationState;
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const [sideQuests, setSideQuests] = useState<UpdateSideQuestProps[]>(
+    content.sideQuests.map(
+      (sideQuest) =>
+        ({
+          id: sideQuest.id,
+          content: sideQuest.content,
+        }) as UpdateSideQuestProps
+    )
+  );
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UpdateMainQuestProps>();
 
-  const { register, control, handleSubmit } = useForm<EditMainQuestQuestProps>();
+  const {
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    title,
+    setTitle,
+    isDifficulty,
+    setIsDifficulty,
+    isPrivate,
+    setIsPrivate,
+    onSubmit,
+  } = useEditMainQuestForm(content, date);
 
-  const onSubmit = handleSubmit((data) => {
-    const hidden = (isPrivate ? 'TRUE' : 'FALSE') as QuestHiddenType;
-    const updatedSideQuests = (sideQuests || []).map((sideQuest: SideContent) => {
-      if (sideQuest) {
-        return {
-          ...sideQuest, 
-          status: sideQuest.status
-        };
-      }
+  const { handleDeleteBtn } = useConfirmDelete(content);
+
+  const addSideQuest = () => {
+    if (sideQuests.length < MAX_SIDE_QUESTS) {
+      setSideQuests([...sideQuests, { content: '' }]);
+    }
+  };
+
+  const removeSideQuest = (index: number) => {
+    if (sideQuests.length > MIN_SIDE_QUESTS) {
+      setSideQuests(sideQuests.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateSideQuest = (index: number, newContent: string) => {
+    setSideQuests((prevSideQuests) => {
+      const updatedSideQuests = [...prevSideQuests];
+      updatedSideQuests[index] = { ...updatedSideQuests[index], content: newContent };
+      return updatedSideQuests;
     });
-    const { id, ...rest } = data;
-    const newData = { id, ...rest, hidden: hidden, sideQuests: updatedSideQuests };
-    EditQuestMutation.mutate(newData, {
-      onSuccess: () => {
-        queryClient.setQueryData([BASE_KEY.QUEST, content.id], (oldData: Quest) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            ...newData,
-          }
-        });
+  };
 
-        queryClient.invalidateQueries({
-          queryKey: [BASE_KEY.QUEST, date],
-          exact: true,
-        });
-        navigate('/', { state: { updatedData: newData } });
-      }
-    });
-  });
-
-  const handleDeleteBtn = () => {
-    const message = '정말 삭제하시겠습니까?';
-    showConfirm(message, () => {
-      if (content && content.id !== undefined) {
-        DeleteMainQuestsMutation.mutate(content.id);
-      }
-    });
+  const handleFormSubmit = (data: UpdateMainQuestProps) => {
+    const newData = {
+      ...data,
+      sideQuests,
+    };
+    onSubmit(newData, date);
   };
 
   return (
     <>
       <CloseButton onClick={() => navigate('/')} />
-      <EditMainQuestQuestStyle>
+      <EditMainQuestStyle>
         <header>
           <p>메인 퀘스트 수정</p>
           <div className="lockIcons">
@@ -85,70 +105,67 @@ const EditMainQuestQuest = () => {
             )}
           </div>
         </header>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
           <input type="hidden" value={isDifficulty} {...register('difficulty')} />
           <input type="hidden" value={content.id} {...register('id')} />
           <QuestInputBox
             value={title}
-            {...register('title')}
+            {...register('title', { required: 'true' })}
             onChange={(e) => setTitle(e.target.value)}
           />
+          {errors.title && <p className="error-text">퀘스트 제목을 입력하세요</p>}
           <QuestButtonContainer>
             <Button
-              type='button'
-              className={`easyButton ${isDifficulty === 'EASY' ? 'isActive' : ''}`}
-              onClick={() => setIsDifficulty('EASY')}
-              children={'EASY'}
+              type="button"
+              className={`easyButton ${isDifficulty === QUEST_DIFFICULTY.EASY ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty(QUEST_DIFFICULTY.EASY)}
+              children={QUEST_DIFFICULTY.EASY}
               size={'medium'}
               color={'white'}
             />
             <Button
-              type='button'
-              className={`normalButton ${isDifficulty === 'NORMAL' ? 'isActive' : ''}`}
-              onClick={() => setIsDifficulty('NORMAL')}
-              children={'NORMAL'}
+              type="button"
+              className={`normalButton ${isDifficulty === QUEST_DIFFICULTY.NORMAL ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty(QUEST_DIFFICULTY.NORMAL)}
+              children={QUEST_DIFFICULTY.NORMAL}
               size={'medium'}
               color={'white'}
             />
             <Button
-              type='button'
-              className={`hardButton ${isDifficulty === 'HARD' ? 'isActive' : ''}`}
-              onClick={() => setIsDifficulty('HARD')}
-              children={'HARD'}
+              type="button"
+              className={`hardButton ${isDifficulty === QUEST_DIFFICULTY.HARD ? 'isActive' : ''}`}
+              onClick={() => setIsDifficulty(QUEST_DIFFICULTY.HARD)}
+              children={QUEST_DIFFICULTY.HARD}
               size={'medium'}
               color={'white'}
             />
           </QuestButtonContainer>
-          <div className="plusContainer">
-          </div>
           <InnerQuests>
-            {content.sideQuests &&
-              content.sideQuests.map((sideQuest: SideContent, index: number) => (
-                <SideBoxContainer key={index}>
-                  <input
-                    className="checkBoxInput"
-                    type="checkbox"
-                    checked={sideQuest.status === 'COMPLETED' ? true : false}
-                    {...register(`sideQuests.${index}.status`)}
-                    onChange={(e) => {
-                      const newStatus = e.target.checked ? 'COMPLETED' : 'ON_PROGRESS';
-                      const newSideQuests = [...(sideQuests || [])];
-                      newSideQuests[index].status = newStatus;
-                      setSideQuests(newSideQuests);
-                    }}
-                  />
-                  <QuestInputBox
-                    value={sideQuest.content}
-                    {...register(`sideQuests.${index}.content`)}
-                    onChange={(e) => {
-                      const newContent = e.target.value;
-                      const newSideQuests = [...(sideQuests || [])];
-                      newSideQuests[index].content = newContent;
-                      setSideQuests(newSideQuests);
-                    }}
-                  />
-                </SideBoxContainer>
-              ))}
+            {sideQuests.map((sideQuest: SideContent & { isNew?: boolean }, index: number) => (
+              <SideBoxContainer key={index}>
+                <QuestInputBox
+                  value={sideQuest.content}
+                  onChange={(e) => updateSideQuest(index, e.target.value)}
+                  placeholder="퀘스트 내용을 입력하세요"
+                />
+                <DeleteButton
+                  type="button"
+                  onClick={() => removeSideQuest(index)}
+                  children="삭제"
+                  size="small"
+                  color="red"
+                />
+              </SideBoxContainer>
+            ))}
+            {sideQuests.length < MAX_SIDE_QUESTS && (
+              <Button
+                type="button"
+                onClick={addSideQuest}
+                children="퀘스트 추가"
+                size="medium"
+                color="blue"
+              />
+            )}
           </InnerQuests>
           <h3 className="period">기간</h3>
           <div className="dateContainer">
@@ -171,30 +188,31 @@ const EditMainQuestQuest = () => {
               })}
             />
           </div>
+          {(errors.startDate || errors.endDate) && <p className="error-text">기간을 입력하세요</p>}
           <div className="modifiyAndClose">
             <Button
               className="modifiyButton"
-              type={'submit'}
-              children={'수정'}
-              size={'medium'}
-              color={'black'}
+              type="submit"
+              children="수정"
+              size="medium"
+              color="black"
             />
             <Button
-              type='button'
+              type="button"
               className="closeButton"
-              children={'삭제'}
-              size={'medium'}
-              color={'black'}
+              children="삭제"
+              size="medium"
+              color="black"
               onClick={handleDeleteBtn}
             />
           </div>
         </form>
-      </EditMainQuestQuestStyle>
+      </EditMainQuestStyle>
     </>
   );
 };
 
-const EditMainQuestQuestStyle = styled.div`
+const EditMainQuestStyle = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -225,6 +243,12 @@ const EditMainQuestQuestStyle = styled.div`
     width: 80%;
     ${media.mobile} {
       width: 100%;
+    }
+
+    .error-text {
+      color: ${({ theme }) => theme.color.red};
+      margin-top: 5px;
+      font-size: 13px;
     }
   }
 
@@ -266,7 +290,7 @@ const EditMainQuestQuestStyle = styled.div`
       background-color: ${({ theme }) => theme.color.green};
     }
     .closeButton {
-      background-color: ${({ theme }) => theme.color.grayNormal};
+      background-color: ${({ theme }) => theme.color.red};
     }
   }
 `;
@@ -320,13 +344,13 @@ const SideBoxContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-
-  .checkBoxInput {
-    display: flex;
-    align-items: center;
-    width: 20px;
-    height: 20px;
-  }
 `;
 
-export default EditMainQuestQuest;
+const DeleteButton = styled(Button)`
+  min-width: 50px;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 0.8rem;
+`;
+
+export default EditMainQuest;

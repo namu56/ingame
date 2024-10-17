@@ -6,37 +6,43 @@ on:
     paths:
       - 'server/**'
 
+env:
+  working-directory: ./server
+
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./server
+        working-directory: ${{ env.working-directory }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
+
       - name: Cache node modules
-        id: cache-node-modules
+        id: cache-npm
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-server-node-modules
         with:
           path: server/node_modules
-          key: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('server/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('server/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
             ${{ runner.os }}-
-      - name: Install Dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+
+      - name: Install dependencies
+        if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         run: npm ci
-      - name: Run test
+
+      - name: Test
         run: npm run test
-      - name: Run build
+
+      - name: Build
         run: npm run build

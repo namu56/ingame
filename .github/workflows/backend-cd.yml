@@ -7,167 +7,74 @@ on:
       - 'server/**'
 
 env:
-  IMAGE: ingame-be
-  K8S_CONFIG_PATH: k8s/ingame-be
-  K8S_NAMESPACE: ingame
-  REPO: ${{ secrets.REPO }}
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_USERNAME: ${{ secrets.DB_USERNAME }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_DATABASE: ${{ secrets.DB_DATABASE }}
-  SALT_ROUNDS: ${{ secrets.SALT_ROUNDS }}
-  ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_SECRET_KEY }}
-  ACCESS_TOKEN_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
-  REFRESH_TOKEN_SECRET_KEY: ${{ secrets.REFRESH_TOKEN_SECRET_KEY }}
-  REFRESH_TOKEN_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
-  REDIS_HOST: ${{ secrets.REDIS_HOST }}
-  REDIS_PORT: ${{ secrets.REDIS_PORT }}
-  CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-  AWS_REGION: ap-northeast-2
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  TAG: ${{ github.sha }}
+  WORKING_DIRECTORY: ./server
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ROLE_TO_ASSUME: ${{ secrets.ROLE_TO_ASSUME }}
+  ECR_REPOSITORY: ${{ secrets.ECR_INGAME_SERVER_REPOSITORY }}
+  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+  ECS_SERVER_SERVICE: ${{ secrets.ECS_SERVER_SERVICE }}
+  ECS_TASK_DEFINITION: task_definition.json
+  ECS_CONTAINER_NAME: ${{ secrets.ECS_INGAME_SERVER_CONTAINER_NAME }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  INGAME_SERVER_SECRETS: ${{ secrets.INGAME_SERVER_SECRETS }}
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  build:
-    name: Build and Push to ECR
-    runs-on: self-hosted
+  deploy:
+    runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./server
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: server/node_modules
-          key: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('server/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-
-
-      - name: Install Dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
-        run: npm ci
-
-      - name: Run build
-        run: npm run build
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
-      - name: ECR login
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Docker build
-        run: |
-          docker build --platform linux/amd64 -t ${{ env.IMAGE }} .
-
-      - name: ECR push
-        run: |
-          aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.REPO }}
-          docker tag ${{ env.IMAGE }} ${{ secrets.REPO }}/${{ env.IMAGE }}:${{ env.TAG }}
-          docker push ${{ secrets.REPO }}/${{ env.IMAGE }}:${{ env.TAG }}
-
-  deploy:
-    name: Deploy to Minikube
-    needs: build
-    runs-on: self-hosted
-    steps:
-      - name: Check out code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          role-session-name: sampleSessionName
 
-      - name: ECR login
+      - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Setup Kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > $HOME/.kube/config
-          kubectl config use-context ingame
-
-      - name: Check if secret exists
-        id: secret-exist
-        run: |
-          if kubectl get secret aws-ecr-cred --namespace ${{ env.K8S_NAMESPACE }}; then
-            echo "secret_exist=true" >> $GITHUB_ENV
-          else
-            echo "secret_exist=false" >> $GITHUB_ENV
-          fi
-
-      - name: Create or update Kubernetes secrets for ECR
-        run: |
-          TOKEN=$(aws ecr get-authorization-token --region ap-northeast-2 --output text --query "authorizationData[].authorizationToken" | base64 --decode | cut -d: -f2)
-          if [ "${{ env.secret_exist }}" == "false" ]; then
-            echo "Creating secret..."
-            kubectl create secret docker-registry aws-ecr-cred \
-              --docker-server=${{ secrets.REPO }} \
-              --docker-username=AWS \
-              --docker-password="${TOKEN}" \
-              --namespace ${{ env.K8S_NAMESPACE }}
-          else
-            echo "Updating secret..."
-              ENCODED_JSON=$(echo -n '{"auths":{"'${{ secrets.REPO }}'":{"username":"AWS","password":"'"${TOKEN}"'"}}}' | base64 | tr -d '\n')
-              kubectl patch secret aws-ecr-cred \
-              --namespace ${{ env.K8S_NAMESPACE }} \
-              --type='strategic' \
-              --patch="{\"data\":{\".dockerconfigjson\":\"${ENCODED_JSON}\"}}"
-          fi
-
-      - name: Render Deployment YAML
-        run: |
-          envsubst < k8s/ingame-be.tmpl > k8s/ingame-be.yaml
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         env:
-          IMAGE: ${{ env.IMAGE }}
-          REPO: ${{ secrets.REPO }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          SALT_ROUNDS: ${{ secrets.SALT_ROUNDS }}
-          ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_SECRET_KEY }}
-          ACCESS_TOKEN_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
-          REFRESH_TOKEN_SECRET_KEY: ${{ secrets.REFRESH_TOKEN_SECRET_KEY }}
-          REFRESH_TOKEN_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-          AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          NODE_ENV: ${{ secrets.NODE_ENV }}
-          TAG: ${{ github.sha }}
-
-      - name: Print rendered YAML
-        run: cat k8s/ingame-be.yaml
-
-      - name: Deploy Application
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          kubectl apply -f ${{ env.K8S_CONFIG_PATH }}.yaml
-          kubectl rollout status deployment/ingame-be -n ${{ env.K8S_NAMESPACE }}
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build --target production -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Replace placeholders in task definition
+        run: |
+          sed -i 's/${ECS_CONTAINER_NAME}/${{ env.ECS_CONTAINER_NAME }}/g' ${{ env.ECS_TASK_DEFINITION }}
+          sed -i 's/${AWS_REGION}/${{ env.AWS_REGION }}/g' ${{ env.ECS_TASK_DEFINITION }}
+          sed -i 's/${AWS_ACCOUNT_ID}/${{ env.AWS_ACCOUNT_ID }}/g' ${{ env.ECS_TASK_DEFINITION }}
+          sed -i 's/${INGAME_SERVER_SECRETS}/${{ env.INGAME_SERVER_SECRETS }}/g' ${{ env.ECS_TASK_DEFINITION }}
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./server/${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.ECS_CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVER_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

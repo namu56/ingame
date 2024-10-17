@@ -1,0 +1,22 @@
+import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
+import { ProfilePhoto } from './profile-photo.entity';
+import { IProfilePhotoRepository } from './profile-photo-repository.interface';
+import { EntityTarget } from 'typeorm';
+
+export class ProfilePhotoRepository
+  extends GenericTypeOrmRepository<ProfilePhoto>
+  implements IProfilePhotoRepository
+{
+  getName(): EntityTarget<ProfilePhoto> {
+    return ProfilePhoto.name;
+  }
+
+  async findOneByUserId(userId: number): Promise<ProfilePhoto> {
+    return this.getRepository().findOne({
+      where: {
+        user: { id: userId },
+      },
+      relations: ['user'],
+    });
+  }
+}

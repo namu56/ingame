@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import Top from '@/components/Top';
+import Top from '@/components/common/Top';
 import tropy from '@/assets/images/tropy.png';
 import { media } from '@/styles/theme';
-import RankingCardList from '@/components/RankingCardList';
-import Dropdown from '@/components/Dropdown';
+import RankingCardList from '@/components/ranking/RankingCardList';
+import Dropdown from '@/components/common/Dropdown';
 
 const Ranking = () => {
   return (
