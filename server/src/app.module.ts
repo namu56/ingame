@@ -7,6 +7,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PointModule } from './modules/point/point.module';
 import { CoreModule } from './core/core.module';
 import { SideQuestModule } from '@modules/side-quest/side-quest.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 const applicationModule = [
   CoreModule,
@@ -27,5 +29,7 @@ const applicationModule = [
     }),
     ...applicationModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
