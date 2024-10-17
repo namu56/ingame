@@ -29,7 +29,7 @@ jobs:
         id: cache-npm
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-client-node-modules
         with:
           path: client/node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('client/package-lock.json') }}
