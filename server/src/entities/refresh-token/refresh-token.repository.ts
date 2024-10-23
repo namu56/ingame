@@ -11,9 +11,9 @@ export class RefreshTokenRepository
     return RefreshToken.name;
   }
 
-  findByUserId(userId: number, token: string): Promise<RefreshToken> {
+  findByUserId(userId: number): Promise<RefreshToken> {
     return this.getRepository().findOne({
-      where: { user: { id: userId }, token },
+      where: { user: { id: userId } },
       relations: ['user'],
     });
   }
