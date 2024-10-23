@@ -51,6 +51,7 @@ export class AuthController {
   @ApiForbiddenResponse({ description: 'fail - Invaild token' })
   async logout(@Req() req: Request, @Res() res: Response) {
     const refreshToken: string = req.cookies.refreshToken;
+
     await this.authService.logout(refreshToken);
     res.clearCookie('refreshToken');
     res.sendStatus(HttpStatus.NO_CONTENT);
@@ -61,9 +62,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Req() req: Request): Promise<AuthTokenResponse> {
     const refreshToken: string = req.cookies.refreshToken;
-    if (!refreshToken) {
-      throw new HttpException('Refresh token not found', HttpStatus.UNAUTHORIZED);
-    }
+
     return await this.authService.refresh(refreshToken);
   }
 }

@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ITokenService } from './interfaces/token-service.interface';
 import { AccessTokenPayload, RefreshTokenPayload } from 'src/common/dto/token';
 import { JwtService } from '@nestjs/jwt';
@@ -29,7 +23,7 @@ export class TokenService implements ITokenService {
     return await this.jwtService.signAsync(instanceToPlain(payload));
   }
 
-  async createRefreshToken(userId: number): Promise<string> {
+  async upsertRefreshToken(userId: number): Promise<string> {
     const refreshTokenPayload = new RefreshTokenPayload(userId);
 
     const token = await this.jwtService.signAsync(instanceToPlain(refreshTokenPayload), {
@@ -37,21 +31,14 @@ export class TokenService implements ITokenService {
       expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
     });
 
-    const refreshToken = RefreshToken.create(userId, token);
-    this.refreshTokenRepository.save(refreshToken);
+    let refreshToken = await this.refreshTokenRepository.findByUserId(userId);
 
-    return token;
-  }
+    if (refreshToken) {
+      refreshToken.update(token);
+    } else {
+      refreshToken = RefreshToken.create(userId, token);
+    }
 
-  async updateRefreshToken(userId: number, refreshToken: RefreshToken): Promise<string> {
-    const refreshTokenPayload = new RefreshTokenPayload(userId);
-
-    const token = await this.jwtService.signAsync(instanceToPlain(refreshTokenPayload), {
-      secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
-      expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
-    });
-
-    refreshToken.update(token);
     await this.refreshTokenRepository.save(refreshToken);
 
     return token;
@@ -61,15 +48,10 @@ export class TokenService implements ITokenService {
     this.refreshTokenRepository.deleteByToken(refreshToken);
   }
 
-  async refresh(refreshToken: string, payload: AccessTokenPayload): Promise<AuthTokenResponse> {
-    const target = await this.refreshTokenRepository.findByUserId(payload.id, refreshToken);
-
-    if (!target) {
-      throw new HttpException('refreshToken이 존재하지 않습니다', HttpStatus.NOT_FOUND);
-    }
+  async refresh(payload: AccessTokenPayload): Promise<AuthTokenResponse> {
     try {
       const newAccessToken = await this.createAccessToken(payload);
-      const newRefreshToken = await this.updateRefreshToken(payload.id, target);
+      const newRefreshToken = await this.upsertRefreshToken(payload.id);
 
       return new AuthTokenResponse(newAccessToken, newRefreshToken);
     } catch (error) {

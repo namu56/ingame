@@ -10,6 +10,9 @@ import Header from '@/components/common/Header';
 import GoogleIcon from '@/assets/images/google-icon.png';
 import KakaoIcon from '@/assets/images/kakao-icon.png';
 import NaverIcon from '@/assets/images/naver-icon.png';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getToken } from '@/utils/tokenUtils';
 
 export interface LoginProps {
   email: string;
@@ -18,6 +21,7 @@ export interface LoginProps {
 
 const Login = () => {
   const { userLogin } = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -28,6 +32,12 @@ const Login = () => {
   const onSubmit = (data: LoginProps) => {
     userLogin(data);
   };
+
+  useEffect(() => {
+    if (getToken()) {
+      navigate(ROUTERS.MAIN);
+    }
+  }, [getToken()]);
 
   return (
     <>

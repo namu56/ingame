@@ -49,7 +49,7 @@ export class AuthService implements IAuthService {
 
   async login(payload: AccessTokenPayload): Promise<AuthTokenResponse> {
     const accessToken = await this.tokenService.createAccessToken(payload);
-    const refreshToken = await this.tokenService.createRefreshToken(payload.id);
+    const refreshToken = await this.tokenService.upsertRefreshToken(payload.id);
 
     return new AuthTokenResponse(accessToken, refreshToken);
   }
@@ -63,7 +63,7 @@ export class AuthService implements IAuthService {
     const user = await this.userService.findUserById(decodedToken.id);
     try {
       const payload = new AccessTokenPayload(user.id, user.email);
-      return this.tokenService.refresh(refreshToken, payload);
+      return this.tokenService.refresh(payload);
     } catch (error) {
       throw new UnauthorizedException('토큰 재발급에 실패했습니다.');
     }
