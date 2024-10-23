@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, CreateAxiosDefaults } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { getToken, removeToken, setToken } from './tokenUtils';
 import { SERVER_API_URL } from '../settings';
 import { logout, refreshToken } from '@/api/auth.api';
