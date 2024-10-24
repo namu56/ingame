@@ -8,11 +8,13 @@ export class SchedulerController {
   constructor(private readonly schedulerService: SchedulerService) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: DEFAULT_TIMEZONE })
+  // @Cron(CronExpression.EVERY_30_SECONDS, { timeZone: DEFAULT_TIMEZONE })
   async updateExpiredMainQuests() {
     await this.schedulerService.updateExpiredMainQuests();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: DEFAULT_TIMEZONE })
+  // @Cron(CronExpression.EVERY_30_SECONDS, { timeZone: DEFAULT_TIMEZONE })
   async updateExpiredSubQuests() {
     await this.schedulerService.updateExpiredSubQuests();
   }
