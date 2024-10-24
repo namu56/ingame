@@ -1,11 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-  LoggerService,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { Status } from '../../common/types/quest/quest.type';
 import {
   IPointService,
@@ -13,7 +6,7 @@ import {
 } from '@modules/point/interfaces/point-service.interface';
 import { IQuestRepository, QUEST_REPOSITORY_KEY } from '@entities/quest/quest-repository.interface';
 import { getExpiredDate } from '@common/utils/date.util';
-import { EntityManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Namespace } from '@core/decorators/namespace.decorator';
 import {
   ISideQuestRepository,
@@ -22,12 +15,13 @@ import {
 import { Transactional } from '@core/decorators/transactional.decorator';
 import { SideQuest } from '@entities/side-quest/side-quest.entity';
 import { Quest } from '@entities/quest/quest.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 @Injectable()
 export class SchedulerService {
   constructor(
     @Inject(Logger) private readonly logger: LoggerService,
-    @Inject(EntityManager) private readonly entityManager: EntityManager,
+    @InjectDataSource() private dataSource: DataSource,
     @Inject(QUEST_REPOSITORY_KEY) private readonly questRepository: IQuestRepository,
     @Inject(SIDE_QUEST_REPOSITORY_KEY) private readonly sideQuestRepository: ISideQuestRepository,
     @Inject(POINT_SERVICE_KEY) private readonly pointService: IPointService
