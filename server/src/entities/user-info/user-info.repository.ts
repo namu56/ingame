@@ -1,7 +1,7 @@
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { UserInfo } from './user-info.entity';
 import { IUserInfoRepository } from './user-info-repository.interface';
-import { EntityTarget } from 'typeorm';
+import { EntityTarget, FindOneOptions } from 'typeorm';
 import { UserInfoWithRankDto } from '@common/dto/user-info';
 import { plainToInstance } from 'class-transformer';
 
@@ -14,7 +14,10 @@ export class UserInfoRepository
   }
 
   async findByUserId(userId: number): Promise<UserInfo | null> {
-    return this.getRepository().findOne({ where: { user: { id: userId } }, relations: ['user'] });
+    const findOption: FindOneOptions = {
+      where: { userId },
+    };
+    return this.getRepository().findOne(findOption);
   }
 
   async findByNickname(nickname: string): Promise<UserInfo | null> {

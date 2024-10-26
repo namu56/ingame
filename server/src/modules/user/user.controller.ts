@@ -73,7 +73,7 @@ export class UserController {
   @ApiForbiddenResponse({ description: 'Fail - Invalid token' })
   @HttpCode(HttpStatus.OK)
   async getCurrentUser(@CurrentUser() user: AccessTokenPayload): Promise<UserResponse> {
-    return await this.userService.findUserById(user.id);
+    return await this.userService.getUserResposeById(user.id);
   }
 
   @Patch('me')
@@ -113,6 +113,6 @@ export class UserController {
   @ApiNotFoundResponse({ description: 'Fail - User not found' })
   @HttpCode(HttpStatus.OK)
   async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserResponse> {
-    return await this.userService.findUserById(id);
+    return await this.userService.getUserResposeById(id);
   }
 }

@@ -71,12 +71,12 @@ export class UserService implements IUserService {
   }
 
   async deleteUserById(id: number): Promise<void> {
-    await this.findById(id);
+    await this.getUserById(id);
     await this.userRepository.delete(id);
   }
 
-  async findUserById(id: number): Promise<UserResponse> {
-    const user = await this.findById(id);
+  async getUserResposeById(id: number): Promise<UserResponse> {
+    const user = await this.getUserById(id);
     const level = this.levelCalculatorService.findLevel(user.userInfo.point).level;
     const levelProgress = this.levelCalculatorService.calculateLevelProgress(user.userInfo.point);
 
@@ -132,8 +132,8 @@ export class UserService implements IUserService {
     return uniqueNickname;
   }
 
-  private async findById(id: number): Promise<User> {
-    const user = await this.userRepository.findById(id);
+  async getUserById(id: number): Promise<User | null> {
+    const user = await this.userRepository.findUserById(id);
     if (!user) {
       throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
     }
