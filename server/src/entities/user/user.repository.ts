@@ -1,7 +1,7 @@
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { User } from './user.entity';
 import { IUserRepository } from './user-repository.interface';
-import { EntityTarget, FindOneOptions } from 'typeorm';
+import { EntityTarget } from 'typeorm';
 import { USER_SELECT_FIELDS } from '@common/constants';
 
 export class UserRepository extends GenericTypeOrmRepository<User> implements IUserRepository {
@@ -17,7 +17,6 @@ export class UserRepository extends GenericTypeOrmRepository<User> implements IU
     return await this.getRepository()
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.userInfo', 'userInfo')
-      .leftJoinAndSelect('user.profilePhoto', 'profilePhoto')
       .select(USER_SELECT_FIELDS)
       .where('user.id = :id', { id })
       .getOne();

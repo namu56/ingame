@@ -5,6 +5,5 @@ export const USER_SELECT_FIELDS = [
   'userInfo.nickname',
   'userInfo.intro',
   'userInfo.point',
-  'profilePhoto.id',
-  'profilePhoto.profilePhotoUrl',
+  'userInfo.profilePhoto',
 ];
