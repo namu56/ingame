@@ -11,11 +11,11 @@ export class RefreshTokenRepository
     return RefreshToken.name;
   }
 
-  findByUserId(userId: number): Promise<RefreshToken> {
-    return this.getRepository().findOne({
-      where: { user: { id: userId } },
-      relations: ['user'],
-    });
+  async findByUserId(userId: number): Promise<RefreshToken | null> {
+    return await this.getRepository()
+      .createQueryBuilder('refreshToken')
+      .where('refreshToken.user_id = :userId', { userId })
+      .getOne();
   }
 
   async deleteByToken(refreshToken: string): Promise<DeleteResult> {
