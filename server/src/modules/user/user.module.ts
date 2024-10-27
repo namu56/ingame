@@ -4,7 +4,6 @@ import { UserController } from './user.controller';
 import { USER_SERVICE_KEY } from './interfaces/user-service.interface';
 import { UserRepositoryModule } from 'src/entities/user/user-repository.module';
 import { UserInfoRepositoryModule } from 'src/entities/user-info/user-info-repository.module';
-import { ProfilePhotoRepositoryModule } from 'src/entities/profile-photo/profile-photo-repository.module';
 
 const userService: ClassProvider = {
   provide: USER_SERVICE_KEY,
@@ -12,7 +11,7 @@ const userService: ClassProvider = {
 };
 
 @Module({
-  imports: [UserRepositoryModule, UserInfoRepositoryModule, ProfilePhotoRepositoryModule],
+  imports: [UserRepositoryModule, UserInfoRepositoryModule],
   exports: [userService],
   providers: [userService],
   controllers: [UserController],

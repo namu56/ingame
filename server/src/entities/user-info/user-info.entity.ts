@@ -10,6 +10,9 @@ export class UserInfo extends BaseTimeEntity {
   @Column({ type: 'varchar', length: 50, nullable: true })
   intro: string | null;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  profilePhoto: string | null;
+
   @Column({ type: 'int', default: 0 })
   point: number;
 
@@ -32,5 +35,9 @@ export class UserInfo extends BaseTimeEntity {
 
   updatePoint(point: number): void {
     this.point = point;
+  }
+
+  updateProfilePhoto(profilePhoto: string): void {
+    this.profilePhoto = profilePhoto;
   }
 }

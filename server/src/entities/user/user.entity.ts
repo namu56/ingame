@@ -1,6 +1,5 @@
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { UserInfo } from '../user-info/user-info.entity';
-import { ProfilePhoto } from '../profile-photo/profile-photo.entity';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 import { RefreshToken } from '../refresh-token/refresh-token.entity';
 import { UserProvider } from 'src/common/types/user/user.type';
@@ -24,11 +23,6 @@ export class User extends BaseTimeEntity {
     cascade: ['insert'],
   })
   userInfo: UserInfo;
-
-  @OneToOne(() => ProfilePhoto, (ProfilePhoto) => ProfilePhoto.user, {
-    cascade: ['insert'],
-  })
-  profilePhoto: ProfilePhoto;
 
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
@@ -54,9 +48,5 @@ export class User extends BaseTimeEntity {
 
   updateUserInfo(userInfo: UserInfo): void {
     this.userInfo = userInfo;
-  }
-
-  updateProfilePhoto(profilePhoto: ProfilePhoto): void {
-    this.profilePhoto = profilePhoto;
   }
 }

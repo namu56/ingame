@@ -20,8 +20,8 @@ export class UserResponse {
   readonly point: number;
 
   @Expose()
-  @Transform(({ obj }) => obj.profilePhoto.profilePhotoUrl)
-  readonly profilePhotoUrl: string | null;
+  @Transform(({ obj }) => obj.userInfo.profilePhoto)
+  readonly profilePhoto: string | null;
 
   @Expose()
   readonly level: number;

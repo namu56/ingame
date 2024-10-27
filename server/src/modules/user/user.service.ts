@@ -13,11 +13,6 @@ import {
   USER_INFO_REPOSITORY_KEY,
 } from 'src/entities/user-info/user-info-repository.interface';
 import {
-  IProfilePhotoRepository,
-  PROFILE_PHOTO_REPOSITORY_KEY,
-} from 'src/entities/profile-photo/profile-photo-repository.interface';
-import { ProfilePhoto } from 'src/entities/profile-photo/profile-photo.entity';
-import {
   CreateLocalUserRequest,
   CreateSocialUserRequest,
   UpdateProfilePhotoRequest,
@@ -32,7 +27,6 @@ export class UserService implements IUserService {
     private readonly configService: ConfigService,
     @Inject(USER_REPOSITORY_KEY) private userRepository: IUserRepository,
     @Inject(USER_INFO_REPOSITORY_KEY) private userInfoRepository: IUserInfoRepository,
-    @Inject(PROFILE_PHOTO_REPOSITORY_KEY) private profilePhotoRepository: IProfilePhotoRepository,
     private readonly levelCalculatorService: LevelCalculatorService
   ) {}
 
@@ -47,7 +41,6 @@ export class UserService implements IUserService {
       const hashedPassword = await encryptValue(password, saltRounds);
       const newUser = User.createLocal(email, hashedPassword);
       newUser.updateUserInfo(UserInfo.create(nickname));
-      newUser.updateProfilePhoto(ProfilePhoto.create());
 
       await this.userRepository.save(newUser);
     } catch (error) {
@@ -62,7 +55,6 @@ export class UserService implements IUserService {
     try {
       const newSnsUser = User.createSocial(email, provider, providerId);
       newSnsUser.updateUserInfo(UserInfo.create(uniqueNickname));
-      newSnsUser.updateProfilePhoto(ProfilePhoto.create());
 
       return await this.userRepository.save(newSnsUser);
     } catch (error) {
@@ -106,14 +98,14 @@ export class UserService implements IUserService {
   }
 
   async updateProfilePhotoById(userId: number, request: UpdateProfilePhotoRequest): Promise<void> {
-    const { profilePhotoUrl } = request;
-    const profilePhoto = await this.profilePhotoRepository.findOneByUserId(userId);
-    if (!profilePhoto) {
+    const { profilePhoto } = request;
+    const userInfo = await this.userInfoRepository.findByUserId(userId);
+    if (!userInfo) {
       throw new HttpException('해당 유저 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
     }
 
-    profilePhoto.update(profilePhotoUrl);
-    await this.profilePhotoRepository.save(profilePhoto);
+    userInfo.updateProfilePhoto(profilePhoto);
+    await this.userInfoRepository.save(userInfo);
   }
 
   async isExistEmail(email: string): Promise<void> {
