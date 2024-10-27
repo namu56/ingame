@@ -8,5 +8,5 @@ export class UpdateProfilePhotoRequest {
   })
   @IsNotEmpty()
   @IsString()
-  profilePhotoUrl: string;
+  profilePhoto: string;
 }
