@@ -14,7 +14,10 @@ export class UserInfoRepository
   }
 
   async findByUserId(userId: number): Promise<UserInfo | null> {
-    return this.getRepository().findOne({ where: { user: { id: userId } }, relations: ['user'] });
+    return await this.getRepository()
+      .createQueryBuilder('userInfo')
+      .where('userInfo.user_id = :userId', { userId })
+      .getOne();
   }
 
   async findByNickname(nickname: string): Promise<UserInfo | null> {

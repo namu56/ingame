@@ -60,7 +60,7 @@ export class AuthService implements IAuthService {
 
   async refresh(refreshToken: string): Promise<AuthTokenResponse> {
     const decodedToken = await this.tokenService.verifiedRefreshToken(refreshToken);
-    const user = await this.userService.findUserById(decodedToken.id);
+    const user = await this.userService.getUserById(decodedToken.id);
     try {
       const payload = new AccessTokenPayload(user.id, user.email);
       return this.tokenService.refresh(payload);
