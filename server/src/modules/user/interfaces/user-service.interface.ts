@@ -1,3 +1,4 @@
+import { UserInfo } from '@entities/user-info/user-info.entity';
 import {
   CreateLocalUserRequest,
   CreateSocialUserRequest,
@@ -23,4 +24,5 @@ export interface IUserService {
   isExistEmail(email: string): Promise<void>;
   isExistNickname(nickname: string): Promise<void>;
   getUserById(id: number): Promise<User>;
+  getUserInfoByUserId(userId: number): Promise<UserInfo>;
 }
