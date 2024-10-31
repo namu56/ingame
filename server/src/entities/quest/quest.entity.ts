@@ -37,9 +37,7 @@ export class Quest extends BaseTimeEntity {
   })
   user: User;
 
-  @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest, {
-    cascade: ['insert'],
-  })
+  @OneToMany(() => SideQuest, (sideQuest) => sideQuest.quest)
   sideQuests: SideQuest[];
 
   static createMainQuest(

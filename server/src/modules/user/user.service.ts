@@ -40,9 +40,12 @@ export class UserService implements IUserService {
     try {
       const hashedPassword = await encryptValue(password, saltRounds);
       const newUser = User.createLocal(email, hashedPassword);
-      newUser.updateUserInfo(UserInfo.create(nickname));
+      const newUserInfo = UserInfo.create(nickname);
+
+      newUserInfo.user = newUser;
 
       await this.userRepository.save(newUser);
+      await this.userInfoRepository.save(newUserInfo);
     } catch (error) {
       throw new HttpException('회원가입에 실패하였습니다', HttpStatus.CONFLICT);
     }
@@ -54,19 +57,21 @@ export class UserService implements IUserService {
     const uniqueNickname = await this.createUniqueNickname(nickname);
     try {
       const newSnsUser = User.createSocial(email, provider, providerId);
-      newSnsUser.updateUserInfo(UserInfo.create(uniqueNickname));
+      const newUserInfo = UserInfo.create(uniqueNickname);
 
-      return await this.userRepository.save(newSnsUser);
+      newUserInfo.user = newSnsUser;
+
+      const savedUser = await this.userRepository.save(newSnsUser);
+      await this.userInfoRepository.save(newUserInfo);
+
+      return savedUser;
     } catch (error) {
       throw new HttpException('회원가입에 실패하였습니다', HttpStatus.CONFLICT);
     }
   }
 
-  async findUserByEmail(email: string): Promise<User> {
+  async findUserByEmail(email: string): Promise<User | null> {
     const user = await this.userRepository.findByEmail(email);
-    if (!user) {
-      throw new HttpException('이메일이 존재하지 않습니다', HttpStatus.NOT_FOUND);
-    }
     return user;
   }
 
@@ -85,10 +90,8 @@ export class UserService implements IUserService {
 
   async updateUserInfoById(userId: number, request: UpdateUserRequest): Promise<void> {
     const { nickname, intro } = request;
-    const userInfo = await this.userInfoRepository.findByUserId(userId);
-    if (!userInfo) {
-      throw new HttpException('해당 유저 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
-    }
+    const userInfo = await this.getUserInfoByUserId(userId);
+
     // 변경하려는 닉네임과 현재 사용자의 닉네임이 다른 경우에만 중복 확인
     if (userInfo.nickname !== nickname) {
       await this.isExistNickname(nickname);
@@ -99,7 +102,7 @@ export class UserService implements IUserService {
 
   async updateProfilePhotoById(userId: number, request: UpdateProfilePhotoRequest): Promise<void> {
     const { profilePhoto } = request;
-    const userInfo = await this.userInfoRepository.findByUserId(userId);
+    const userInfo = await this.getUserInfoByUserId(userId);
     if (!userInfo) {
       throw new HttpException('해당 유저 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
     }
@@ -132,11 +135,19 @@ export class UserService implements IUserService {
     return uniqueNickname;
   }
 
-  async getUserById(id: number): Promise<User | null> {
+  async getUserById(id: number): Promise<User> {
     const user = await this.userRepository.findUserById(id);
     if (!user) {
       throw new HttpException('해당 유저가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
     }
     return user;
+  }
+
+  async getUserInfoByUserId(userId: number): Promise<UserInfo> {
+    const userInfo = await this.userInfoRepository.findByUserId(userId);
+    if (!userInfo) {
+      throw new HttpException('해당 유저 정보가 존재하지 않습니다.', HttpStatus.NOT_FOUND);
+    }
+    return userInfo;
   }
 }

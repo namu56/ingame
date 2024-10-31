@@ -15,16 +15,12 @@ export class SideQuestService {
   constructor(
     @Inject(SIDE_QUEST_REPOSITORY_KEY) private readonly sideQuestRepository: ISideQuestRepository
   ) {}
-  async createSideQuests(
-    questId: number,
-    sideQuests: CreateSideQuestRequest[]
-  ): Promise<SideQuest[]> {
-    const newSideQuests: SideQuest[] = [];
-    for (const sideQuest of sideQuests) {
-      const { content } = sideQuest;
-      newSideQuests.push(SideQuest.create(questId, content));
-    }
-    return newSideQuests;
+  async createSideQuests(questId: number, sideQuests: CreateSideQuestRequest[]) {
+    const newSideQuests = sideQuests.map(({ content }) => {
+      return SideQuest.create(questId, content);
+    });
+
+    await this.sideQuestRepository.save(newSideQuests);
   }
 
   async findSideQuests(questId: number): Promise<SideQuest[]> {
@@ -33,28 +29,34 @@ export class SideQuestService {
 
   async updateSideQuests(
     questId: number,
-    sideQuestRequests: UpdateSideQuestRequest[]
+    currentSideQuests: SideQuest[],
+    requests: UpdateSideQuestRequest[]
   ): Promise<void> {
-    const sideQuests = await this.findSideQuests(questId);
-    const deleteSideQuestIds = new Set(sideQuests.map((sideQuest) => sideQuest.id));
+    const currentSideQuestsMap = new Map(
+      currentSideQuests.map((currentSideQuest) => [currentSideQuest.id, currentSideQuest])
+    );
 
-    for (const request of sideQuestRequests) {
-      if (request.id) {
-        const target = sideQuests.find((sideQuest) => sideQuest.id === request.id);
-        if (target) {
-          deleteSideQuestIds.delete(request.id);
-          await target.updateContent(request.content);
-          await this.sideQuestRepository.save(target);
-        }
-      } else {
-        const newSideQuest = SideQuest.create(questId, request.content);
-        await this.sideQuestRepository.save(newSideQuest);
-      }
-    }
+    const targets = requests
+      .map((request) => {
+        if (!request.id) return SideQuest.create(questId, request.content);
 
-    if (deleteSideQuestIds.size > 0) {
-      await this.sideQuestRepository.delete(Array.from(deleteSideQuestIds));
-    }
+        const target = currentSideQuestsMap.get(request.id);
+        if (!target) return null;
+
+        target.updateContent(request.content);
+        return target;
+      })
+      .filter(Boolean);
+
+    const updateSideQuestIds = requests.map((updateSideQuest) => updateSideQuest.id);
+    const deleteSideQuestIds = currentSideQuests
+      .filter((currentSideQuest) => !updateSideQuestIds.includes(currentSideQuest.id))
+      .map((deleteSideQuest) => deleteSideQuest.id);
+
+    await Promise.all([
+      targets.length && (await this.sideQuestRepository.save(targets)),
+      deleteSideQuestIds.length && (await this.sideQuestRepository.delete(deleteSideQuestIds)),
+    ]);
   }
 
   async updateSideQuestStatus(

@@ -37,26 +37,26 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
 
   async findMainQuests(userId: number, date: Date): Promise<Quest[]> {
     return await this.baseSelectQueryBuilder(userId, Mode.Main)
-      .andWhere('quest.startDate <=:date', { date })
+      .andWhere('quest.startDate <= :date', { date })
       .andWhere('quest.endDate >= :date', { date })
       .getMany();
   }
 
   async findSubQuests(userId: number, date: Date): Promise<Quest[]> {
     return await this.baseSelectQueryBuilder(userId, Mode.Sub)
-      .andWhere('quest.startDate =:date', { date })
+      .andWhere('quest.startDate = :date', { date })
       .getMany();
   }
 
   async findMainQuest(userId: number, questId: number): Promise<Quest | null> {
     return await this.baseSelectQueryBuilder(userId, Mode.Main)
-      .andWhere('quest.id=:id', { id: questId })
+      .andWhere('quest.id = :id', { id: questId })
       .getOne();
   }
 
   async findSubQuest(userId: number, questId: number): Promise<Quest | null> {
     return await this.baseSelectQueryBuilder(userId, Mode.Sub)
-      .andWhere('quest.id=:id', { id: questId })
+      .andWhere('quest.id = :id', { id: questId })
       .getOne();
   }
 
@@ -65,7 +65,7 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
       .createQueryBuilder('quest')
       .select(QUEST_SELECT_FIELDS)
       .where('quest.userId = :userId', { userId })
-      .andWhere('quest.mode= :mode', { mode });
+      .andWhere('quest.mode = :mode', { mode });
 
     if (mode === Mode.Main) query = query.leftJoinAndSelect('quest.sideQuests', 'sideQuest');
 

@@ -27,13 +27,11 @@ export class QuestService {
     const { mode, sideQuests } = request;
     try {
       const quest = await this.createQuest(userId, request);
+      const savedQuest = await this.questRepository.save(quest);
 
       if (mode === Mode.Main) {
-        const newSideQuests = await this.sideQuestService.createSideQuests(quest.id, sideQuests);
-        quest.createSideQuests(newSideQuests);
+        await this.sideQuestService.createSideQuests(savedQuest.id, sideQuests);
       }
-
-      await this.questRepository.save(quest);
     } catch (error) {
       throw new HttpException('퀘스트를 생성하는데 실패했습니다', HttpStatus.CONFLICT);
     }
@@ -44,7 +42,7 @@ export class QuestService {
     questId: number,
     request: UpdateQuestStatusRequest
   ): Promise<void> {
-    const quest = await this.findById(userId, questId);
+    const quest = await this.findMainById(userId, questId);
     try {
       quest.updateStatus(request.status);
 
@@ -85,15 +83,15 @@ export class QuestService {
     request: UpdateMainQuestRequest
   ): Promise<void> {
     const { title, difficulty, startDate, endDate, hidden, sideQuests } = request;
-    const quest = await this.findById(userId, questId);
+    const quest = await this.findMainById(userId, questId);
     if (quest.mode !== Mode.Main) {
       throw new HttpException('메인 퀘스트가 아닙니다', HttpStatus.BAD_REQUEST);
     }
     try {
       quest.updateMainQuest(title, difficulty, hidden, startDate, endDate);
 
-      await this.sideQuestService.updateSideQuests(questId, sideQuests);
       await this.questRepository.save(quest);
+      await this.sideQuestService.updateSideQuests(questId, quest.sideQuests, sideQuests);
     } catch (error) {
       throw new HttpException('퀘스트 업데이트에 실패하였습니다', HttpStatus.CONFLICT);
     }
@@ -132,14 +130,6 @@ export class QuestService {
         ? Quest.createMainQuest(userId, title, difficulty, startDate, endDate, hidden)
         : Quest.createSubQuest(userId, title, startDate, endDate, hidden);
 
-    return quest;
-  }
-
-  private async findById(userId: number, questId: number): Promise<Quest> {
-    const quest = await this.questRepository.findById(userId, questId);
-    if (!quest) {
-      throw new HttpException('퀘스트가 존재하지 않습니다', HttpStatus.NOT_FOUND);
-    }
     return quest;
   }
 
