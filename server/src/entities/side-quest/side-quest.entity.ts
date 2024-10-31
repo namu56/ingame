@@ -5,7 +5,7 @@ import { BaseTimeEntity } from '@core/database/typeorm/base-time.entity';
 
 @Entity('side_quest')
 export class SideQuest extends BaseTimeEntity {
-  @Column({ type: 'bigint' })
+  @Column({ type: 'bigint', nullable: false })
   questId: number;
 
   @Column({ type: 'varchar', length: 50 })

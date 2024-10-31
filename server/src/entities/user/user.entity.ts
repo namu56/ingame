@@ -19,9 +19,7 @@ export class User extends BaseTimeEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   providerId: string | null;
 
-  @OneToOne(() => UserInfo, (userInfo) => userInfo.user, {
-    cascade: ['insert'],
-  })
+  @OneToOne(() => UserInfo, (userInfo) => userInfo.user)
   userInfo: UserInfo;
 
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
@@ -44,9 +42,5 @@ export class User extends BaseTimeEntity {
     user.provider = provider;
     user.providerId = providerId;
     return user;
-  }
-
-  updateUserInfo(userInfo: UserInfo): void {
-    this.userInfo = userInfo;
   }
 }
