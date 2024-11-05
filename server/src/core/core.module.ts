@@ -18,6 +18,7 @@ import { LevelCalculatorModule } from './level-calculator/level-calculator.modul
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 import { LoggerContextMiddleware } from './middlewares';
+import { MetricsModule } from './metrics/metrics.module';
 
 const modules = [
   CustomTypeOrmModule,
@@ -28,6 +29,7 @@ const modules = [
   SchedulerModule,
   ScheduleModule.forRoot(),
   LevelCalculatorModule,
+  MetricsModule.register(),
 ];
 const strategies = [JwtStrategy, LocalStrategy, GoogleStrategy];
 const filters: ClassProvider[] = [{ provide: APP_FILTER, useClass: AllExceptionsFilter }];
