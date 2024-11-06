@@ -25,7 +25,7 @@ const applicationModule = [
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
-      envFilePath: process.env.NODE_ENV === 'production' ? '.production.env' : '.development.env',
+      envFilePath: `${process.env.NODE_ENV}.env`,
     }),
     ...applicationModule,
   ],
