@@ -57,9 +57,23 @@ services:
     networks:
       - ingame
 
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - '6379:6379'
+    env_file:
+      - ./.env
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    networks:
+      - ingame
+
 volumes:
   mariadb_data:
   grafana_data:
+  redis_data:
 
 networks:
   ingame:
