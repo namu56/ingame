@@ -6,7 +6,7 @@ export const TOKEN_SERVICE_KEY = 'tokenServiceKey';
 export interface ITokenService {
   createAccessToken(payload: AccessTokenPayload): Promise<string>;
   upsertRefreshToken(userId: number): Promise<string>;
-  deleteToken(refreshToken: string): Promise<void>;
+  deleteByUserId(userId: number): Promise<void>;
   refresh(payload: AccessTokenPayload): Promise<AuthTokenResponse>;
   verifiedRefreshToken(refreshToken: string): Promise<RefreshTokenPayload>;
 }
