@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule, Provider } from '@nestjs/common
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionManager } from './transaction-manager';
 import { TransactionMiddleware } from 'src/core/middlewares/transaction.middleware';
-import { dataSourceOptions } from 'src/core/config';
+import { dataSourceOptions } from '@core/config';
 
 const modules = [TypeOrmModule.forRoot(dataSourceOptions)];
 const providers: Provider[] = [TransactionManager];

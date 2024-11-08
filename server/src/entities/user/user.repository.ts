@@ -21,4 +21,8 @@ export class UserRepository extends GenericTypeOrmRepository<User> implements IU
       .where('user.id = :id', { id })
       .getOne();
   }
+
+  async delete(id: number): Promise<void> {
+    await this.getRepository().delete(id);
+  }
 }
