@@ -20,4 +20,8 @@ export class SideQuestRepository
     const findOptions: FindManyOptions<SideQuest> = { where: { questId } };
     return this.getRepository().find(findOptions);
   }
+
+  async delete(ids: number | number[]): Promise<void> {
+    await this.getRepository().delete(ids);
+  }
 }

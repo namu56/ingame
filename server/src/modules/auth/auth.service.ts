@@ -54,8 +54,8 @@ export class AuthService implements IAuthService {
     return new AuthTokenResponse(accessToken, refreshToken);
   }
 
-  async logout(refreshToken: string): Promise<void> {
-    this.tokenService.deleteToken(refreshToken);
+  async logout(userId: number): Promise<void> {
+    this.tokenService.deleteByUserId(userId);
   }
 
   async refresh(refreshToken: string): Promise<AuthTokenResponse> {

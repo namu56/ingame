@@ -1,3 +1,4 @@
+import { getRefreshTokenCookieOptions } from '@core/config/cookie.config';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Response } from 'express';
 import { Observable } from 'rxjs';
@@ -14,12 +15,7 @@ export class AuthTokenInterceptor implements NestInterceptor {
         if (data && data.refreshToken) {
           const isProduction = process.env.NODE_ENV === 'production';
 
-          res.cookie('refreshToken', data.refreshToken, {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 7,
-            sameSite: isProduction ? 'none' : 'lax',
-            secure: isProduction,
-          });
+          res.cookie('refreshToken', data.refreshToken, getRefreshTokenCookieOptions());
 
           delete data.refreshToken;
         }

@@ -19,6 +19,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 import { LoggerContextMiddleware } from './middlewares';
 import { MetricsModule } from './metrics/metrics.module';
+import { RedisModule } from './database/redis/redis.module';
 
 const modules = [
   CustomTypeOrmModule,
@@ -30,6 +31,7 @@ const modules = [
   ScheduleModule.forRoot(),
   LevelCalculatorModule,
   MetricsModule.register(),
+  RedisModule,
 ];
 const strategies = [JwtStrategy, LocalStrategy, GoogleStrategy];
 const filters: ClassProvider[] = [{ provide: APP_FILTER, useClass: AllExceptionsFilter }];

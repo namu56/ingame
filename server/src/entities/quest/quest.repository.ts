@@ -21,6 +21,10 @@ export class QuestRepository extends GenericTypeOrmRepository<Quest> implements 
     return this.getRepository().findOne(findOptions);
   }
 
+  async delete(ids: number | number[]): Promise<void> {
+    await this.getRepository().delete(ids);
+  }
+
   async findExpiredMainQuests(date: Date): Promise<Quest[]> {
     const findOptions: FindManyOptions = {
       where: { mode: Mode.Main, status: Status.OnProgress, endDate: LessThan(date) },

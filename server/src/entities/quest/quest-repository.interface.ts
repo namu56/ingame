@@ -11,4 +11,5 @@ export interface IQuestRepository extends IGenericRepository<Quest> {
   findSubQuests(userId: number, date: Date): Promise<Quest[]>;
   findMainQuest(userId: number, questId: number): Promise<Quest | null>;
   findSubQuest(userId: number, questId: number): Promise<Quest | null>;
+  delete(ids: number | number[]): Promise<void>;
 }

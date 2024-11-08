@@ -20,10 +20,6 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity>
     return Array.isArray(t) ? savedEntities : savedEntities[0];
   }
 
-  async delete(ids: number | number[]): Promise<void> {
-    await this.getRepository().delete(ids);
-  }
-
   protected getRepository(): Repository<T> {
     return this.transactionManager.getEntityManager().getRepository(this.getName());
   }

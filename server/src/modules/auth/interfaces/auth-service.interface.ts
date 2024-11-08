@@ -9,6 +9,6 @@ export interface IAuthService {
   validateLocalUser(email: string, password: string): Promise<Omit<User, 'password'> | null>;
   validateSocialUser(createSocialUserRequest: CreateSocialUserRequest): Promise<User | null>;
   login(payload: AccessTokenPayload): Promise<AuthTokenResponse>;
-  logout(refreshToken: string): Promise<void>;
+  logout(userId: number): Promise<void>;
   refresh(refreshToken: string): Promise<AuthTokenResponse>;
 }

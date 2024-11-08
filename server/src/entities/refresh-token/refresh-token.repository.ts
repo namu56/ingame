@@ -1,7 +1,7 @@
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { IRefreshTokenRepository } from './refresh-token-repository.interface';
 import { RefreshToken } from './refresh-token.entity';
-import { DeleteResult, EntityTarget } from 'typeorm';
+import { EntityTarget } from 'typeorm';
 
 export class RefreshTokenRepository
   extends GenericTypeOrmRepository<RefreshToken>
@@ -18,7 +18,7 @@ export class RefreshTokenRepository
       .getOne();
   }
 
-  async deleteByToken(refreshToken: string): Promise<DeleteResult> {
-    return await this.getRepository().delete({ token: refreshToken });
+  async deleteByUserId(userId: number): Promise<void> {
+    await this.getRepository().delete({ userId });
   }
 }
