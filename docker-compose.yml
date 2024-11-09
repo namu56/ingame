@@ -1,7 +1,9 @@
 version: '3.8'
 
 services:
+  # Application Services
   client:
+    container_name: client
     build:
       context: ./client
       dockerfile: Dockerfile.dev
@@ -9,7 +11,7 @@ services:
       - '3000:3000'
     volumes:
       - ./client:/usr/src/app
-      - /usr/src/app/node_modules
+      - client_node_modules:/usr/src/app/node_modules
     env_file:
       - ./client/.env
     depends_on:
@@ -18,20 +20,103 @@ services:
       - ingame
 
   server:
+    container_name: server
     build:
       context: ./server
       dockerfile: Dockerfile.dev
     ports:
-      - '8080:8080'
+      - '5678:5678'
+      - '9229:9229'
     volumes:
       - ./server:/usr/src/app
-      - /usr/src/app/node_modules
+      - server_node_modules:/usr/src/app/node_modules
     env_file:
       - ./server/.development.env
+    command: npm run start:debug
+    depends_on:
+      - db
+      - redis
     networks:
       - ingame
 
+  # Database Services
+  db:
+    image: mariadb:11.2.2
+    container_name: db
+    env_file:
+      - ./.env
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    networks:
+      - ingame
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - '6379:6379'
+    env_file:
+      - ./.env
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    networks:
+      - ingame
+
+  # Monitoring Services
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./conf/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    depends_on:
+      - cadvisor
+    networks:
+      - ingame
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - '9091:3000'
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    networks:
+      - ingame
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - '8080:8080'
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - ingame
+
+volumes:
+  client_node_modules:
+  server_node_modules:
+  mariadb_data:
+  grafana_data:
+  redis_data:
+
 networks:
   ingame:
-    external: true
     name: ingame
